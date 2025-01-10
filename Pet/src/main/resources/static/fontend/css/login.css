@@ -1,0 +1,174 @@
+body {
+  display: flex;
+  margin-right: 25%;
+  align-items: center;
+  min-height: 100vh;
+  background-image: url("../img/background.png");
+  background-color: #fef0e6;
+  background-size: cover;
+}
+.cover {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.wrapper {
+  width: 450px;
+  height: 600px;
+  border: 1px solid #fef0e6;
+  border-radius: 40px;
+  padding: 30px 40px;
+  backdrop-filter: blur(20px);
+  background-color: #ffff;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* Thiết lập hiệu ứng lật thẻ */
+.login-form,
+.register-form {
+  position: absolute;
+  width: 80%;
+  height: 600px;
+  transition: transform 0.8s;
+}
+
+.login-form {
+  transform: rotateY(0deg);
+  backface-visibility: hidden;
+}
+
+.register-form {
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+}
+.wrapper h1 {
+  font-size: 44px;
+  text-align: center;
+}
+.wrapper .input-box {
+  width: 100%;
+  height: 50px;
+  margin: 40px 0;
+  position: relative;
+  border: 3px solid #fef0e6;
+  border-radius: 40px;
+  
+
+}
+.wrapper .input-box input {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  border: 1px solid rgba(255, 255, 255, 2);
+  border-radius: 40px;
+  font-size: 18px;
+  /* font-family: var(--color-text); */
+  /* color: var(--color-text); */
+  padding: 20px 45px 20px 20px;
+}
+.wrapper .input-box input:focus {
+  background-color: var(--color-one);
+}
+.wrapper .input-box input::placeholder {
+  color: rgba(45, 45, 45, 0.7);
+}
+.wrapper .input-box i {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+}
+.wrapper .forgot-box {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  margin: -15px 0px 15px;
+}
+.wrapper .forgot-box label:hover {
+  text-decoration: underline;
+}
+.wrapper .forgot-box label input {
+  margin-right: 5px;
+  accent-color: #fff;
+}
+.wrapper .forgot-box a:hover {
+  text-decoration: underline;
+}
+.wrapper .button {
+  width: 100%;
+  height: 45px;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px #ffffff;
+  color: var(--color-text);
+  font-family: var(--font1);
+  font-weight: 600;
+  font-size: 18px;
+}
+.wrapper .button:hover {
+  background-color: #fef0e6;
+}
+.wrapper .register-login-link {
+  font-size: 18px;
+  text-align: center;
+  margin: 20px 0 15px;
+}
+.wrapper .register-login-link a {
+  font-weight: 600;
+}
+.wrapper .register-login-link a:hover {
+  text-decoration: underline;
+}
+.wrapper .home-link {
+  display: flex;
+  justify-content: center;
+}
+.wrapper .home-link a {
+  font-size: 18px;
+  text-align: center;
+  margin: 10px 0 15px;
+  font-weight: 600;
+}
+.wrapper .home-link a:hover {
+  text-decoration: underline;
+}
+
+/* CSS cho các error */
+#error-acc-register,
+#error-pass-register,
+#error-acc-login,
+#error-pass-login,
+#error-pass-again-register {
+  color: rgb(252, 35, 35);
+  padding: 0;
+  padding-top: 2px;
+  margin: 0 20px;
+  font-size: 13px;
+}
+/* End CSS cho các error */
+/* Đặt các icon Google và Facebook thành hình tròn và căn giữa */
+.social-icons {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.social-icon {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.social-icon i {
+  font-size: 24px;
+  color: #333;
+}

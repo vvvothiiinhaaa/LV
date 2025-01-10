@@ -1,0 +1,183 @@
+.quantity-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .quantity-input span {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #555;
+  }
+  .form-control {
+    width: 60px;
+    text-align: center;
+    font-size: 1rem;
+    padding: 5px;
+  }
+
+  .quantity-input input {
+    width: 60px;
+    text-align: center;
+    font-size: 1rem;
+    padding: 5px;
+  }
+
+  .table td, .table th {
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  .table img {
+    width: 100px;
+    height: auto;
+  }
+
+  .btn-custom {
+    background-color: #9f7143;
+    color: white;
+  }
+
+  .btn-custom:hover {
+    background-color: #9f7143;
+  }
+
+  /* Nút Update Cart */
+  .btn-update {
+    background-color: #9f7143; 
+    color: white;
+    font-size: 1rem;
+    font-weight: bold; 
+    padding: 10px 30px;
+    border-radius: 5px;
+    border: none;
+    justify-content: space-between;
+    text-transform: uppercase; /* Chữ in hoa */
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-update:hover {
+    background-color: #9f7143; /* Màu vàng đậm khi hover */
+  }
+
+  .btn-update:active {
+    background-color: #9f7143; /* Màu vàng khi nhấn */
+  }
+
+  .btn-delete {
+    border: none;
+    background-color: #fff;
+  }
+
+  #cart {
+    margin-top: 10%;
+  }
+
+  /* Coupon Section */
+  .coupon-section, .cart-totals-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 5%;
+  }
+
+  .coupon-section {
+    border: 1px solid #ddd;
+  }
+
+  .cart-totals-section {
+    border: 1px solid #ddd;
+  }
+
+  .section-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+  }
+
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap:5%;
+  }
+
+  .input-group input {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    width: 50%;
+  }
+
+  .input-group button {
+    background-color: #9f7143;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px auto;
+  }
+
+  .input-group button:hover {
+    background-color: #9f7143;
+  }
+
+  .total-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+
+
+  .btn-custom {
+    background-color: #9f7143;
+    color: white;
+    padding: 12px 20px;
+    width: 40%;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 16px;
+  }
+  .btn-sale {
+      background-color: #9f7143;
+    color: white;
+    padding: 12px 20px;
+    width: 40%;
+    margin-right: 15%;
+    border: none;
+    gap:10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 16px;
+  }
+  .btn-buy{
+      justify-content: center;
+      align-items: center;
+      align-content: center;
+      background-color: #9f7143;
+    color: white;
+    padding: 12px 20px;
+    width: 40%;
+    margin: 10px auto;
+    border: none;
+    gap:10px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 16px;
+    display:block;
+
+  }
+
+  .btn-custom:hover {
+    background-color: #9f7143;
+  }
+  #total , #subtotal , #ship {
+    font-weight: bold;
+  }

@@ -1,0 +1,163 @@
+/* Đoạn CSS gốc */
+.custom-card {
+    border-radius: 999em 999em 999em 999em;
+    padding: 20px;
+    height: 300px;
+    width: 80%;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    background-color: #fff9f4;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Thêm hiệu ứng mượt */
+}
+
+.custom-image {
+    width: 500px;
+    height: 250px;
+    border-radius: 50%;
+    overflow: hidden;
+  
+}
+
+.custom-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.custom-circle {
+    width: 100px;
+    height: 100px;
+    background-color: #c4b6aa;
+    border-radius: 50%;
+    position: absolute;
+    right: 5px;
+    bottom: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+p{
+    margin-left: 60px ; 
+    margin-right: 60px ;
+}
+h3 {
+  
+    text-align: center ;
+}
+
+
+
+
+
+
+.custom-card:hover {
+    transform: scale(1.05); /* Phóng to toàn bộ container */
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2); /* Tăng bóng khi hover */
+    background-color:#fef0e6 ;
+}
+
+
+
+
+
+
+
+
+/* Responsive cho tablet (kích thước màn hình từ 768px đến 1024px) */
+@media (max-width: 1024px) {
+    .custom-card {
+        flex-direction: column;
+        height: auto; 
+        width: 90%; 
+        
+        padding: 15px;
+    }
+
+    .custom-image {
+        width: 350px;
+        height: 200px;
+        margin-bottom: 15px;
+    }
+
+    .custom-circle {
+        width: 80px;
+        height: 80px;
+        right: 10px;
+        bottom: 10px;
+    }
+}
+
+
+
+.hero {
+    background: url('../img/bnser.png') no-repeat center center;
+    background-size: cover;
+    padding: 150px 0;
+    margin-top:4%;
+}
+h1 {
+    opacity: 0; /* Ẩn ban đầu */
+    transform: translateY(100px); /* Vị trí ban đầu (dưới màn hình) */
+    transition: all 0.6s ease-out; /* Hiệu ứng mượt */
+    text-align: right;
+}
+
+h1.active {
+    opacity: 1; /* Hiển thị khi kích hoạt */
+    transform: translateY(0); /* Quay về vị trí ban đầu */
+}
+
+/* Responsive cho mobile (kích thước màn hình nhỏ hơn 768px) */
+@media (max-width: 768px) {
+    .custom-card {
+        flex-direction: column; /* Sắp xếp dọc */
+        border-radius: 100px;
+        height: 550px; /* Tự điều chỉnh chiều cao */
+        width: 90%; /* Chiều rộng gần đầy màn hình */
+        padding: 10px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-image {
+        width: 250px;
+        height: auto;
+        margin-bottom: 10px;
+        margin-top: 10px;
+    }
+
+    .custom-circle {
+        width: 60px;
+        height: 60px;
+        right: 5px;
+        bottom: 5px;
+    }
+
+}
+/* Responsive cho tablet (kích thước màn hình từ 769px đến 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .custom-card {
+        flex-direction: row; /* Sắp xếp ngang */
+        border-radius: 999em; /* Bo góc nhẹ hơn */
+        height: auto; /* Để chiều cao tự động */
+        width: 80%; /* Chiều rộng vừa với tablet */
+        padding: 20px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng đổ nhẹ */
+    }
+
+    .custom-image {
+        width: 400px; /* Tăng kích thước ảnh */
+        height: auto;
+        margin-right: 20px; /* Khoảng cách giữa ảnh và nội dung */
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    .custom-circle {
+        width: 80px; /* Tăng kích thước vòng tròn */
+        height: 80px;
+        right: -25px; /* Điều chỉnh vị trí bên phải */
+        bottom: 5px;
+    }
+
+  
+}

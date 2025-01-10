@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style-TrangChuTrangChu.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+</head>
+<body>
+    <!-- header -->
+    <header>
+      <nav class="navbar section-content">
+              <a href="#" class="nav-logo">
+                  <h2 class="logo-text">Pettie</h2>
+              </a>
+              <ul class="nav-menu">
+                  <button id="menu-close-button" class="fas fa-times"></button>
+                  <li class="nav-item">
+                      <a href="#" class="nav-link">Trang Chủ</a>
+                  </li>
+                  <li class="nav-item">
+                      <a href="#shop" class="nav-link">Cửa Hàng</a>
+                  </li>
+                  <li class="nav-item">
+                      <a href="#service" class="nav-link">Dịch Vụ</a>
+                  </li>
+                  <li class="nav-item">
+                      <a href="#veter" class="nav-link">Phòng Khám</a>
+                  </li>
+                  <!-- <li class="nav-item">
+                      <a href="#" class="nav-link">Giới Thiệu</a>
+                  </li> -->
+                  <li class="nav-item">
+                    <a href="#" class="nav-link">Đăng Nhập</a>
+                </li>
+              </ul>
+      <button id="menu-open-button" class="fas fa-bars"></button>
+    
+      </nav>
+    </header> 
+    <main>
+        <section class="hero-section">
+            <div class="section-content">
+                <div class="hero-details">
+                    <h2 class="title">Pettie</h2>
+                    <h3 class="subtitle">Cửa hàng dành cho thú cưng Pettie</h3>
+                    <p class="description"> chào mừng bạn đến với Pettie,nơi dành cho thú cưng
+                 chúng tôi cung cấp các sản phẩm và dịch vụ chất lượng nhất </p>
+                 <p class="description"> chào mừng bạn đến với Pettie,nơi dành cho thú cưng
+                    chúng tôi cung cấp các sản phẩm và dịch vụ chất lượng nhất </p>
+                 <div class="buttons">
+                   <a href="#" class="button contact">Dat Lich Ngay</a>
+                   <a href="#" class="button contact-us">Lien He</a>
+                 </div>
+                </div>
+                <div class="hero-image-wrapper">
+                    <img src="./img/banner-img.png" alt="" class="hero-image">
+                </div>
+
+            </div>
+         
+        </section>
+        <!-- cửa hàng -->
+         <section class="shop-section" id="shop">
+            <h2 class="section-title"> Danh Mục Sản Phẩm</h2>
+                <div class="section-content">
+                  <div class="slider-container swiper">
+                    <div class="slider-wrapper" >
+                      <ul class="product-list swiper-wrapper" >
+                        <li class="product swiper-slide" >
+                          <a href="#" id="dog-food">
+                            <img src="../img/dog-food.png" class="dog" alt="Hạt cho chó" />
+                            <h3 class="name">Hạt cho chó</h3>
+                          </a>
+                        </li>
+                        <li class="product  swiper-slide">
+                          <a href="#" id="dog-snack">
+                            <img src="../img/dog-snack.png" class="dog" alt="Snacks, xương gặp cho chó" />
+                            <h3 class="name">Snacks, xương gặm <br />
+                              cho chó</h3>
+                          </a>
+                        </li>
+                        <li class="product swiper-slide" >
+                          <a href="#" id="cat-food">
+                            <img src="../img/cat-food.png" class="cat" alt="Hạt cho mèo" />
+                            <h3 class="name">Hạt cho mèo</h3>
+                          </a>
+                        </li>
+                        <li class="product swiper-slide" >
+                          <a href="#" id="cat-pate">
+                            <img src="../img/cat-pate.png" class="cat" alt="Pate cho mèo" />
+                            <h3 class="name">Pate cho mèo</h3>
+                          </a>
+                        </li>
+                        <li class="product swiper-slide" >
+                          <a href="#" id="balo">
+                            <img src="../img/balo.png" class="cat" calt="Balo vận chuyển" />
+                            <h3 class="name">Balo vận chuyển</h3>
+                          </a>
+                        </li>
+                        <li class="product swiper-slide" >
+                          <a href="#" id="pet-bed">
+                            <img src="../img/giuong.png" class="cat" alt="Ổ đệm, giường" />
+                            <h3 class="name">Ổ đệm, giường</h3>
+                          </a>
+                        </li>
+                        <li class="product swiper-slide" >
+                          <a href="#" id="pet-bed">
+                            <img src="../img/vesinh.png" class="cat" alt="" />
+                            <h3 class="name">Cát , Dụng cụ vệ sinh</h3>
+                          </a>
+                        </li>
+                      </ul>
+
+                      <div class="swiper-pagination"></div>
+
+                      <!-- If we need navigation buttons -->
+                      <div class="swiper-button-prev"></div>
+                      <div class="swiper-button-next"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- sản phẩm bán chạy -->
+
+                <div class="p3">
+                  <div class="title">
+                    <div class="title1">
+                      <h2 class="section-title">Sản Phẩm Bán Chạy</h2>
+                    </div>
+                  </div>
+                  <div class="row" id="best-sellers"></div>
+                </div>
+                <!-- sản phẩm mới -->
+                <div class="p3">
+                  <div class="title">
+                    <div class="title1">
+                      <h2 class="section-title">Sản Phẩm Mới</h2>
+                    </div>
+                  </div>
+                  <div class="row" id="best-sellers"></div>
+                </div>
+         </section>
+         <!-- dịch vụ -->
+         <section class="menu-section" id="service">
+          <h2 class="section-title">Dịch Vụ Dành Cho Thú Cưng</h2>
+          <div class="section-content">
+            <ul class="menu-list">
+              <!-- cắt tỉa -->
+              <li class="menu-item">
+                <a href="catgrooming.html">
+                  <img src="../img/catgrooming.png" alt="Cắt tạo kiểu" class="menu-image">
+                </a>
+                <h3 class="name">Dịch Vụ Cắt Tạo Kiểu</h3>
+                <p class="text">Tại Pettie, chúng tôi cung cấp dịch vụ cắt tỉa, tạo kiểu chuyên nghiệp giúp thú cưng có diện mạo mới thoải mái, xinh đẹp.</p>
+              </li>
+              <!-- tắm gội vệ sinh -->
+              <li class="menu-item">
+                <a href="dogcleaning.html">
+                  <img src="../img/dog.png" alt="Tắm vệ sinh" class="menu-image">
+                </a>
+                <h3 class="name">Dịch Vụ Tắm Vệ Sinh</h3>
+                <p class="text">Dịch vụ tắm vệ sinh cho thú cưng tại Pettie cung cấp phương pháp chăm sóc thú cưng toàn diện, giúp thú cưng có diện mạo xinh đẹp và khỏe mạnh.</p>
+              </li>
+              <!-- pet hotel -->
+              <li class="menu-item">
+                <a href="pethotel.html">
+                  <img src="../img/pethotel.png" alt="Lưu trú thú cưng" class="menu-image">
+                </a>
+                <h3 class="name">Dịch Vụ Lưu Trú</h3>
+                <p class="text">Tại Pettie, chúng tôi là nơi lý tưởng để thú cưng của bạn tận hưởng kỳ nghỉ thoải mái, an toàn và tràn đầy yêu thương.</p>
+              </li>
+            </ul>
+          </div>
+        </section>
+        <!-- phòng khám -->
+         <section class="" id="veter">
+          <h2 class="section-title">Phòng Khám</h2>
+         </section>
+         <!-- contact -->
+          <section class="contact-section">
+            <h2 class="section-title">Liên hệ với chúng tôi</h2>
+            <div class="section-content">
+              <ul class="contact-info-list">
+                <li class="contact-info">
+                  <i class="fa-solid fa-location-crosshairs"></i>
+                  <p>Đường 3/2, Phường Xuân Khánh, Quận Ninh Kiều, Cần Thơ</p>
+                </li>
+                <li class="contact-info">
+                  <i class="fa-regular fa-envelope"></i>
+                  <p>pettieforpet@gmail.com</p>
+                </li>
+                <li class="contact-info">
+                  <i class="fa-solid fa-phone"></i>
+                  <p>0332219197</p>
+                </li>
+                <li class="contact-info">
+                  <i class="fa-regular fa-clock"></i>
+                  <p>Moday - Sunday : 10:00 AM - 10:00 PM</p>
+                </li>
+              
+                </li>
+              </ul>
+
+              <form action="#" class="contact-form">
+                <input type="text" class="form-input"  placeholder="Tên của bạn" required>
+                <input type="email" class="form-input"  placeholder="Email của bạn" required>
+                <textarea name="#" class="form-input" placeholder="Lời nhắn của bạn" required></textarea>
+                <button class="submit-button">Gửi</button>
+              </form>
+            </div>
+          </section>
+         <!-- footer -->
+
+        
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+
+    <script src="../js/script-TrangChu.js"></script>
+
+</body>
+</html>
