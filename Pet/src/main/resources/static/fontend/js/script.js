@@ -3,6 +3,148 @@
  * @param {Object} product - Đối tượng sản phẩm.
  * @returns {HTMLElement} - Thẻ HTML chứa sản phẩm.
  */
+
+
+
+// Lắng nghe sự kiện khi người dùng chọn bộ lọc và bấm nút "Áp dụng"
+document.getElementById("applyFilters").addEventListener("click", function() {
+    // Lấy giá trị bộ lọc category và price
+    const categoryFilter = document.getElementById("categoryFilter").value;
+    const priceFilter = document.getElementById("priceFilter").value;
+
+    // Cập nhật breadcrumb với category đã chọn
+    updateBreadcrumb(categoryFilter);
+
+    // Gọi API hoặc xử lý logic lọc sản phẩm
+    fetchFilteredProducts(categoryFilter, priceFilter);
+});
+
+document.getElementById("categoryBreadcrumb").addEventListener("click", function(event) {
+    event.preventDefault(); // Ngăn không cho chuyển trang khi click vào thẻ <a>
+    const categoryFilter = document.getElementById("categoryFilter").value;
+    // Cập nhật breadcrumb để hiển thị category đang chọn
+    updateBreadcrumb(categoryFilter);
+
+    // Lọc sản phẩm theo category đã chọn
+    fetchFilteredProducts(categoryFilter);
+});
+// Hàm gọi API để lọc sản phẩm theo category
+function fetchFilteredProducts(category) {
+    // Giả sử bạn có API lọc sản phẩm theo category
+    fetch(`/api/products/filter?category=${category}&price=all`)
+        .then(response => response.json())
+        .then(data => {
+            displayProducts(data); // Hiển thị sản phẩm đã lọc
+        })
+        .catch(error => {
+            console.error("Error fetching filtered products:", error);
+        });
+}
+// Hàm cập nhật breadcrumb
+function updateBreadcrumb(category) {
+    const categoryBreadcrumb = document.querySelector(".breadcrumb-item:last-child a");
+    
+    // Cập nhật nội dung của breadcrumb
+    if (category === "thức ăn cho chó") {
+        categoryBreadcrumb.textContent = "Thức ăn cho chó";
+    } else if (category === "thức ăn cho mèo") {
+        categoryBreadcrumb.textContent = "thức ăn cho mèo";
+    } else if (category === "Dụng cụ vệ sinh") {
+        categoryBreadcrumb.textContent = "Dụng cụ vệ sinh";
+    }   else if (category === "Đồ chơi cho chó mèo") {
+        categoryBreadcrumb.textContent = "Đồ chơi cho chó mèo";
+    } 
+    else {
+        categoryBreadcrumb.textContent = "Tất cả sản phẩm";
+    }
+}
+// Hàm gọi API để lọc sản phẩm theo category
+function fetchFilteredProducts(category) {
+    // Giả sử bạn có một API để lọc sản phẩm theo category
+    fetch(`/api/products/filter?category=${category}&price=all`)
+        .then(response => response.json())
+        .then(data => {
+            displayProducts(data); // Hiển thị sản phẩm sau khi lọc
+        })
+        .catch(error => {
+            console.error("Error fetching filtered products:", error);
+        });
+}
+
+// Hàm gọi API để lấy sản phẩm đã lọc
+function fetchFilteredProducts(category, price) {
+    // Giả sử API trả về một mảng các sản phẩm đã lọc
+    fetch(`/api/products/filter?category=${category}&price=${price}`)
+        .then(response => response.json())
+        
+        .then(data => {
+            console.log("Category:", category);
+            console.log("Price:", price);
+
+            displayProducts(data); // Hiển thị sản phẩm đã lọc
+        })
+        .catch(error => {
+            console.error("Error fetching filtered products:", error);
+        });
+}
+
+// Hàm hiển thị danh sách sản phẩm
+function displayProducts(products) {
+    const productList = document.getElementById("productList");
+    productList.innerHTML = ""; // Xóa tất cả sản phẩm hiện tại
+
+    products.forEach(product => {
+        const productDiv = createProductItem(product); // Sử dụng hàm createProductItem đã có
+        productList.appendChild(productDiv); // Thêm sản phẩm vào danh sách
+    });
+}
+
+// Hàm tạo một mục sản phẩm
+// function createProductItem(product) {
+    // function createProductItem(product) {
+    //     const productDiv = document.createElement("div");
+    //     productDiv.classList.add("col");
+    
+    //     // Kiểm tra trạng thái còn hàng
+    //     const stockStatus = product.quantity === 0 
+    //         ? '<span style="color:blue; font-weight:bold;">(HẾT HÀNG)</span>' 
+    //         : "";
+    
+    //     // Chỉnh sửa URL của ảnh
+    //     const imageUrl = product.url ? product.url.replace(/.*\/html\//, "/img/") : 'default-image.png';
+    
+    //     // Tạo HTML cho sản phẩm
+    //     productDiv.innerHTML = `
+    //         <div class="card product-card h-100">
+    //             <a href="product-detail.html?id=${product.id}" class="product-link">
+    //                 <img src="${imageUrl}" class="card-img-top product-image" alt="${product.name}">
+    //             </a>
+    //             <div class="card-body">
+    //                 <h6 class="card-title product-title">${product.name}</h6>
+    //                 <p class="card-text product-price">${formatPrice(product.price)} VND</p>
+    //                 <div class="product-action">
+    //                     <button class="buy-now">Mua ngay</button>
+    //                     <i class="fa-solid fa-cart-shopping add-to-cart" id="add-to-cart-btn"></i>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     `;
+    
+       
+
+    //     return productDiv;
+    // }
+    
+
+// Hàm định dạng giá sản phẩm
+function formatPrice(price) {
+    return price.toLocaleString('vi-VN');
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////// lọc sản phẩmphẩm
+
 function createProductItem(product) {
     const productDiv = document.createElement("div");
     productDiv.classList.add("col");
@@ -16,7 +158,7 @@ function createProductItem(product) {
     // Nội dung HTML của sản phẩm
     productDiv.innerHTML = `
    
-    <div class="card product-card h-100">
+    <div class="card product-card h-150">
     <a href="product-detail.html?id=${product.id}" class="product-link">
         <img src="${imageUrl || 'default-image.png'}" class="card-img-top product-image" alt="${product.name}">
     </a>
@@ -24,17 +166,11 @@ function createProductItem(product) {
         <h6 class="card-title product-title">${product.name}</h6>
         <p class="card-text product-price">${formatPrice(product.price)} VND</p>
         <div class="product-actions">
-            <button class="btn btn-success buy-now">Mua ngay</button>
-             <i class="fa-solid fa-cart-shopping add-to-cart" id="add-to-cart-btn"></i>
+            <button class="btn btn-lg buy-now">Mua ngay</button>
+            <i class="fa-solid fa-cart-shopping add-to-cart" id="add-to-cart-btn"></i>
         </div>
     </div>
-</div>
-
-
-
-
-
-    `;
+</div> `;
 
     return productDiv;
 }

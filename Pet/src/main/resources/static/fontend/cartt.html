@@ -105,6 +105,9 @@
             <span>Vận chuyển:</span> <span id="ship">0 VNĐ</span>
           </div>
           <div class="total-line">
+            <span>Khuyến mãi:</span> <span id="sale">0 VNĐ</span>
+          </div>
+          <div class="total-line">
             <span>Tổng cộng:</span> <span id="total">$255.00</span>
           </div>
           <hr>
@@ -126,8 +129,36 @@
   <script src="./js/header.js"></script>
   <script>
     
-    // JavaScript code to handle API requests and update UI dynamically
-    // Assuming backend API returns the necessary product data in a JSON format.
+//     // JavaScript code to handle API requests and update UI dynamically
+//     // Assuming backend API returns the necessary product data in a JSON format.
+//     document.getElementById('checkout').addEventListener('click', function() {
+//     // Chuyển hướng đến trang thanh toán
+//     window.location.href = 'pay.html'; // Đường dẫn đến trang mới
+// });
+
   </script>
+  <script>
+    // Script lấy và xử lý message từ URL
+    function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
+    function showPaymentMessage() {
+        const message = getUrlParameter('message');
+        if (message) {
+            if (message === 'success') {
+                alert('Đơn hàng đã đặt thành công');
+            } else if (message === 'failure') {
+                alert('Thanh toán thất bại! Vui lòng thử lại.');
+            } else {
+                console.warn('Thông báo không xác định:', message);
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', showPaymentMessage);
+</script>
+
 </body>
 </html>

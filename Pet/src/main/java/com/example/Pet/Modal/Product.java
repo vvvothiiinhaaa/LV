@@ -12,12 +12,13 @@ import jakarta.persistence.Table;
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Đảm bảo Hibernate tự động tăng id
+    @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
     private String name;
     // private Float price;
-    @Column(name = "price")
+    @Column(name = "price", nullable = true) // Nullable vì giá có thể được cập nhật từ ProductPrice
     private Double price;
 
     private String url;
@@ -31,6 +32,11 @@ public class Product {
     private Integer quantity;
     private String ingredient;
 
+    // @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<imgProduct> images = new ArrayList<>();
+    // public List<imgProduct> getImages() {
+    //     return images;
+    // }
     // Getters và Setters
     /**
      * @return Long return the id
@@ -219,4 +225,15 @@ public class Product {
         this.ingredient = ingredient;
     }
 
+    // Phương thức để gán giá từ ProductPrice
+    public void updatePrice(Double latestPrice) {
+        this.price = latestPrice;
+    }
+
+    // /**
+    //  * @param images the images to set
+    //  */
+    // public void setImages(List<imgProduct> images) {
+    //     this.images = images;
+    // }
 }

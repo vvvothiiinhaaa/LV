@@ -423,19 +423,20 @@ body {
 
 
 /* Actions container styling */
-.product-actions {
+ .product-actions {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 15px; /* Adds space between price and buttons */
-}
+ } 
 
 /* Styling for the "Mua ngay" button */
 .buy-now {
+  display: flex;
   width: 120px;
   padding: 8px 12px;
   font-size: 14px;
-  margin-right: 10px; /* Space between the button and the icon */
+  margin-right: 10px; 
   background-color: #9f7143;
   color:black;
   border-radius:20px;
@@ -453,4 +454,49 @@ body {
 .add-to-cart {
   font-size: 25px; /* Adjust the size of the icon */
   cursor: pointer; /* Change cursor to pointer to indicate interactivity */
+}
+ 
+
+/* header */
+/* Đảm bảo container chứa navbar và container chứa form tìm kiếm không nằm ngang nhau */
+
+
+
+/* Đảm bảo nút Đăng Nhập có khoảng cách với các phần tử khác */
+
+
+/* Đảm bảo form tìm kiếm có khoảng cách đủ với navbar */
+/* Căn chỉnh form tìm kiếm để nó nằm trên header và không bị lệch */
+/* Đảm bảo form tìm kiếm nằm trên thanh header */
+/* Căn chỉnh form tìm kiếm nằm dưới navbar */
+/* Đảm bảo form tìm kiếm nằm dưới navbar trong header */
+
+
+/* Đảm bảo form tìm kiếm nằm dưới navbar */
+/* Đảm bảo form tìm kiếm xuống dòng */
+.search {
+  width: 100%; /* Đảm bảo form chiếm toàn bộ chiều rộng */
+  text-align: center; /* Căn giữa form */
+  margin-top: 10px; /* Tạo khoảng cách giữa navbar và form tìm kiếm */ 
+  display: block;
+}
+
+#searchForm {
+  /* Đảm bảo form chiếm một dòng riêng biệt */
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto; /* Căn giữa form */
+}
+
+#searchForm .form-control {
+  max-width: 500px; /* Điều chỉnh độ rộng của ô tìm kiếm */
+}
+
+#searchForm button {
+  background-color: #e5c07b;
+  border: none;
+}
+
+#searchForm button i {
+  color: black;
 }

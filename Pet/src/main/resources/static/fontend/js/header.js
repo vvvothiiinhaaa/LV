@@ -284,3 +284,88 @@ document.addEventListener("DOMContentLoaded", function() {
 //         console.error('Lỗi khi lấy số lượng sản phẩm trong giỏ hàng:', error);
 //     });
 // }
+
+
+
+/////////////// chức năng tìm kiếm 
+// Lắng nghe sự kiện khi người dùng nhấn Enter hoặc nhấn vào biểu tượng tìm kiếm
+// Lắng nghe sự kiện khi người dùng nhấn Enter hoặc nhấn vào biểu tượng tìm kiếm
+// Lắng nghe sự kiện khi nhấn Enter trong ô tìm kiếm
+// document.getElementById("searchInput").addEventListener("keypress", function(event) {
+//     if (event.key === "Enter") { // Kiểm tra xem phím nhấn là Enter
+//         const searchQuery = document.getElementById("searchInput").value.trim();
+//         if (searchQuery) {
+//             fetchSearchResults(searchQuery); // Gọi API tìm kiếm
+//         }
+//     }
+// });
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const searchToggleDesktop = document.getElementById("searchToggleDesktop");
+    if (searchToggleDesktop) {
+        searchToggleDesktop.addEventListener("click", function() {
+            const searchQuery = document.getElementById("searchInput").value.trim();
+            if (searchQuery) {
+                fetchSearchResults(searchQuery);
+            }
+        });
+    }
+});
+
+
+// Hàm gọi API tìm kiếm
+function fetchSearchResults(query) {
+    fetch(`/api/products/search?name=${query}`)
+        .then(response => response.json())
+        .then(data => {
+            displaySearchResults(data);
+        })
+        .catch(error => {
+            console.error('Error fetching search results:', error);
+        });
+}
+
+
+// Hàm hiển thị kết quả tìm kiếm
+function displaySearchResults(products) {
+    const productList = document.getElementById('productList');
+    productList.innerHTML = ''; // Xóa danh sách sản phẩm cũ
+
+    products.forEach(product => {
+        const productDiv = createProductItem(product); // Tạo một mục sản phẩm mới
+        productList.appendChild(productDiv); // Thêm sản phẩm vào danh sách
+    });
+}
+
+// Hàm tạo một mục sản phẩm
+function createProductItem(product) {
+    const productDiv = document.createElement('div');
+    productDiv.classList.add('col');
+
+    const imageUrl = product.url.replace(/.*\/html\//, '/img/');
+    productDiv.innerHTML = `
+        <div class="card product-card h-100">
+            <a href="product-detail.html?id=${product.id}" class="product-link">
+                <img src="${imageUrl || 'default-image.png'}" class="card-img-top product-image" alt="${product.name}">
+            </a>
+            <div class="card-body">
+                <h6 class="card-title product-title">${product.name}</h6>
+                <p class="card-text product-price">${formatPrice(product.price)} VND</p>
+                <div class="product-actions">
+                    <button class="btn btn-lg buy-now">Mua ngay</button>
+                    <i class="fa-solid fa-cart-shopping add-to-cart" id="add-to-cart-btn"></i>
+                </div>
+            </div>
+
+        </div>
+    `;
+
+    return productDiv;
+}
+
+// Hàm định dạng giá sản phẩm
+function formatPrice(price) {
+    return price.toLocaleString('vi-VN');
+}
+

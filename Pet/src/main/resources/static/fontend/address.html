@@ -1,0 +1,132 @@
+
+    <!-- Content Section -->
+    <div id="content">
+        <h3 class="text-center" id="page-title">Địa chỉ của tôi</h3>
+        <div class="card" id="address">
+            <div class="card-body">
+                <!-- Tiêu đề và nút hành động -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="card-title" id="recipient-name">Nhã</h5>
+                    <div>
+                        <button class="btn btn-outline-lg btn-sm" id="update-button">Cập nhật</button>
+                        <button class="btn btn-outline-lg btn-sm" id="delete-button">Xóa</button>
+                    </div>
+                </div>
+                <!-- Thông tin chi tiết -->
+                <p class="card-text" id="phone-number">(+84) 332 219 196</p>
+                <p class="card-text" id="address-details">KTX B, ĐH Cần Thơ, Phường Xuân Khánh, Quận Ninh Kiều, Cần Thơ</p>
+                <p class="card-text">
+                    <small class="text-muted" id="default-status">Mặc định</small>
+                </p>
+            </div>
+        </div>
+
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#addressModal">
+            Thêm địa chỉ mới
+        </button>
+    </div>
+
+    <!-- Modal: Thêm địa chỉ mới -->
+    <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addressModalLabel">Địa chỉ mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addressForm">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Họ và tên" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Số điện thoại" required>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select" id="provinceSelect" aria-label="Tỉnh/Thành phố">
+                                <option selected>Chọn Tỉnh/Thành phố</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select" id="districtSelect" aria-label="Quận/Huyện">
+                                <option selected>Chọn Quận/Huyện</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <select class="form-select" id="wardSelect" aria-label="Phường/Xã">
+                                <option selected>Chọn Phường/Xã</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" placeholder="Địa chỉ cụ thể" required></textarea>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" value="" id="defaultAddressCheck">
+                            <label class="form-check-label" for="defaultAddressCheck">
+                                Đặt làm địa chỉ mặc định
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-lg">Hoàn thành</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Cập nhật địa chỉ -->
+    <div class="modal fade" id="updateAddressModal" tabindex="-1" aria-labelledby="updateAddressModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="updateAddressModalLabel">Cập nhật địa chỉ</h5>
+                    <input type="hidden" id="addressId">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateAddressForm">
+                        <div class="mb-3">
+                            <label for="recipientName" class="form-label">Tên người nhận</label>
+                            <input type="text" class="form-control" id="recipientName" name="recipientName" placeholder="Nhập tên người nhận" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Nhập số điện thoại" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="addressDetail" class="form-label">Chi tiết địa chỉ</label>
+                            <input type="text" class="form-control" id="addressDetail" name="addressDetail" placeholder="Nhập địa chỉ chi tiết" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="provinceCity" class="form-label">Tỉnh/Thành phố</label>
+                            <select class="form-select" id="provinceS" name="provinceCity">
+                                <option value="">Chọn tỉnh/thành phố</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="district" class="form-label">Quận/Huyện</label>
+                            <select class="form-select" id="districtS" name="district">
+                                <option value="">Chọn quận/huyện</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="wardSubdistrict" class="form-label">Phường/Xã</label>
+                            <select class="form-select" id="wardSubdistrictS" name="wardSubdistrict">
+                                <option value="">Chọn Phường/Xã</option>
+                            </select>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="defaultAddress" name="defaultAddress" />
+                            <label class="form-check-label" for="defaultAddressS">Đặt làm địa chỉ mặc định</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveAddressBtn" onclick="saveUpdatedAddress()">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   

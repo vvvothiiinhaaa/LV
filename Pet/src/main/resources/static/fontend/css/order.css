@@ -1,0 +1,23 @@
+  /* Màu mặc định cho nút */
+  .btn-custom {
+    background-color: #333333; /* Màu mặc định */
+    color: #ffffff; /* Màu chữ */
+    border: none;
+}
+
+/* Màu khi hover */
+.btn-custom:hover {
+    background-color: #c3a179; /* Màu khi hover */
+    color: #ffffff; /* Màu chữ khi hover */
+}
+
+/* Màu khi nút được nhấn (active) */
+.btn-custom:active {
+    background-color: #a57a5e; /* Màu khi nút được nhấn */
+    color: #ffffff;
+}
+
+/* Bo tròn nhẹ cho nút */
+.btn-custom {
+    border-radius: 4px;
+}

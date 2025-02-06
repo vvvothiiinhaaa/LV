@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                                 // Thêm dòng sản phẩm vào bảng
                                 cartItemsContainer.appendChild(row);
-
+ 
                                 // Xử lý sự kiện xóa sản phẩm
                                 const deleteBtn = document.getElementById(`delete-btn-${item.product.id}`);
                                 deleteBtn.addEventListener("click", function () {
@@ -137,15 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
                            
                            
                             });
-                            // xử lý checkbox
-                            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-                            selectAllCheckbox.addEventListener('change', function() {
-                                const productCheckboxes = document.querySelectorAll('.productCheckbox');
-                                productCheckboxes.forEach(checkbox => {
-                                    checkbox.checked = this.checked;
-                                });
-                            });
-
+                           
                             // Xử lý sự kiện "Delete All"
                             const deleteAllBtn = document.getElementById("delete-all-btn");
                             deleteAllBtn.addEventListener("click", function () {
@@ -183,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 modal.hide();
                             });
 
-
+// //
                             // Thêm sự kiện cho tất cả hộp kiểm khi người dùng chọn hoặc bỏ chọn
                             document.querySelectorAll('.productCheckbox').forEach(checkbox => {
                                 checkbox.addEventListener('change', updateTotal);
@@ -197,9 +189,51 @@ document.addEventListener('DOMContentLoaded', function () {
                                 });
                             });
 
-                           
+                            // xử lý checkbox
+                            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                            selectAllCheckbox.addEventListener('change', function() {
+                                const productCheckboxes = document.querySelectorAll('.productCheckbox');
+                                productCheckboxes.forEach(checkbox => {
+                                    checkbox.checked = this.checked;
+                                });
+                            });
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                        
+                            // // Thêm sự kiện cho tất cả hộp kiểm sản phẩm
+                            // document.querySelectorAll('.productCheckbox').forEach(checkbox => {
+                            //     checkbox.addEventListener('change', function () {
+                            //         const productId = this.id.split('-')[1]; // Lấy ID sản phẩm từ checkbox
+                            //         const isChecked = this.checked;
+
+                            //         // Gọi hàm cập nhật trạng thái checkbox
+                            //         updateCheckboxStatus(productId, isChecked);
+
+                            //         // Cập nhật tổng tiền
+                            //         updateTotal();
+                            //     });
+                            // });
+
+                            // // Xử lý checkbox "Chọn tất cả"
+                            // const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                            // selectAllCheckbox.addEventListener('change', function () {
+                            //     const productCheckboxes = document.querySelectorAll('.productCheckbox');
+
+                            //     productCheckboxes.forEach(checkbox => {
+                            //         checkbox.checked = isChecked;
+
+                            //         const productId = checkbox.id.split('-')[1]; // Lấy ID sản phẩm
+                            //         // Gọi hàm cập nhật trạng thái checkbox cho từng sản phẩm
+                            //         updateCheckboxStatus(productId, isChecked);
+                            //     });
+
+                            //     // Cập nhật tổng tiền
+                            //     updateTotal();
+                            // });
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
                             // Hàm cập nhật tổng tiền dựa vào các sản phẩm được chọn
                             function updateTotal() {
@@ -262,30 +296,138 @@ function updateCartCount(userId) {
         });
     }
     
+//////////////////////////////////////////////////////
 
-    // document.addEventListener('DOMContentLoaded', function () {
-    //     const productCheckboxes = document.querySelectorAll('.productCheckbox');
-    //     const subtotalElement = document.getElementById('subtotal');
-    //     const totalElement = document.getElementById('total');
-    
-    //     productCheckboxes.forEach(checkbox => {
-    //         checkbox.addEventListener('change', updateTotals);
-    //     });
-    
-    //     function updateTotals() {
-    //         let subtotal = 0;
-    //         productCheckboxes.forEach(checkbox => {
-    //             if (checkbox.checked) {
-    //                 const productId = checkbox.getAttribute('id').split('-')[1];
-    //                 const productTotalElement = document.getElementById(`product-total-${productId}`);
-    //                 subtotal += parseFloat(productTotalElement.textContent.replace(/[^\d.-]/g, ''));
-    //             }
-    //         });
-    
-    //         // Định dạng số với đơn vị tiền tệ VND
-    //         subtotalElement.textContent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal);
-    //         totalElement.textContent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal); // Update this line if other calculations for total are needed
-    //     }
-    // });
-    
-    
+// function updateCheckboxStatus(productId, isSelected) {
+//     const apiUrl = '/api/cart/update-selected'; // Đường dẫn API cập nhật
+//     const payload = {
+//         productId: productId,
+//         selected: isSelected
+//     };
+
+//     fetch(apiUrl, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         credentials: 'include',
+//         body: JSON.stringify(payload),
+//     })
+//     .then(response => {
+//         if (!response.ok) {
+//             return response.text().then(text => {
+//                 throw new Error(text || 'Lỗi khi cập nhật trạng thái checkbox');
+//             });
+//         }
+//         return response.json();
+//     })
+//     .then(data => {
+//         console.log("Trạng thái checkbox đã được cập nhật:", data);
+//     })
+//     .catch(error => {
+//         console.error('Lỗi:', error.message);
+//     });
+// }
+///////////////////////////////////////
+// /**
+//  * Hàm cập nhật trạng thái selected của sản phẩm
+//  * @param {number|string} productId - ID của sản phẩm
+//  * @param {boolean} isSelected - Trạng thái checkbox (true: được chọn, false: không được chọn)
+//  */
+// function updateSelected(productId, isSelected) {
+//     fetch('/api/cart/update-selected', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         credentials: 'include',
+//         body: JSON.stringify({
+//             productId: productId,
+//             selected: isSelected,
+//         }),
+//     })
+//     .then(response => {
+//         if (!response.ok) {
+//             throw new Error('Lỗi khi cập nhật trạng thái selected');
+//         }
+//         return response.json();
+//     })
+//     .then(data => {
+//         console.log(`Cập nhật trạng thái selected thành công cho sản phẩm ID: ${productId}`, data);
+//     })
+//     .catch(error => {
+//         console.error('Lỗi khi cập nhật trạng thái selected:', error);
+//     });
+// }
+
+document.getElementById("checkout").addEventListener("click", function () {
+    const selectedProducts = [];
+
+    // Duyệt qua tất cả checkbox của sản phẩm
+    document.querySelectorAll('.productCheckbox').forEach(checkbox => {
+        if (checkbox.checked) { // Kiểm tra nếu checkbox được chọn
+            const productId = checkbox.id.split('-')[1]; // Lấy ID sản phẩm từ ID của checkbox
+            selectedProducts.push(productId); // Thêm ID sản phẩm vào danh sách
+        }
+    });
+
+    // Nếu không có sản phẩm nào được chọn
+    if (selectedProducts.length === 0) {
+        alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
+        return;
+    }
+
+    // Gọi API để lấy userId
+    fetch('/api/auth/check-login', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Không thể lấy thông tin user. Vui lòng đăng nhập lại.");
+        }
+        return response.json();
+    })
+    .then(userData => {
+        const userId = userData.userId;
+
+        if (!userId) {
+            throw new Error("Không tìm thấy userId. Vui lòng đăng nhập lại.");
+        }
+
+        // Cập nhật trạng thái selected cho các sản phẩm được chọn
+        return Promise.all(
+            selectedProducts.map(productId => {
+                return fetch(`/api/cart/update-selected?userId=${userId}&productId=${productId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        selected: true, // Đặt selected thành true
+                    }),
+                });
+            })
+        );
+    })
+    .then(responses => {
+        const allSuccessful = responses.every(response => response.ok);
+
+        if (allSuccessful) {
+            console.log("Cập nhật trạng thái selected thành công cho tất cả sản phẩm được chọn.");
+            // Chuyển hướng đến trang thanh toán
+            window.location.href = "pay.html";
+        } else {
+            console.error("Có lỗi xảy ra khi cập nhật trạng thái của một hoặc nhiều sản phẩm.");
+            alert("Đã xảy ra lỗi. Vui lòng thử lại.");
+        }
+    })
+    .catch(error => {
+        console.error("Lỗi:", error);
+        alert(error.message || "Đã xảy ra lỗi khi xử lý thanh toán. Vui lòng thử lại.");
+    });
+});

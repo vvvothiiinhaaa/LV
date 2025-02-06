@@ -64,7 +64,7 @@ public class CartService {
             cartItem.setCart(cart);
             cartItem.setProduct(product);
             cartItem.setQuantity(quantity);
-            cartItem.setSelected(true);
+            cartItem.setSelected(false);
         } else {
             // Nếu sản phẩm đã có trong giỏ hàng, cập nhật số lượng
             int newQuantity = cartItem.getQuantity() + quantity;

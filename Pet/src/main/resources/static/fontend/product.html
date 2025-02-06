@@ -80,7 +80,7 @@
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="./trangchu.html">Trang Chủ</a></li>
                 <li class="breadcrumb-item"><a href="./product.html">Cửa Hàng</a></li>
-                <li class="breadcrumb-item"><a href="#">Category</a></li>
+                <li class="breadcrumb-item"><a href="#" id="categoryBreadcrumb">tất cả sản phẩm</a></li>
             </ul>
         </div>
 
@@ -93,25 +93,25 @@
                         <label for="categoryFilter" class="form-label">Danh Mục</label>
                         <select id="categoryFilter" class="form-select form-select-sm">
                             <option value="all">Tất cả sản phẩm</option>
-                            <option value="electronics">Thức ăn cho Chó</option>
-                            <option value="fashion">Thức ăn cho mèo</option>
-                            <option value="home">Dụng cụ vệ sinh</option>
-                            <option value="home">Đồ chơi cho chó mèo</option>
+                            <option value="thức ăn cho chó">thức ăn cho chó</option>
+                            <option value="thức ăn cho mèo">thức ăn cho mèo</option>
+                            <option value="Dụng cụ vệ sinh">Dụng cụ vệ sinh</option>
+                            <option value="Đồ chơi cho chó mèo">Đồ chơi cho chó mèo</option>
                         </select>
                     </div>
                     <div class="mb-2">
                         <label for="priceFilter" class="form-label">Giá</label>
                         <select id="priceFilter" class="form-select form-select-sm">
-                            <option value="all">All Prices</option>
-                            <option value="0-50">$0 - $50</option>
-                            <option value="50-100">$50 - $100</option>
-                            <option value="100-200">$100 - $200</option>
+                            <option value="all">Tất cả giá</option>
+                            <option value="0-100">0 VND - 100,000 VND</option>
+                            <option value="100-500">100,000 VND - 500,000 VND</option>
+                            <option value="500">Lớn hơn 500,000 VND</option>
                         </select>
                     </div>
                     <button class="btn btn-sm btn-lg w-100" id="applyFilters">Áp dụng</button>
                 </div>
             </div>
-
+            
             <!-- Product Display Section -->
             <div class="col-md-9">
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4" id="productList">
@@ -231,35 +231,10 @@
         //     }
         // }
 
-        document.getElementById('applyFilters').addEventListener('click', () => {
-            const category = document.getElementById('categoryFilter').value;
-            const priceRange = document.getElementById('priceFilter').value;
-
-            const products = document.querySelectorAll('#productList .col');
-            products.forEach(product => {
-                const productCategory = product.getAttribute('data-category');
-                const productPrice = parseFloat(product.getAttribute('data-price'));
-
-                let categoryMatch = (category === 'all' || productCategory === category);
-                let priceMatch = false;
-
-                if (priceRange === 'all') {
-                    priceMatch = true;
-                } else {
-                    const [minPrice, maxPrice] = priceRange.split('-').map(Number);
-                    priceMatch = productPrice >= minPrice && productPrice <= maxPrice;
-                }
-
-                if (categoryMatch && priceMatch) {
-                    product.style.display = '';
-                } else {
-                    product.style.display = 'none';
-                }
-            });
-        });
+      
 
         // Initial product load
-        fetchProducts();
+        // fetchProducts(); ///5.2.2025
     </script>
     <script src="./js/script.js"></script>
     <script src="./js/script-product-detail.js"></script>

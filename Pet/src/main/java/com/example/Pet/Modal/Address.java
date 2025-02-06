@@ -24,14 +24,20 @@ public class Address {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "province_city")
+    @Column(name = "province_city", nullable = false, length = 100)
     private String provinceCity;
 
-    @Column(name = "district")
+    @Column(name = "district", nullable = false, length = 100)
     private String district;
 
-    @Column(name = "ward_subdistrict")
+    @Column(name = "ward_subdistrict", nullable = false, length = 100)
     private String wardSubdistrict;
+
+    @Column(name = "address_detail")
+    private String addressDetail;
+
+    @Column(name = "default_address")
+    private boolean defaultAddress;
 
     // Getters and Setters
     /**
@@ -130,6 +136,34 @@ public class Address {
      */
     public void setWardSubdistrict(String wardSubdistrict) {
         this.wardSubdistrict = wardSubdistrict;
+    }
+
+    /**
+     * @return String return the addressDetail
+     */
+    public String getAddressDetail() {
+        return addressDetail;
+    }
+
+    /**
+     * @param addressDetail the addressDetail to set
+     */
+    public void setAddressDetail(String addressDetail) {
+        this.addressDetail = addressDetail;
+    }
+
+    /**
+     * @return boolean return the defaultAddress
+     */
+    public boolean isDefaultAddress() {
+        return defaultAddress;
+    }
+
+    /**
+     * @param defaultAddress the defaultAddress to set
+     */
+    public void setDefaultAddress(boolean defaultAddress) {
+        this.defaultAddress = defaultAddress;
     }
 
 }

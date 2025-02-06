@@ -14,9 +14,12 @@ public class imgProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "product_id")
     private Long productId;
-
+    // @ManyToOne
+    // @JoinColumn(name = "product_id", nullable = false)
+    // private Product product;
     private String url1;
     private String url2;
     private String url3;
@@ -31,6 +34,15 @@ public class imgProduct {
         this.id = id;
     }
 
+    // public Product getProduct() {
+    //     return product;
+    // }
+    // public void setProduct(Product product) {
+    //     this.product = product;
+    //     if (product != null && !product.getImages().contains(this)) {
+    //         product.getImages().add(this);
+    //     }
+    // }
     public Long getProductId() {
         return productId;
     }
@@ -70,4 +82,5 @@ public class imgProduct {
     public void setUrl4(String url4) {
         this.url4 = url4;
     }
+
 }

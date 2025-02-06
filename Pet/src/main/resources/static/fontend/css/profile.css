@@ -1,0 +1,182 @@
+body {
+    background-color: #f8f9fa; /* Light gray background */
+}
+/* .list-group {
+    position: fixed; 
+    width:25%;
+} */
+
+.card {
+    margin-top: 20px;
+    border: none; /* Remove default border */
+}
+.card-title {
+    font-size: 1.25rem; /* Slightly larger font size */
+}
+.card-text {
+    margin-bottom: 0.5rem; /* Reduced bottom margin for card text */
+}
+.btn-outline-primary {
+    margin-right: 5px !important; /* Spacing between buttons */
+}
+.text-muted {
+    font-weight: bold; /* Bold for muted text */
+    color: #dc3545 ; /* Red color for default address */
+}
+/* .btn-danger {
+    background-color: #dc3545 !important; 
+} */
+/* Additional styling for the sidebar */
+
+.list-group-item {
+    border: none; /* Remove borders from sidebar items */
+    padding-left: 30px; /* Increased left padding for better alignment */
+    background-color: #ffff;
+}
+.list-group-item:hover {
+    background-color: #9f7143; /* Hover effect for sidebar items */
+    font-size: 1rem;
+}
+.list-group-item.active {
+    background-color: #9f7143; /* Màu nền sau khi click */
+    color: #ffffff; /* Màu chữ */
+    border-color: #9f7143; /* Viền màu xanh */
+}
+
+.modal-content {
+    border-radius: 0.5rem; /* Rounded borders for the modal */
+}
+
+.modal-header, .modal-footer {
+    border-bottom: none; /* Remove default border-bottom in modal-header */
+    border-top: none; /* Remove default border-top in modal-footer */
+}
+.modal-content {
+    border-radius: 0.5rem;
+  }
+  
+  .modal-header, .modal-footer {
+    border: none;
+  }
+  
+  .form-select {
+    color: #495057; /* Dark gray for text */
+  }
+  
+.openModalButton {
+        background-color: #9f7143;
+    color:black;
+    border-radius:20px;
+  }
+
+.openModalButton:hover {
+    background-color: #fff;
+    border-color: #9f7143;
+    color:black;
+}
+
+#avatar {
+    width: 150px; 
+    height: 150px; 
+    border-radius: 50%;
+    object-fit: cover; 
+    align-items: center;
+    justify-self: center;
+    margin: 15px auto;
+}
+
+
+/* Phần tiêu đề */
+h3 {
+    font-weight: bold;
+}
+
+.text-muted {
+    font-size: 0.9rem;
+}
+
+/* Phần avatar */
+img.rounded-circle {
+    border: 3px solid #ddd;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Nút hành động */
+.btn-primary {
+    background-color: #ff5722;
+    border-color: #ff5722;
+    font-weight: bold;
+}
+
+.btn-primary:hover {
+    background-color: #e64a19;
+    border-color: #e64a19;
+}
+
+.btn-outline-primary {
+    color: #ff5722;
+    border-color: #ff5722;
+    font-weight: bold;
+}
+
+.btn-outline-primary:hover {
+    background-color: #ff5722;
+    color: #fff;
+}
+
+/* Form Labels */
+.form-label {
+    font-weight: bold;
+}
+
+.save {
+    background-color: #9f7143;
+    color:black;
+    border-radius:20px; 
+}
+.save:hover {
+    background-color: #fff;
+    border-color: #9f7143;
+    color:black;
+}
+
+/* card */
+ 
+.custom-card {
+    margin-bottom: 20px; /* Khoảng cách giữa các card */
+    border: 1px solid #ddd; /* Đường viền nhẹ */
+    border-radius: 8px; /* Bo góc */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+    transition: transform 0.2s, box-shadow 0.2s; /* Hiệu ứng hover */
+
+}
+.card {
+    background-color: #f8f9fa;
+}
+
+.custom-card:hover {
+    transform: translateY(-5px); /* Nâng lên một chút khi hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Đổ bóng mạnh hơn khi hover */
+}
+
+.custom-card .card-title {
+    font-size: 1.25rem; /* Kích thước tiêu đề */
+    color: #333; /* Màu tiêu đề */
+    font-weight: bold;
+}
+
+.custom-card .card-text {
+    font-size: 1rem; /* Kích thước chữ nội dung */
+    color: #555; /* Màu nội dung */
+    margin-bottom: 8px; /* Khoảng cách giữa các đoạn */
+}
+
+.custom-card .btn {
+    font-size: 0.875rem; /* Kích thước chữ của nút */
+    padding: 5px 10px; /* Khoảng cách trong nút */
+    border-radius: 4px; /* Bo góc cho nút */
+}
+
+.custom-card .btn:hover {
+    background-color: #f0f0f0; /* Màu nền khi hover nút */
+}

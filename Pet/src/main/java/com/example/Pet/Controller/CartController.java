@@ -1,6 +1,7 @@
 package com.example.Pet.Controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.Pet.Modal.Cartitem;  // Đảm bảo CartItem có chữ cái đầu tiên viết hoa
-import com.example.Pet.Service.CartService;
+import com.example.Pet.Modal.Cartitem;
+import com.example.Pet.Service.CartItemService;
+import com.example.Pet.Service.CartService;  // Đảm bảo CartItem có chữ cái đầu tiên viết hoa
 
 @RestController
 @RequestMapping("/api/cart")
@@ -23,6 +25,8 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
+    @Autowired
+    private CartItemService cartItemService;
 
     // Lấy giỏ hàng theo userId
     @GetMapping("/{userId}")
@@ -86,6 +90,30 @@ public class CartController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0);
         }
+    }
+
+    //////////////////////////////// cập nhật select
+    @PutMapping("/update-selected")
+    public String updateSelected(@RequestParam Long userId, @RequestParam Long productId) {
+        cartItemService.updateSelected(userId, productId);
+        return "Updated successfully";
+    }
+
+    // @GetMapping("/selected-products")
+    // public ResponseEntity<List<Long>> getSelectedProducts(@RequestParam Long userId) {
+    //     List<Long> selectedProductIds = cartItemService.getSelectedProductIds(userId);
+    //     return ResponseEntity.ok(selectedProductIds);
+    // }
+    @GetMapping("/selected-products")
+    public ResponseEntity<List<Map<String, Object>>> getSelectedProducts(@RequestParam Long userId) {
+        List<Map<String, Object>> selectedProducts = cartItemService.getSelectedProductsWithQuantity(userId);
+        return ResponseEntity.ok(selectedProducts);
+    }
+
+    @PostMapping("/reset-selected")
+    public ResponseEntity<?> resetSelectedProducts(@RequestParam Long userId) {
+        cartItemService.resetSelectedProducts(userId);
+        return ResponseEntity.ok("Reset selected products successfully.");
     }
 
 }

@@ -1,46 +1,248 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>User Profile</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Bootstrap Icons -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/profile.css">
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-<div class="container-fluid">
-  <div class="row">
-    <!-- Sidebar -->
-    <div class="col-md-4 col-lg-3 bg-light">
-      <div class="px-3 py-4">
-        <h4 class="mb-4">User Profile</h4>
-        <div class="list-group">
-          <a href="#" class="list-group-item list-group-item-action active" aria-current="true">
-            Dashboard
-          </a>
-          <a href="#" class="list-group-item list-group-item-action">Settings</a>
-          <a href="#" class="list-group-item list-group-item-action">Messages</a>
-          <a href="#" class="list-group-item list-group-item-action">Logout</a>
-        </div>
-      </div>
-    </div>
+  <div id="header"></div>
+<div class="container" style="margin-top:10%;">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <div class="list-group">
 
-    <!-- Profile Information -->
-    <div class="col-md-8 col-lg-9">
-      <div class="px-3 py-4">
-        <h2>Welcome, John Doe!</h2>
-        <div class="mb-4">
-          <p>This is your profile page. You can see the progress you've made with your work and manage your projects or assigned tasks.</p>
+                            <!-- Thêm ảnh đại diện -->
+                <div class="d-flex align-items-center justify-content-center p-3" >
+                    <img src="./img/5.png" class="rounded-circle"id="avatar" alt="Avatar" >
+                </div>
+                <a href="#" class="list-group-item list-group-item-action" data-page="user">Hồ Sơ</a>
+                <a href="#" class="list-group-item list-group-item-action" data-page="address" >Sổ Địa Chỉ </a>
+                <a href="#" class="list-group-item list-group-item-action" >Đổi Mật Khẩu</a>
+                <a href="#" class="list-group-item list-group-item-action" >Cài Đặt Thông Báo</a>
+                <a href="#" class="list-group-item list-group-item-action">Lịch sử đặt lịch</a>
+                <!-- Other items -->
+            </div>
         </div>
-        <!-- More user details here -->
-        <div>
-          <h4>About</h4>
-          <p>Here is more detailed information about the user.</p>
+
+        <!-- Content -->
+        <div class="col-md-9" id="content">
+            <!-- <h3 class="text-center" id="page-title">Địa chỉ của tôi</h3>
+            <div class="card" id="address-container">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title" id="recipient-name">Nhã</h5>
+                        <div>
+                            <button class="btn btn-outline-lg btn-sm" id="update-button">Cập nhật</button>
+                            <button class="btn btn-outline-lg btn-sm" id="delete-button">Xóa</button>
+                        </div>
+                    </div>
+                    <p class="card-text" id="phone-number">(+84) 332 219 196</p>
+                    <p class="card-text" id="address-details">KTX B, ĐH Cần Thơ, Phường Xuân Khánh, Quận Ninh Kiều, Cần Thơ</p>
+                    <p class="card-text">
+                        <small class="text-muted" id="default-status">Mặc định</small>
+                    </p>
+                </div> -->
+            </div>
+        
+            <!-- Button trigger modal -->
+            <!-- <button type="button" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#addressModal">
+              Thêm địa chỉ mới
+            </button> -->
+            
         </div>
-      </div>
+        
+
+                        <!-- Modal -->
+              <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addressModalLabel">Địa chỉ mới</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="addressForm">
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Họ và tên" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Số điện thoại" required>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select" id="provinceSelect" aria-label="Tỉnh/Thành phố">
+                                        <option selected>Chọn Tỉnh/Thành phố</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select" id="districtSelect" aria-label="Quận/Huyện">
+                                        <option selected>Chọn Quận/Huyện</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select" id="wardSelect" aria-label="Phường/Xã">
+                                        <option selected>Chọn Phường/Xã</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" placeholder="Địa chỉ cụ thể" required></textarea>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" value="" id="defaultAddressCheck">
+                                    <label class="form-check-label" for="defaultAddressCheck">
+                                        Đặt làm địa chỉ mặc định
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn btn-lg">Hoàn thành</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+              </div>
+
+              <!-- Modal cập nhật địa chỉ -->
+<div class="modal fade" id="updateAddressModal" tabindex="-1" aria-labelledby="updateAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateAddressModalLabel">Cập nhật địa chỉ</h5>
+                <input type="hidden" id="addressId">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateAddressForm">
+                    <div class="mb-3">
+                        <label for="recipientName" class="form-label">Tên người nhận</label>
+                        <input type="text" class="form-control" id="recipientName" name="recipientName" placeholder="Nhập tên người nhận" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Số điện thoại</label>
+                        <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Nhập số điện thoại" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="addressDetail" class="form-label">Chi tiết địa chỉ</label>
+                        <input type="text" class="form-control" id="addressDetail" name="addressDetail" placeholder="Nhập địa chỉ chi tiết" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="provinceCity" class="form-label">Tỉnh/Thành phố</label>
+                        <select class="form-select" id="provinceS" name="provinceCity" >
+                            <option value="">Chọn tỉnh/thành phố</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="district" class="form-label">Quận/Huyện</label>
+                        <select class="form-select" id="districtS" name="district">
+                            <option value="">Chọn quận/huyện</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="wardSubdistrict" class="form-label">Phường/Xã</label>
+                        <select class="form-select" id="wardSubdistrictS" name="wardSubdistrict">
+                            <option value="">Chọn Phường/Xã</option>
+                        </select>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="defaultAddress" name="defaultAddress" />
+                        <label class="form-check-label" for="defaultAddressS">Đặt làm địa chỉ mặc định</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="saveAddressBtn" onclick="saveUpdatedAddress()">Lưu</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+           
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./js/profile.js"></script>
+<script src="./js/header.js"></script>
+<script src="./js/address.js"></script>
+<!-- <script src="./js/addr.js"></script> -->
+<script>
+ document.addEventListener("DOMContentLoaded", function () {
+    const sidebarLinks = document.querySelectorAll(".list-group-item");
+
+    function loadPage(page) {
+        fetch(`./${page}.html`)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("content").innerHTML = data;
+
+                // Cập nhật class "active" trong sidebar
+                updateActiveLink(page);
+
+                // Nếu đang tải trang "address", tải thêm script address.js
+                if (page === "address") {
+                    setTimeout(() => {
+                        loadScript("./js/address.js", function () {
+                            if (typeof loadUserAddresses === "function") {
+                                loadUserAddresses(); // Chạy lại hàm load địa chỉ
+                            }
+                        });
+                    }, 500); // Chờ một chút để nội dung được render
+                }
+            })
+            .catch(error => console.error("Lỗi tải trang:", error));
+    }
+
+    function loadScript(scriptUrl, callback) {
+        // Kiểm tra và xóa script cũ trước khi tải lại
+        const existingScript = document.querySelector(`script[src="${scriptUrl}"]`);
+        if (existingScript) {
+            existingScript.remove();
+        }
+
+        const script = document.createElement("script");
+        script.src = scriptUrl;
+        script.onload = function () {
+            console.log(`Script ${scriptUrl} đã tải thành công`);
+            if (callback) callback();
+        };
+        document.body.appendChild(script);
+    }
+
+    function updateActiveLink(activePage) {
+        sidebarLinks.forEach(link => {
+            if (link.getAttribute("data-page") === activePage) {
+                link.classList.add("active");
+            } else {
+                link.classList.remove("active");
+            }
+        });
+    }
+
+    sidebarLinks.forEach(link => {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+            const page = this.getAttribute("data-page");
+            if (page) {
+                loadPage(page);
+            }
+        });
+    });
+
+    loadPage("address"); // Load trang mặc định
+});
+
+
+
+
+</script>
 </body>
 </html>
