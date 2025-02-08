@@ -230,22 +230,22 @@ public class AppointmentService {
 
     @Transactional
     public Appointment createAppointment(Long userId, Set<Integer> petIds, Set<Integer> serviceIds, String timeSlot, LocalDate appDate) {
-        // Kiểm tra xem danh sách thú cưng có hợp lệ không
+        // Kiểm tra danh sách thú cưng
         Set<Pet> pets = petRepository.findAllById(petIds).stream().collect(Collectors.toSet());
         if (pets.isEmpty() || pets.size() != petIds.size()) {
             throw new RuntimeException("Some pets not found");
         }
 
-        // Kiểm tra xem danh sách dịch vụ có hợp lệ không
+        // Kiểm tra danh sách dịch vụ
         Set<Serviceforpet> services = serviceRepository.findAllById(serviceIds).stream().collect(Collectors.toSet());
         if (services.isEmpty() || services.size() != serviceIds.size()) {
             throw new RuntimeException("Some services not found");
         }
 
-        // Chuyển đổi chuỗi slot thành thời gian
+        // **Chuyển đổi `timeSlot` thành `LocalTime` (chỉ lưu giờ và phút)**
         String[] times = timeSlot.split("-");
-        LocalTime startTime = LocalTime.of(Integer.parseInt(times[0].split(":")[0]), Integer.parseInt(times[0].split(":")[1]));
-        LocalTime endTime = LocalTime.of(Integer.parseInt(times[1].split(":")[0]), Integer.parseInt(times[1].split(":")[1]));
+        LocalTime startTime = LocalTime.parse(times[0]);
+        LocalTime endTime = LocalTime.parse(times[1]);
 
         // Kiểm tra số lượng lịch hẹn trong khung giờ đó
         Long appointmentCount = appointmentRepository.countByStartTimeAndEndTimeAndAppDate(startTime, endTime, appDate);
@@ -253,7 +253,7 @@ public class AppointmentService {
             throw new RuntimeException("This time slot is fully booked! Choose another slot.");
         }
 
-        // Tạo lịch hẹn chính
+        // Tạo lịch hẹn
         Appointment appointment = new Appointment(userId, pets, services, startTime, endTime, appDate, "Đã đặt lịch");
         appointment = appointmentRepository.save(appointment);
 
