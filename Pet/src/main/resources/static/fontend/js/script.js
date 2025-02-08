@@ -46,7 +46,7 @@ function updateBreadcrumb(category) {
     
     // Cập nhật nội dung của breadcrumb
     if (category === "thức ăn cho chó") {
-        categoryBreadcrumb.textContent = "Thức ăn cho chó";
+        categoryBreadcrumb.textContent = "thức ăn cho chó";
     } else if (category === "thức ăn cho mèo") {
         categoryBreadcrumb.textContent = "thức ăn cho mèo";
     } else if (category === "Dụng cụ vệ sinh") {
@@ -166,14 +166,93 @@ function createProductItem(product) {
         <h6 class="card-title product-title">${product.name}</h6>
         <p class="card-text product-price">${formatPrice(product.price)} VND</p>
         <div class="product-actions">
-            <button class="btn btn-lg buy-now">Mua ngay</button>
-            <i class="fa-solid fa-cart-shopping add-to-cart" id="add-to-cart-btn"></i>
+            <button class="buy-now" data-product-id="${product.id}">Thêm vào giỏ hàng</button>
         </div>
     </div>
 </div> `;
 
     return productDiv;
 }
+
+//////////////// thêm vào giỏ hàng ( ngoài trang product)
+
+
+
+// ========================== THÊM SẢN PHẨM VÀO GIỎ HÀNG ==========================
+document.addEventListener("DOMContentLoaded", function () {
+    fetch('/api/auth/check-login', { credentials: 'include' })
+        .then(response => response.json())
+        .then(data => {
+            const userId = data.userId; // Lấy userId từ API
+
+            if (!userId) {
+                console.error('Không tìm thấy userId từ API');
+                return;
+            }
+
+            // Lắng nghe sự kiện click trên toàn bộ document
+            document.body.addEventListener("click", function (event) {
+                const target = event.target;
+
+                if (target.classList.contains("buy-now")) {
+                    const productId = target.getAttribute("data-product-id"); // Lấy productId từ nút bấm
+
+                    if (!productId) {
+                        console.error(" Không tìm thấy productId trên nút bấm!", target);
+                        return;
+                    }
+
+                    const isBuyNow = target.classList.contains("buy-now");
+                    handleCartAction(userId, productId, 1, isBuyNow);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Lỗi khi kiểm tra trạng thái đăng nhập:', error);
+        });
+});
+function handleCartAction(userId, productId, quantity = 1, buyNow = false) {
+    if (!productId) {
+        console.error("Không tìm thấy productId!");
+        return;
+    }
+
+    console.log(`Thêm sản phẩm vào giỏ hàng: userId=${userId}, productId=${productId}, quantity=${quantity}, buyNow=${buyNow}`);
+
+    const params = new URLSearchParams();
+    params.append('userId', userId);
+    params.append('productId', productId);
+    params.append('quantity', quantity);
+
+    fetch('http://localhost:8080/api/cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params.toString()
+    })
+    .then(response => {
+        if (response.ok) {
+            updateCartCount(userId);
+            return response.text();
+        } else {
+            throw new Error('Không thể thêm sản phẩm vào giỏ hàng');
+        }
+    })
+    .then(responseText => {
+        console.log(responseText);
+        alert(responseText);
+
+        // if (buyNow) {
+        //     window.location.href = "cartt.html"; // Chuyển hướng đến trang giỏ hàng
+        // }
+    })
+    .catch(error => {
+        console.error('Lỗi:', error);
+        alert('Lỗi khi thêm sản phẩm vào giỏ hàng');
+    });
+}
+
 
 /**
  * Hàm tải và hiển thị danh sách sản phẩm từ API.
@@ -211,4 +290,24 @@ document.addEventListener("DOMContentLoaded", function () {
     loadProducts("http://localhost:8080/api/products", "productList");
 });
 
+// //////////// go to top
+document.addEventListener("DOMContentLoaded", function () {
+    const goToTopBtn = document.getElementById("goToTopBtn");
 
+    if (!goToTopBtn) {
+        console.error(" Không tìm thấy nút Go to Top!");
+        return;
+    }
+
+    // Cuộn lên đầu trang khi bấm vào nút
+    goToTopBtn.addEventListener("click", function () {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    });
+});
+
+
+
+/// search

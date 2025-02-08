@@ -1,6 +1,7 @@
 package com.example.Pet.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,5 +14,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findByUserIdAndOrderStatus(Integer userId, String orderStatus);
 
     List<Order> findByUserId(Integer userId);
+
+    Optional<Order> findById(Long id);
 
 }

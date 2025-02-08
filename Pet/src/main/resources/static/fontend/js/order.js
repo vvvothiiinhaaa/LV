@@ -64,10 +64,16 @@ function renderOrders(orders) {
                     Xem
                 </button>
             </td>
+             
+            <td> <button class="btn btn-custom complete-details-btn" data-order-id="${order.id}" data-bs-toggle="modal" data-bs-target="#">
+                    Hoàn Thành
+                </button>
+            </td>
              <td>
             <button class="btn btn-custom cancel-order-btn" data-order-id="${order.id}">
                 <i class="fas fa-times"></i> Hủy
             </button>
+             
         </td>
         `;
         orderList.appendChild(row);
@@ -107,6 +113,7 @@ function openCancelConfirmationModal(orderId) {
                         <div class="modal-footer">
                             <button type="button" class="btn btn-custom" data-bs-dismiss="modal">Hủy</button>
                             <button type="button" class="btn btn-custom" id="confirmCancelOrder">Xác nhận</button>
+                             
                         </div>
                     </div>
                 </div>

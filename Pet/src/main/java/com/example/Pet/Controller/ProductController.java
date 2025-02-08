@@ -1,8 +1,10 @@
 package com.example.Pet.Controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,8 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Pet.Modal.Product;
 import com.example.Pet.Modal.imgProduct;
-import com.example.Pet.Repository.ImgProductReponsitory;
 import com.example.Pet.Repository.ProductRepository;
+import com.example.Pet.Repository.imgProductRepository;
 import com.example.Pet.Service.FileStorageService;
 import com.example.Pet.Service.ProductService;
 
@@ -31,8 +33,10 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    // @Autowired
+    // private ImgProductReponsitory imgProductRepository;
     @Autowired
-    private ImgProductReponsitory imgProductRepository;
+    private imgProductRepository imgproductRepository;
 
     @Autowired
     private FileStorageService fileStorageService;
@@ -118,7 +122,7 @@ public class ProductController {
         imgProd.setUrl4(fileStorageService.saveFile(url4));  // Lưu ảnh phụ 4
 
         // Lưu ảnh phụ vào cơ sở dữ liệu
-        imgProductRepository.save(imgProd);
+        imgproductRepository.save(imgProd);
 
         return product;  // Trả về sản phẩm vừa được lưu
     }
@@ -143,4 +147,139 @@ public class ProductController {
     ) {
         return productService.searchProducts(name, brand, origin, genre);
     }
+
+    // Endpoint tìm kiếm sản phẩm
+    @GetMapping("/search-products")
+    public ResponseEntity<List<Product>> searchProducts(@RequestParam("query") String query) {
+        List<Product> products = productService.searchProducts(query);
+        return products.isEmpty()
+                ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(products)
+                : ResponseEntity.ok(products);
+    }
+
+    ////////////////////////////////////////// cập nhật sản phẩm
+    // @PutMapping("/{productId}/update")
+    // public ResponseEntity<Product> updateProduct(
+    //         @PathVariable Long productId,
+    //         @RequestParam("name") String name,
+    //         @RequestParam("sold") Integer sold,
+    //         @RequestParam("genre") String genre,
+    //         @RequestParam("origin") String origin,
+    //         @RequestParam("brand") String brand,
+    //         @RequestParam("component") String component,
+    //         @RequestParam("description") String description,
+    //         @RequestParam("quantity") Integer quantity,
+    //         @RequestParam("ingredient") String ingredient,
+    //         @RequestParam(value = "url", required = false) MultipartFile urlFile,
+    //         @RequestParam(value = "url1", required = false) MultipartFile url1,
+    //         @RequestParam(value = "url2", required = false) MultipartFile url2,
+    //         @RequestParam(value = "url3", required = false) MultipartFile url3,
+    //         @RequestParam(value = "url4", required = false) MultipartFile url4) {
+
+    //     Optional<Product> productOptional = productRepository.findById(productId);
+    //     if (!productOptional.isPresent()) {
+    //         return ResponseEntity.notFound().build();
+    //     }
+
+    //     Product product = productOptional.get();
+    //     product.setName(name);
+    //     product.setSold(sold);
+    //     product.setGenre(genre);
+    //     product.setOrigin(origin);
+    //     product.setBrand(brand);
+    //     product.setComponent(component);
+    //     product.setDescription(description);
+    //     product.setQuantity(quantity);
+    //     product.setIngredient(ingredient);
+
+    //     if (urlFile != null) {
+    //         product.setUrl(fileStorageService.saveFile(urlFile));
+    //     }
+
+    //     product = productRepository.save(product);
+
+    //     Optional<imgProduct> imgProductOptional = imgproductRepository.findByProductId(productId);
+    //     imgProduct imgProd = imgProductOptional.orElse(new imgProduct());
+    //     imgProd.setProductId(product.getId());
+
+    //     if (url1 != null) {
+    //         imgProd.setUrl1(fileStorageService.saveFile(url1));
+    //     }
+    //     if (url2 != null) {
+    //         imgProd.setUrl2(fileStorageService.saveFile(url2));
+    //     }
+    //     if (url3 != null) {
+    //         imgProd.setUrl3(fileStorageService.saveFile(url3));
+    //     }
+    //     if (url4 != null) {
+    //         imgProd.setUrl4(fileStorageService.saveFile(url4));
+    //     }
+
+    //     imgproductRepository.save(imgProd);
+
+    //     return ResponseEntity.ok(product);
+    // }
+    /////////////////// cậpp nhật có thể vắng các cột 
+    @PutMapping("/{productId}/update")
+    public ResponseEntity<Product> updateProduct(
+            @PathVariable Long productId,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "price", required = false) Double price,
+            @RequestParam(value = "sold", required = false) Integer sold, // Thêm required = false
+            @RequestParam(value = "genre", required = false) String genre,
+            @RequestParam(value = "origin", required = false) String origin,
+            @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "component", required = false) String component,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "quantity", required = false) Integer quantity,
+            @RequestParam(value = "ingredient", required = false) String ingredient,
+            @RequestParam(value = "url", required = false) MultipartFile urlFile) {
+
+        Optional<Product> productOptional = productRepository.findById(productId);
+        if (!productOptional.isPresent()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Product product = productOptional.get();
+        if (name != null) {
+            product.setName(name);
+        }
+        if (price != null) {
+            product.setPrice(price);
+        }
+        if (sold != null) {
+            product.setSold(sold);  // Chỉ cập nhật nếu có giá trị
+
+        }
+        if (genre != null) {
+            product.setGenre(genre);
+        }
+        if (origin != null) {
+            product.setOrigin(origin);
+        }
+        if (brand != null) {
+            product.setBrand(brand);
+        }
+        if (component != null) {
+            product.setComponent(component);
+        }
+        if (description != null) {
+            product.setDescription(description);
+        }
+        if (quantity != null) {
+            product.setQuantity(quantity);
+        }
+        if (ingredient != null) {
+            product.setIngredient(ingredient);
+        }
+
+        if (urlFile != null) {
+            product.setUrl(fileStorageService.saveFile(urlFile));
+        }
+
+        product = productRepository.save(product);
+
+        return ResponseEntity.ok(product);
+    }
+
 }

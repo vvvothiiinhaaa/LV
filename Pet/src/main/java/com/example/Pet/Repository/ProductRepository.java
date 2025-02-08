@@ -4,9 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.Pet.Modal.Product;
+
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -41,5 +46,18 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByNameContainingIgnoreCaseAndBrandContainingIgnoreCaseAndOriginContainingIgnoreCaseAndGenreContainingIgnoreCase(
             String name, String brand, String origin, String genre
     );
+
+    /////////////////////////////
+     @Query("SELECT DISTINCT p FROM Product p WHERE "
+            + "LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "
+            + "LOWER(p.genre) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "
+            + "LOWER(p.brand) LIKE LOWER(CONCAT('%', :keyword, '%')) OR "
+            + "LOWER(p.origin) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<Product> searchByKeyword(@Param("keyword") String keyword);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Product p SET p.quantity = p.quantity + :quantity, p.sold = p.sold - :quantity WHERE p.id = :productId")
+    void restoreProductStock(Long productId, int quantity);
 
 }

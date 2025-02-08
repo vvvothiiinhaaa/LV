@@ -304,6 +304,7 @@
     </div>
 </footer>
 
+
     
 
     <!-- Bootstrap Bundle with Popper -->
@@ -317,7 +318,8 @@
     </script>
     <!-- <script src="./js/script.js"></script> -->
     <script src="./js/navbar.js"></script>
-    <script src="./js/header.js"></script>
+    <script src="./js/header.js" defer></script>
+    <script src="./js/script.js"></script>
     <script>
         
         document.addEventListener('DOMContentLoaded', function () {
@@ -361,5 +363,26 @@
             searchForm.classList.toggle('active');
         });
     </script> -->
+<!-- Nút "Go to Top" -->
+<button id="goToTopBtn" title="Go to top">↑</button>
+ <!-- <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const goToTopBtn = document.getElementById("goToTopBtn");
+
+    if (!goToTopBtn) {
+        console.error(" Không tìm thấy nút Go to Top!");
+        return;
+    }
+
+    // Cuộn lên đầu trang khi bấm vào nút
+    goToTopBtn.addEventListener("click", function () {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    });
+});
+
+ </script>    -->
 </body>
 </html>

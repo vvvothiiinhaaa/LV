@@ -104,4 +104,15 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    ////////////////// cập nhật trạng thái đơn hàng
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<String> updateOrderStatus(@PathVariable int orderId, @RequestParam String newStatus) {
+        try {
+            orderService.updateOrderStatus(orderId, newStatus);
+            return ResponseEntity.ok("Cập nhật trạng thái thành công");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body("Order not found");
+        }
+    }
 }

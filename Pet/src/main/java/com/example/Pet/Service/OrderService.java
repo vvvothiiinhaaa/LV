@@ -167,14 +167,53 @@ public class OrderService {
     }
 
     ////////////////////////////////// hủy đơn hàng
+    // public void cancelOrder(int orderId) {
+    //     Optional<Order> orderOptional = orderRepository.findById(orderId);
+    //     if (orderOptional.isPresent()) {
+    //         Order order = orderOptional.get();
+    //         order.setOrderStatus("Đã Hủy");
+    //         orderRepository.save(order);
+    //     } else {
+    //         throw new RuntimeException("Order not found");
+    //     }
+    // }
     public void cancelOrder(int orderId) {
         Optional<Order> orderOptional = orderRepository.findById(orderId);
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();
-            order.setOrderStatus("Đã Hủy");
+            if ("Chờ Xác Nhận".equals(order.getOrderStatus())) {
+                order.setOrderStatus("Đã Hủy");
+                // Khôi phục số lượng sản phẩm đã bán và tồn kho
+                // Kiểm tra danh sách sản phẩm trong đơn hàng
+                if (order.getOrderItems().isEmpty()) {
+                    System.out.println("Không có sản phẩm nào trong đơn hàng!");
+                    throw new RuntimeException("Không có sản phẩm nào trong đơn hàng để cập nhật số lượng.");
+                }
+
+                // Cập nhật số lượng sản phẩm đã bán và tồn kho
+                for (OrderItem item : order.getOrderItems()) {
+                    System.out.println("Cập nhật sản phẩm: " + item.getProductId() + " - Số lượng: " + item.getQuantity());
+                    productRepository.restoreProductStock(item.getProductId(), item.getQuantity());
+                }
+                orderRepository.save(order);
+            } else {
+                throw new RuntimeException("Hủy đơn hàng được thực hiện khi ở trạng thái chờ xác nhận!");
+            }
+        } else {
+            throw new RuntimeException("Order not found");
+        }
+    }
+
+    ////////////////////////////////////// cập nhật trạng thái đơn hàng
+    public void updateOrderStatus(int orderId, String newStatus) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isPresent()) {
+            Order order = orderOptional.get();
+            order.setOrderStatus(newStatus);
             orderRepository.save(order);
         } else {
             throw new RuntimeException("Order not found");
         }
     }
+
 }

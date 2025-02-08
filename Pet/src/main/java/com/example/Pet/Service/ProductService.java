@@ -202,4 +202,10 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    /////
+     // Tìm kiếm sản phẩm theo từ khóa
+     public List<Product> searchProducts(String keyword) {
+        return productRepository.searchByKeyword(keyword);
+    }
+
 }

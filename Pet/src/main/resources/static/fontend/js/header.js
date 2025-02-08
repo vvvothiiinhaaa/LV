@@ -210,7 +210,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
                 // Sau khi header được tải, kiểm tra trạng thái đăng nhập
                 checkLoginStatus();
-                
+                setupSearchEvent();
                 // Gán sự kiện tìm kiếm sau khi header được tải
                 const searchToggle = document.getElementById('searchToggle');
                 const searchToggleDesktop = document.getElementById('searchToggleDesktop');
@@ -301,71 +301,91 @@ document.addEventListener("DOMContentLoaded", function() {
 // });
 
 
-document.addEventListener("DOMContentLoaded", function() {
-    const searchToggleDesktop = document.getElementById("searchToggleDesktop");
-    if (searchToggleDesktop) {
-        searchToggleDesktop.addEventListener("click", function() {
-            const searchQuery = document.getElementById("searchInput").value.trim();
-            if (searchQuery) {
-                fetchSearchResults(searchQuery);
-            }
-        });
-    }
-});
-
-
-// Hàm gọi API tìm kiếm
-function fetchSearchResults(query) {
-    fetch(`/api/products/search?name=${query}`)
-        .then(response => response.json())
-        .then(data => {
-            displaySearchResults(data);
-        })
-        .catch(error => {
-            console.error('Error fetching search results:', error);
-        });
-}
-
-
-// Hàm hiển thị kết quả tìm kiếm
-function displaySearchResults(products) {
-    const productList = document.getElementById('productList');
-    productList.innerHTML = ''; // Xóa danh sách sản phẩm cũ
-
-    products.forEach(product => {
-        const productDiv = createProductItem(product); // Tạo một mục sản phẩm mới
-        productList.appendChild(productDiv); // Thêm sản phẩm vào danh sách
-    });
-}
-
-// Hàm tạo một mục sản phẩm
-function createProductItem(product) {
-    const productDiv = document.createElement('div');
-    productDiv.classList.add('col');
-
-    const imageUrl = product.url.replace(/.*\/html\//, '/img/');
-    productDiv.innerHTML = `
-        <div class="card product-card h-100">
-            <a href="product-detail.html?id=${product.id}" class="product-link">
-                <img src="${imageUrl || 'default-image.png'}" class="card-img-top product-image" alt="${product.name}">
-            </a>
-            <div class="card-body">
-                <h6 class="card-title product-title">${product.name}</h6>
-                <p class="card-text product-price">${formatPrice(product.price)} VND</p>
-                <div class="product-actions">
-                    <button class="btn btn-lg buy-now">Mua ngay</button>
-                    <i class="fa-solid fa-cart-shopping add-to-cart" id="add-to-cart-btn"></i>
-                </div>
-            </div>
-
-        </div>
-    `;
-
-    return productDiv;
-}
+// document.addEventListener("DOMContentLoaded", function() {
+//     const searchToggleDesktop = document.getElementById("searchToggleDesktop");
+//     if (searchToggleDesktop) {
+//         searchToggleDesktop.addEventListener("click", function() {
+//             const searchQuery = document.getElementById("searchInput").value.trim();
+//             if (searchQuery) {
+//                 fetchSearchResults(searchQuery);
+//             }
+//         });
+//     }
+// });
 
 // Hàm định dạng giá sản phẩm
-function formatPrice(price) {
-    return price.toLocaleString('vi-VN');
+// function formatPrice(price) {
+//     return price.toLocaleString('vi-VN');
+// }
+
+
+// window.onload = function() {
+//     var isLoggedIn = false; // Kiểm tra nếu người dùng đã đăng nhập (thông qua session hoặc cookie)
+
+//     // Nếu người dùng đã đăng nhập
+//     if (isLoggedIn) {
+//         document.getElementById('userSection').classList.remove('hidden');
+//         document.getElementById('loginBtn').style.display = 'none'; // Ẩn nút Đăng Nhập
+//     } else {
+//         document.getElementById('userSection').classList.add('hidden');
+//         document.getElementById('loginBtn').style.display = 'block'; // Hiển thị nút Đăng Nhập
+//     }
+// };
+
+// //////////////// tải ảnh đại diện 
+// window.onload = function() {
+//     var profileImage = document.getElementById("userAvatar");
+//     var userImageUrl = "https://example.com/user-avatar.jpg";
+
+//     if (userImageUrl) {
+//         profileImage.src = userImageUrl; 
+//     } else {
+//         profileImage.src = "https://example.com/default-avatar.jpg"; 
+//     }
+// };
+// ///////////////////////////// tìm kiếm sản phẩm
+
+// Hàm gán sự kiện cho nút tìm kiếm
+function setupSearchEvent() {
+    const searchInput = document.getElementById("searchquery");
+    const searchButton = document.getElementById("btnsearch");
+
+    // Gán giá trị từ URL vào khung tìm kiếm khi trang tải
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('query');
+    if (query) {
+        searchInput.value = query; // Gán lại giá trị vào khung tìm kiếm
+    }
+
+    if (searchButton && searchInput) {
+        // Sự kiện cho nút click
+        searchButton.addEventListener("click", function(event) {
+            event.preventDefault();  // Ngăn hành động mặc định của nút
+            performSearch();
+        });
+
+        // Sự kiện khi nhấn phím Enter
+        searchInput.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();  // Ngăn hành động mặc định của phím Enter
+                performSearch();
+            }
+        });
+
+    } else {
+        console.error("Không tồn tại phần tử với ID searchquery hoặc btnsearch.");
+    }
 }
 
+// Hàm thực hiện tìm kiếm
+function performSearch() {
+    var query = document.getElementById("searchquery").value.trim(); // Loại bỏ khoảng trắng
+
+    console.log("Từ khóa tìm kiếm: ", query); // Kiểm tra giá trị nhập vào
+
+    if (query.length > 0) {  // Kiểm tra nếu chuỗi tìm kiếm không rỗng sau khi loại bỏ khoảng trắng
+        window.location.href = "http://localhost:8080/fontend/product.html?query=" + encodeURIComponent(query);
+    } else {
+        alert("Vui lòng nhập từ khóa tìm kiếm!");
+    }
+}

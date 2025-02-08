@@ -338,7 +338,7 @@ body {
 .list-unstyled li{
     color: black;
 }
-.btn {
+/* .btn {
     background-color: #9f7143;
     color:black;
     border-radius:20px;
@@ -348,6 +348,53 @@ body {
     background-color: #fff;
     border-color: #9f7143;
     color:black;
+} */
+
+.buy-now {
+  background-color: #333333; 
+  color: white;
+  border: 5px;
+  width:90%;
+  font-size: 16px;
+  border-radius:5px;
+}
+.buy-now:hover{
+  background-color: #c3a179;
+  color:white;
+}
+#applyFilters {
+  background-color: #333333; 
+  color: white;
+  border: 5px;
+  width:50%;
+  font-size: 16px;
+  border-radius:5px;
+}
+#applyFilters:hover{
+  background-color: #c3a179;
+  color:white;
+}
+
+#loginBtn {
+  background-color: #333333; 
+  color: white;
+  border: 5px;
+  width:50%;
+  font-size: 16px;
+  border-radius:5px;
+}
+
+#loginBtn:hover {
+  background-color: #c3a179;
+  color:white;
+}
+
+.btn-warning {
+  background-color: #c3a179;
+  border: none;
+}
+#searchForm {
+width: 500px;
 }
  .breadcrumb {
   /* margin-top:3%; */
@@ -430,25 +477,6 @@ body {
   margin-top: 15px; /* Adds space between price and buttons */
  } 
 
-/* Styling for the "Mua ngay" button */
-.buy-now {
-  display: flex;
-  width: 120px;
-  padding: 8px 12px;
-  font-size: 14px;
-  margin-right: 10px; 
-  background-color: #9f7143;
-  color:black;
-  border-radius:20px;
-  border-color: #9f7143;
-}
-.buy-now:hover {
- background-color: #fff;
-  border-color: #9f7143;
-  color:black;
-}
-
-
 
 /* Styling for the shopping cart icon */
 .add-to-cart {
@@ -461,42 +489,35 @@ body {
 /* Đảm bảo container chứa navbar và container chứa form tìm kiếm không nằm ngang nhau */
 
 
-
-/* Đảm bảo nút Đăng Nhập có khoảng cách với các phần tử khác */
-
-
-/* Đảm bảo form tìm kiếm có khoảng cách đủ với navbar */
-/* Căn chỉnh form tìm kiếm để nó nằm trên header và không bị lệch */
-/* Đảm bảo form tìm kiếm nằm trên thanh header */
-/* Căn chỉnh form tìm kiếm nằm dưới navbar */
-/* Đảm bảo form tìm kiếm nằm dưới navbar trong header */
-
-
-/* Đảm bảo form tìm kiếm nằm dưới navbar */
-/* Đảm bảo form tìm kiếm xuống dòng */
-.search {
-  width: 100%; /* Đảm bảo form chiếm toàn bộ chiều rộng */
-  text-align: center; /* Căn giữa form */
-  margin-top: 10px; /* Tạo khoảng cách giữa navbar và form tìm kiếm */ 
-  display: block;
+#userSection.hidden {
+  display: none;
 }
 
-#searchForm {
-  /* Đảm bảo form chiếm một dòng riêng biệt */
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto; /* Căn giữa form */
+/* Hiển thị các phần tử khi người dùng đã đăng nhập */
+.logged-in #userSection {
+  display: flex;
 }
 
-#searchForm .form-control {
-  max-width: 500px; /* Điều chỉnh độ rộng của ô tìm kiếm */
-}
-
-#searchForm button {
-  background-color: #e5c07b;
+/* button go to toptop */
+#goToTopBtn {
+  position: fixed;  /* Cố định vị trí trên màn hình */
+  bottom: 20px;  /* Cách đáy màn hình 20px */
+  right: 20px;  /* Cách mép phải 20px */
+  width: 50px;
+  height: 50px;
+  background-color: #c3a179;  /* Màu xanh dương */
+  color: white;
   border: none;
+  border-radius: 50%;  /* Làm nút hình tròn */
+  font-size: 24px;
+  cursor: pointer;
+  display: block; /* Ẩn đi khi chưa cuộn xuống */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
 }
 
-#searchForm button i {
-  color: black;
+#goToTopBtn:hover {
+  background-color: #333333; /* Màu xanh dương đậm hơn khi hover */
 }
+
+/* button go to toptop */
