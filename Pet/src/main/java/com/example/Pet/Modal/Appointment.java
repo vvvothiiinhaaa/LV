@@ -1,7 +1,18 @@
 package com.example.Pet.Modal;
 
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Set;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "appointment")
@@ -12,21 +23,32 @@ public class Appointment {
     private Integer id;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;  // Không dùng @ManyToOne với User
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "pet_id", nullable = false)
-    private Pet pet;
+    @ManyToMany
+    @JoinTable(
+            name = "appointment_pets",
+            joinColumns = @JoinColumn(name = "appointment_id"),
+            inverseJoinColumns = @JoinColumn(name = "pet_id")
+    )
+    private Set<Pet> pets;
 
-    @ManyToOne
-    @JoinColumn(name = "service_id", nullable = false)
-    private Serviceforpet service;
+    @ManyToMany
+    @JoinTable(
+            name = "appointment_services",
+            joinColumns = @JoinColumn(name = "appointment_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
+    private Set<Serviceforpet> services;
 
     @Column(name = "start_time", nullable = false)
-    private LocalDateTime startTime;
+    private LocalTime startTime;
 
     @Column(name = "end_time", nullable = false)
-    private LocalDateTime endTime;
+    private LocalTime endTime;
+
+    @Column(name = "app_date", nullable = false)
+    private LocalDate appDate;
 
     @Column(name = "status", nullable = false)
     private String status;
@@ -34,12 +56,13 @@ public class Appointment {
     public Appointment() {
     }
 
-    public Appointment(Long userId, Pet pet, Serviceforpet service, LocalDateTime startTime, LocalDateTime endTime, String status) {
+    public Appointment(Long userId, Set<Pet> pets, Set<Serviceforpet> services, LocalTime startTime, LocalTime endTime, LocalDate appDate, String status) {
         this.userId = userId;
-        this.pet = pet;
-        this.service = service;
+        this.pets = pets;
+        this.services = services;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.appDate = appDate;
         this.status = status;
     }
 
@@ -60,36 +83,44 @@ public class Appointment {
         this.userId = userId;
     }
 
-    public Pet getPet() {
-        return pet;
+    public Set<Pet> getPets() {
+        return pets;
     }
 
-    public void setPet(Pet pet) {
-        this.pet = pet;
+    public void setPets(Set<Pet> pets) {
+        this.pets = pets;
     }
 
-    public Serviceforpet getService() {
-        return service;
+    public Set<Serviceforpet> getServices() {
+        return services;
     }
 
-    public void setService(Serviceforpet service) {
-        this.service = service;
+    public void setServices(Set<Serviceforpet> services) {
+        this.services = services;
     }
 
-    public LocalDateTime getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public LocalDateTime getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
+    }
+
+    public LocalDate getAppDate() {
+        return appDate;
+    }
+
+    public void setAppDate(LocalDate appDate) {
+        this.appDate = appDate;
     }
 
     public String getStatus() {
