@@ -312,3 +312,55 @@ public class AppointmentService {
                 .collect(Collectors.toList());
     }
 }
+
+///////////////// kiểm tra trùng lịch hẹn
+/// @Transactional
+// public Appointment createAppointment(Long userId, Set<Integer> petIds, Set<Integer> serviceIds, String timeSlot, LocalDate appDate) {
+//     // Kiểm tra danh sách thú cưng
+//     Set<Pet> pets = petRepository.findAllById(petIds).stream().collect(Collectors.toSet());
+//     if (pets.isEmpty() || pets.size() != petIds.size()) {
+//         throw new RuntimeException("Some pets not found");
+//     }
+
+//     // Kiểm tra danh sách dịch vụ
+//     Set<Serviceforpet> services = serviceRepository.findAllById(serviceIds).stream().collect(Collectors.toSet());
+//     if (services.isEmpty() || services.size() != serviceIds.size()) {
+//         throw new RuntimeException("Some services not found");
+//     }
+
+//     // Chuyển đổi chuỗi slot thành thời gian
+//     String[] times = timeSlot.split("-");
+//     LocalTime startTime = LocalTime.parse(times[0]);
+//     LocalTime endTime = LocalTime.parse(times[1]);
+
+//     // **Kiểm tra trùng lặp lịch hẹn**
+//     Long duplicateCount = appointmentRepository.countDuplicateAppointments(userId, petIds, serviceIds, startTime, endTime, appDate);
+//     if (duplicateCount > 0) {
+//         throw new RuntimeException("Duplicate appointment detected! This pet and service already have a booking at this time.");
+//     }
+
+//     // Kiểm tra số lượng lịch hẹn trong khung giờ đó
+//     Long appointmentCount = appointmentRepository.countByStartTimeAndEndTimeAndAppDate(startTime, endTime, appDate);
+//     if (appointmentCount >= 4) {
+//         throw new RuntimeException("This time slot is fully booked! Choose another slot.");
+//     }
+
+//     // Tạo lịch hẹn
+//     Appointment appointment = new Appointment(userId, pets, services, startTime, endTime, appDate, "Đã đặt lịch");
+//     appointment = appointmentRepository.save(appointment);
+
+//     // **Thêm dữ liệu vào bảng trung gian**
+//     for (Pet pet : pets) {
+//         if (appointmentRepository.existsPetInAppointment(appointment.getId(), pet.getId()) == 0) {
+//             appointmentRepository.addPetToAppointment(appointment.getId(), pet.getId());
+//         }
+//     }
+
+//     for (Serviceforpet service : services) {
+//         if (appointmentRepository.existsServiceInAppointment(appointment.getId(), service.getId()) == 0) {
+//             appointmentRepository.addServiceToAppointment(appointment.getId(), service.getId());
+//         }
+//     }
+
+//     return appointment;
+// }

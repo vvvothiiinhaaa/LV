@@ -10,19 +10,23 @@ public class reviewDTO {
     private String content;
     private int rating;
     private LocalDate reviewDate;
-
-    // Constructor mặc định
-    public reviewDTO() {
-    }
+    private String username;
+    private String url;
 
     // Constructor có tham số
-    public reviewDTO(Integer orderItemId, Integer orderId, Long userId, String content, int rating, LocalDate reviewDate) {
+    public reviewDTO(Integer orderItemId, Integer orderId, Long userId, String content, int rating, LocalDate reviewDate, String username, String url) {
         this.orderItemId = orderItemId;
         this.userId = userId;
         this.orderId = orderId;
         this.content = content;
         this.rating = rating;
         this.reviewDate = reviewDate;
+        this.username = username;
+        this.url = url;
+    }
+
+// Constructor mặc định
+    public reviewDTO() {
     }
 
     // Getter và Setter
@@ -78,6 +82,34 @@ public class reviewDTO {
      */
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
+    }
+
+    /**
+     * @return String return the username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * @param username the username to set
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * @return String return the url
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * @param url the url to set
+     */
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 }

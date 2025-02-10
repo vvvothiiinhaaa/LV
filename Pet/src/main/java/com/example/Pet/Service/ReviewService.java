@@ -49,23 +49,23 @@
 // }
 package com.example.Pet.Service;
 
-import com.example.Pet.DTO.reviewDTO;
-
-import com.example.Pet.Repository.OrderItemRepository;
-import com.example.Pet.Repository.ReviewRepository;
-import com.example.Pet.Repository.UserRepository;
-
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.stereotype.Service;
+
+import com.example.Pet.DTO.ReviewUserDTO;
+import com.example.Pet.DTO.reviewDTO;
 import com.example.Pet.Modal.Order;
 import com.example.Pet.Modal.OrderItem;
 import com.example.Pet.Modal.User;
 import com.example.Pet.Modal.review;
+import com.example.Pet.Repository.OrderItemRepository;
 import com.example.Pet.Repository.OrderRepository;
+import com.example.Pet.Repository.ReviewRepository;
+import com.example.Pet.Repository.UserRepository;
 
 @Service
 public class ReviewService {
@@ -83,6 +83,7 @@ public class ReviewService {
     }
 
     // Thêm đánh giá cho sản phẩm trong đơn hàng
+    // Thêm đánh giá cho sản phẩm trong đơn hàng (chỉ cho phép 1 lần)
     public review addReview(reviewDTO reviewDTO) {
         OrderItem orderItem = orderItemRepository.findById(reviewDTO.getOrderItemId())
                 .orElseThrow(() -> new RuntimeException("OrderItem not found"));
@@ -93,21 +94,21 @@ public class ReviewService {
         Order order = orderRepository.findById(orderItem.getOrder().getId())
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        review revieww = new review();
-        revieww.setOrderItem(orderItem);
-        revieww.setOrder(order);
-        revieww.setUser(user);
-        revieww.setContent(reviewDTO.getContent());
-        revieww.setRating(reviewDTO.getRating());
-
-        // Nếu `reviewDate` không được gửi từ DTO, mặc định là ngày hiện tại
-        if (reviewDTO.getReviewDate() == null) {
-            revieww.setReviewDate(LocalDate.now());
-        } else {
-            revieww.setReviewDate(reviewDTO.getReviewDate());
+        // Kiểm tra nếu người dùng đã đánh giá sản phẩm này trong chính orderItem này
+        boolean hasReviewed = reviewRepository.existsByOrderItemAndUser(orderItem, user);
+        if (hasReviewed) {
+            throw new RuntimeException("Bạn đã đánh giá sản phẩm này trong đơn hàng này!");
         }
 
-        return reviewRepository.save(revieww);
+        review review = new review();
+        review.setOrderItem(orderItem);
+        review.setOrder(order);
+        review.setUser(user);
+        review.setContent(reviewDTO.getContent());
+        review.setRating(reviewDTO.getRating());
+        review.setReviewDate(reviewDTO.getReviewDate() != null ? reviewDTO.getReviewDate() : LocalDate.now());
+
+        return reviewRepository.save(review);
     }
 
     // Lấy tất cả đánh giá của một sản phẩm trong đơn hàng
@@ -130,4 +131,31 @@ public class ReviewService {
         Optional<Double> averageRating = reviewRepository.findAverageRatingByProductId(productId);
         return averageRating.orElse(0.0); // Nếu không có đánh giá, trả về 0.0
     }
+
+    // public List<review> getReviewsByProduct(Long productId) {
+    //     return reviewRepository.findReviewsByProductId(productId);
+    // }
+    /////////////////////////////////
+ public List<ReviewUserDTO> getReviewsWithUserByProductId(Long productId) {
+        List<Object[]> results = reviewRepository.findReviewsWithUserByProductId(productId);
+        List<ReviewUserDTO> reviews = new ArrayList<>();
+
+        for (Object[] row : results) {
+            review review = (review) row[0];  // Lấy review
+            User user = (User) row[1];        // Lấy user
+
+            ReviewUserDTO reviewDTO = new ReviewUserDTO(
+                    review.getId(),
+                    review.getContent(),
+                    review.getRating(),
+                    review.getReviewDate(),
+                    user.getId(),
+                    user.getUsername(),
+                    user.getUrl()
+            );
+            reviews.add(reviewDTO);
+        }
+        return reviews;
+    }
+
 }

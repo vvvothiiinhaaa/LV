@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="./css/cart.css">
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/pay.css">
+    <link rel="stylesheet" href="./css/order.css">
 </head>
 <body>
     <div id="header"></div>
@@ -103,7 +104,7 @@
                                 </label>
                             </div>
                             <hr>
-                            <button type="button" class="btn btn-lg mt-3 w-50" onclick="submitPayment()">Đặt Hàng</button>
+                            <button type="button" class="btn btn-custom mt-3 w-50" onclick="submitPayment()">Đặt Hàng</button>
                         </div>
                     </div>
                 </div>
@@ -123,5 +124,26 @@
 
     <script src="./js/pay.js"></script>
     <script src="./js/header.js"></script>
+    <button id="goToTopBtn" title="Go to top">↑</button>
+    <script>
+   
+   document.addEventListener("DOMContentLoaded", function () {
+       const goToTopBtn = document.getElementById("goToTopBtn");
+   
+       if (!goToTopBtn) {
+           console.error(" Không tìm thấy nút Go to Top!");
+           return;
+       }
+   
+       // Cuộn lên đầu trang khi bấm vào nút
+       goToTopBtn.addEventListener("click", function () {
+           window.scrollTo({
+               top: 0,
+               behavior: "smooth"
+           });
+       });
+   });
+   
+   </script>
 </body>
 </html>

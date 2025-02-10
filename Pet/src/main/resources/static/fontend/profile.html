@@ -26,6 +26,7 @@
                 </div>
                 <a href="#" class="list-group-item list-group-item-action" data-page="user">Hồ Sơ</a>
                 <a href="#" class="list-group-item list-group-item-action" data-page="address" >Sổ Địa Chỉ </a>
+                <a href="#"class="list-group-item list-group-item-action" data-page="pet">Thông Tin Của Thú Cưng</a>
                 <a href="#" class="list-group-item list-group-item-action" >Đổi Mật Khẩu</a>
                 <a href="#" class="list-group-item list-group-item-action" >Cài Đặt Thông Báo</a>
                 <a href="#" class="list-group-item list-group-item-action">Lịch sử đặt lịch</a>
@@ -179,27 +180,47 @@
     const sidebarLinks = document.querySelectorAll(".list-group-item");
 
     function loadPage(page) {
-        fetch(`./${page}.html`)
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById("content").innerHTML = data;
+    fetch(`./${page}.html`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById("content").innerHTML = data;
 
-                // Cập nhật class "active" trong sidebar
-                updateActiveLink(page);
+            // Cập nhật class "active" trong sidebar
+            updateActiveLink(page);
 
-                // Nếu đang tải trang "address", tải thêm script address.js
-                if (page === "address") {
-                    setTimeout(() => {
-                        loadScript("./js/address.js", function () {
-                            if (typeof loadUserAddresses === "function") {
-                                loadUserAddresses(); // Chạy lại hàm load địa chỉ
-                            }
-                        });
-                    }, 500); // Chờ một chút để nội dung được render
-                }
-            })
-            .catch(error => console.error("Lỗi tải trang:", error));
-    }
+            // Tải `pet.js` nếu đang vào trang "pet"
+            if (page === "pet") {
+                setTimeout(() => {
+                    loadScript("./js/pet.js", async function () {
+                        console.log("pet.js đã được tải lại!");
+
+                        // Gọi lại fetchUserId sau khi tải pet.js
+                        const userId = await fetchUserId();
+                        if (userId) {
+                            console.log("Lấy lại userId sau khi tải pet.js:", userId);
+                            loadPets(userId);
+                            attachPetEventListeners();
+                        } else {
+                            console.error("Không lấy được userId sau khi tải pet.js");
+                        }
+                    });
+                }, 500);
+            }
+
+            // Tải `address.js` nếu đang vào trang "address"
+            if (page === "address") {
+                setTimeout(() => {
+                    loadScript("./js/address.js", function () {
+                        if (typeof loadUserAddresses === "function") {
+                            loadUserAddresses();
+                        }
+                    });
+                }, 500);
+            }
+        })
+        .catch(error => console.error("Lỗi tải trang:", error));
+}
+
 
     function loadScript(scriptUrl, callback) {
         // Kiểm tra và xóa script cũ trước khi tải lại

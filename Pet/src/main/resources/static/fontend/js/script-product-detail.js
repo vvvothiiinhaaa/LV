@@ -342,3 +342,119 @@ fetch(`http://localhost:8080/api/cart/count/${userId}`, { credentials: 'include'
         console.error('Lỗi khi lấy số lượng sản phẩm trong giỏ hàng:', error);
     });
 }
+////////////////////////////////////////////////// hiển thị đánh giá
+document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
+
+    if (!productId) {
+        console.error("Không tìm thấy ID sản phẩm trong URL");
+        return;
+    }
+
+    fetchUserReviews(productId);
+});
+
+function fetchUserReviews(productId) {
+    fetch(`http://localhost:8080/reviews/product/${productId}`)
+        .then(response => response.json())
+        .then(data => {
+            displayUserReviews(data);
+        })
+        .catch(error => console.error("Lỗi khi tải dữ liệu đánh giá:", error));
+}
+
+function displayUserReviews(reviews) {
+    const reviewsContainer = document.getElementById("user-reviews");
+    reviewsContainer.innerHTML = "";
+
+    if (reviews.length === 0) {
+        reviewsContainer.innerHTML = `<p class="text-muted text-center">Chưa có đánh giá nào.</p>`;
+        return;
+    }
+
+    let isExpanded = false;
+    let displayedReviews = reviews.slice(0, 3);
+    
+    // Xóa nút nếu nó đã tồn tại trước đó
+    document.getElementById("show-more-btn")?.remove();
+    document.getElementById("collapse-btn")?.remove();
+
+    // Tạo nút "Xem thêm" và "Thu gọn"
+    const showMoreBtn = document.createElement("button");
+    showMoreBtn.textContent = "Xem thêm";
+    showMoreBtn.classList.add("btn", "btn-primary", "d-block", "mx-auto", "mt-3");
+    showMoreBtn.id = "show-more-btn";
+
+    const collapseBtn = document.createElement("button");
+    collapseBtn.textContent = "Thu gọn";
+    collapseBtn.classList.add("btn", "btn-primary", "d-block", "mx-auto", "mt-3");
+    collapseBtn.id = "collapse-btn";
+    collapseBtn.style.display = "none"; // Ẩn nút thu gọn ban đầu
+
+    displayedReviews.forEach(review => {
+        reviewsContainer.appendChild(createReviewElement(review));
+    });
+
+    if (reviews.length > 2) {
+        reviewsContainer.appendChild(showMoreBtn);
+    }
+
+    showMoreBtn.addEventListener("click", function () {
+        if (!isExpanded) {
+            reviews.slice(2).forEach(review => {
+                reviewsContainer.appendChild(createReviewElement(review));
+            });
+
+            // Ẩn nút "Xem thêm", hiển thị nút "Thu gọn"
+            showMoreBtn.style.visibility  = "hidden"; 
+            collapseBtn.style.visibility  = "visible"; 
+
+            reviewsContainer.appendChild(collapseBtn); // Đưa nút "Thu gọn" xuống cuối danh sách
+        }
+        isExpanded = true;
+    });
+
+    collapseBtn.addEventListener("click", function () {
+        reviewsContainer.innerHTML = "";
+        reviews.slice(0, 2).forEach(review => {
+            reviewsContainer.appendChild(createReviewElement(review));
+        });
+
+        // Hiển thị lại nút "Xem thêm", ẩn nút "Thu gọn"
+        showMoreBtn.style.visibility  = "visible"; 
+        collapseBtn.style.visibility  = "hidden"; 
+
+        reviewsContainer.appendChild(showMoreBtn);
+        isExpanded = false;
+    });
+
+    reviewsContainer.appendChild(showMoreBtn);
+}
+
+function createReviewElement(review) {
+    const reviewElement = document.createElement("div");
+    reviewElement.classList.add("review-item", "d-flex", "align-items-start", "mb-4");
+
+    reviewElement.innerHTML = `
+        <div class="user-avatar">
+            <img src="${review.url || './img/default-avata.png'}" alt="${review.username}" class="rounded-circle" width="50">
+        </div>
+        <div class="review-content ms-3">
+            <h6 class="mb-1 fw-bold">${review.username}</h6>
+            <div class="rating">${generateStarRating(review.rating)}</div>
+            <p class="text-muted mb-1 small">${review.reviewDate}</p>
+            <p class="mb-0">${review.content}</p>
+        </div>
+    `;
+
+    return reviewElement;
+}
+
+function generateStarRating(rating) {
+    let stars = "";
+    for (let i = 1; i <= 5; i++) {
+        stars += `<span class="star ${i <= rating ? "text-warning" : "text-secondary"}">★</span>`;
+    }
+    return stars;
+}

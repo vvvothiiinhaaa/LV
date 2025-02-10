@@ -126,6 +126,7 @@ public class OrderService {
                     .orElseThrow(() -> new RuntimeException("Product not found with ID: " + orderItem.getProductId()));
 
             Map<String, Object> itemMap = new HashMap<>();
+            itemMap.put("id", orderItem.getId());
             itemMap.put("productName", product.getName());
             itemMap.put("quantity", orderItem.getQuantity());
             itemMap.put("url", product.getUrl());

@@ -1010,3 +1010,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 //////////////////////////////////
+// document.addEventListener("DOMContentLoaded", function () {
+//     document.getElementById("petForm").addEventListener("submit", function (event) {
+//         event.preventDefault();
+//         savePetInfo();
+//     });
+// });

@@ -38,19 +38,39 @@
 // }
 package com.example.Pet.Controller;
 
-import com.example.Pet.DTO.reviewDTO;
-import com.example.Pet.Modal.review;
-import com.example.Pet.Service.ReviewService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.Pet.DTO.ReviewUserDTO;
+import com.example.Pet.DTO.reviewDTO;
+import com.example.Pet.Modal.OrderItem;
+import com.example.Pet.Modal.User;
+import com.example.Pet.Modal.review;
+import com.example.Pet.Repository.OrderItemRepository;
+import com.example.Pet.Repository.ReviewRepository;
+import com.example.Pet.Repository.UserRepository;
+import com.example.Pet.Service.ReviewService;
 
 @RestController
 @RequestMapping("/reviews")
 public class ReviewController {
 
     private final ReviewService reviewService;
+    @Autowired
+    private ReviewRepository reviewRepository;
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
@@ -69,11 +89,14 @@ public class ReviewController {
     }
 
     // API lấy tất cả đánh giá của một sản phẩm cụ thể từ tất cả các đơn hàng
-    @GetMapping("/product/{productId}")
-    public ResponseEntity<List<review>> getReviewsByProduct(@PathVariable Long productId) {
-        return ResponseEntity.ok(reviewService.getReviewsByProduct(productId));
-    }
-
+    // @GetMapping("/product/{productId}")
+    // public ResponseEntity<List<review>> getReviewsByProduct(@PathVariable Long productId) {
+    //     return ResponseEntity.ok(reviewService.getReviewsByProduct(productId));
+    // }
+    // @GetMapping("/product/{productId}")
+    // public ResponseEntity<List<review>> getReviewsByProduct(@PathVariable Long productId) {
+    //     return ResponseEntity.ok(reviewService.getReviewsByProduct(productId));
+    // }
     // API lấy tất cả đánh giá từ tất cả các đơn hàng (Admin hoặc User muốn xem tất cả đánh giá)
     @GetMapping("/all")
     public ResponseEntity<List<review>> getAllReviews() {
@@ -84,5 +107,29 @@ public class ReviewController {
     @GetMapping("/product/{productId}/average-rating")
     public ResponseEntity<Double> getAverageRatingByProduct(@PathVariable Long productId) {
         return ResponseEntity.ok(reviewService.getAverageRatingByProduct(productId));
+    }
+
+    // API kiểm tra xem người dùng đã đánh giá sản phẩm trong đơn hàng chưa
+    // API kiểm tra xem người dùng đã đánh giá sản phẩm trong đơn hàng chưa
+    @GetMapping("/check/{orderItemId}/{userId}")
+    public ResponseEntity<Boolean> checkUserReview(@PathVariable Long orderItemId, @PathVariable Long userId) {
+        Optional<OrderItem> orderItemOpt = orderItemRepository.findById(orderItemId);
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        // Kiểm tra nếu không tìm thấy orderItem hoặc user, trả về false
+        if (orderItemOpt.isEmpty() || userOpt.isEmpty()) {
+            return ResponseEntity.ok(false);
+        }
+
+        boolean hasReviewed = reviewRepository.existsByOrderItemAndUser(orderItemOpt.get(), userOpt.get());
+
+        return ResponseEntity.ok(hasReviewed);
+    }
+
+    /////////////////////////// hh
+  @GetMapping("/product/{productId}")
+    public ResponseEntity<List<ReviewUserDTO>> getReviewsWithUser(@PathVariable Long productId) {
+        List<ReviewUserDTO> reviews = reviewService.getReviewsWithUserByProductId(productId);
+        return ResponseEntity.ok(reviews);
     }
 }

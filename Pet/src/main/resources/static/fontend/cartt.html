@@ -159,6 +159,26 @@
 
     document.addEventListener('DOMContentLoaded', showPaymentMessage);
 </script>
+<button id="goToTopBtn" title="Go to top">↑</button>
+<script>
 
+document.addEventListener("DOMContentLoaded", function () {
+   const goToTopBtn = document.getElementById("goToTopBtn");
+
+   if (!goToTopBtn) {
+       console.error(" Không tìm thấy nút Go to Top!");
+       return;
+   }
+
+   // Cuộn lên đầu trang khi bấm vào nút
+   goToTopBtn.addEventListener("click", function () {
+       window.scrollTo({
+           top: 0,
+           behavior: "smooth"
+       });
+   });
+});
+
+</script>
 </body>
 </html>

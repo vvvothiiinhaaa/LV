@@ -291,6 +291,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // //////////// go to top
+
 document.addEventListener("DOMContentLoaded", function () {
     const goToTopBtn = document.getElementById("goToTopBtn");
 
