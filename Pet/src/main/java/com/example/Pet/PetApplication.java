@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PetApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PetApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PetApplication.class, args);
+    }
 
 }

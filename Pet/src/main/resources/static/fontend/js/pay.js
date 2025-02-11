@@ -47,6 +47,7 @@ async function fetchDefaultAddress() {
     try {
         // Gọi API lấy userId
         const authResponse = await fetch('/api/auth/check-login');
+        const addAddressBtn = document.getElementById("add-address-btn");
         if (!authResponse.ok) throw new Error('Không thể lấy thông tin đăng nhập.');
         const authData = await authResponse.json();
 
@@ -64,9 +65,11 @@ async function fetchDefaultAddress() {
             if (defaultAddress) {
                 // Hiển thị thông tin địa chỉ mặc định lên giao diện
                 selectAddress(defaultAddress);
+                document.getElementById('address-container').style.display = 'none'; // Ẩn nút "Thêm Địa Chỉ"
             } else {
                 console.warn('Không tìm thấy địa chỉ mặc định.');
-                document.getElementById('address-box').style.display = 'none';
+                document.getElementById('address-box').style.display = 'none'; // Ẩn thông tin địa chỉ nếu không có địa chỉ mặc định
+                document.getElementById('address-container').style.display = 'block'; // Hiển thị nút "Thêm Địa Chỉ"
             }
         } else {
             console.warn('Không thể lấy userId.');
@@ -75,6 +78,7 @@ async function fetchDefaultAddress() {
         console.error('Lỗi khi lấy địa chỉ mặc định:', error);
     }
 }
+
 
 // Hiển thị địa chỉ được chọn trên giao diện chính
 function selectAddress(address) {
@@ -643,7 +647,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             console.log('Xóa giỏ hàng xong, chuyển hướng...');
             setTimeout(() => {
-                window.location.href = '/fontend/cartt.html';
+                window.location.href = '/fontend/order.html';
             }, 2000);
         } catch (error) {
             console.error('Lỗi khi tạo đơn hàng:', error.message);
@@ -811,3 +815,336 @@ document.addEventListener('DOMContentLoaded', async () => {
 //         alert('Thanh toán thất bại! Vui lòng thử lại.');
 //     }
 // });
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Lấy tham chiếu đến modal
+    var addressModal = document.getElementById('addressModal');
+
+    // Khởi tạo modal bằng Bootstrap Modal API
+    var modalInstance = new bootstrap.Modal(addressModal);
+
+    // Lắng nghe sự kiện click trên button mở modal
+    document.querySelector('[data-bs-toggle="modal"]').addEventListener('click', function () {
+        modalInstance.show(); // Mở modal
+    });
+
+    // Tùy chọn: Xử lý khi modal được đóng
+    addressModal.addEventListener('hidden.bs.modal', function () {
+        console.log('Modal đã được đóng');
+    });
+
+    // Tùy chọn: Xử lý khi modal được hiển thị
+    addressModal.addEventListener('shown.bs.modal', function () {
+        console.log('Modal đã được hiển thị');
+    });
+});
+document.addEventListener('DOMContentLoaded', function () {
+    initializeProvinceDropdown();
+    setupAddressEventListeners();
+});
+
+/**
+ * Hàm lấy danh sách tỉnh/thành phố và đổ vào dropdown
+ */
+function initializeProvinceDropdown() {
+    fetch('https://provinces.open-api.vn/api/p/')
+        .then(response => response.json())
+        .then(data => {
+            const provinceSelect = document.getElementById('provinceSelect');
+            if (!provinceSelect) {
+                console.error("Không tìm thấy phần tử provinceSelect trên DOM.");
+                return;
+            }
+            provinceSelect.innerHTML = '<option value="">Chọn Tỉnh/Thành phố</option>'; // Reset dropdown
+            data.forEach(province => {
+                provinceSelect.options.add(new Option(province.name, province.code));
+            });
+        })
+        .catch(error => console.error("Lỗi khi lấy danh sách tỉnh/thành phố:", error));
+}
+
+/**
+ * Hàm thiết lập sự kiện thay đổi cho dropdown
+ */
+function setupAddressEventListeners() {
+    const provinceSelect = document.getElementById('provinceSelect');
+    const districtSelect = document.getElementById('districtSelect');
+    const wardSelect = document.getElementById('wardSelect');
+
+    if (!provinceSelect || !districtSelect || !wardSelect) {
+        console.error("Không tìm thấy một hoặc nhiều phần tử select trên DOM.");
+        return;
+    }
+
+    // Xử lý sự kiện thay đổi tỉnh/thành phố
+    provinceSelect.addEventListener('change', function () {
+        const provinceCode = this.value;
+        if (!provinceCode) {
+            resetDropdown(districtSelect, "Chọn Quận/Huyện");
+            resetDropdown(wardSelect, "Chọn Phường/Xã");
+            return;
+        }
+        fetchDistricts(provinceCode);
+    });
+
+    // Xử lý sự kiện thay đổi quận/huyện
+    districtSelect.addEventListener('change', function () {
+        const districtCode = this.value;
+        if (!districtCode) {
+            resetDropdown(wardSelect, "Chọn Phường/Xã");
+            return;
+        }
+        fetchWards(districtCode);
+    });
+}
+
+/**
+ * Hàm lấy danh sách quận/huyện theo tỉnh/thành phố đã chọn
+ * @param {string} provinceCode - Mã tỉnh/thành phố
+ */
+function fetchDistricts(provinceCode) {
+    fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+        .then(response => response.json())
+        .then(data => {
+            const districtSelect = document.getElementById('districtSelect');
+            if (!districtSelect) return;
+            resetDropdown(districtSelect, "Chọn Quận/Huyện");
+            data.districts.forEach(district => {
+                districtSelect.options.add(new Option(district.name, district.code));
+            });
+        })
+        .catch(error => console.error("Lỗi khi lấy danh sách quận/huyện:", error));
+}
+
+/**
+ * Hàm lấy danh sách phường/xã theo quận/huyện đã chọn
+ * @param {string} districtCode - Mã quận/huyện
+ */
+function fetchWards(districtCode) {
+    fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+        .then(response => response.json())
+        .then(data => {
+            const wardSelect = document.getElementById('wardSelect');
+            if (!wardSelect) return;
+            resetDropdown(wardSelect, "Chọn Phường/Xã");
+            data.wards.forEach(ward => {
+                wardSelect.options.add(new Option(ward.name, ward.code));
+            });
+        })
+        .catch(error => console.error("Lỗi khi lấy danh sách phường/xã:", error));
+}
+
+/**
+ * Hàm đặt lại dropdown về trạng thái mặc định
+ * @param {HTMLElement} selectElement - Phần tử dropdown cần reset
+ * @param {string} placeholderText - Văn bản mặc định hiển thị
+ */
+function resetDropdown(selectElement, placeholderText) {
+    if (!selectElement) return;
+    selectElement.innerHTML = `<option value="">${placeholderText}</option>`;
+}
+
+// ///////////////////////////////////////////////////////////////////////////////////form câpj nhậtnhật
+
+// document.addEventListener('DOMContentLoaded', function () {
+    // Fetch and populate provinces
+//     fetch('https://provinces.open-api.vn/api/p/')
+//         .then(response => response.json())
+//         .then(data => {
+//             const provinceSelect = document.getElementById('provinceCity');
+//             data.forEach(provinces => {
+//                 provinceSelect.options.add(new Option(provinces.name, provinces.code));
+//             });
+//         });
+
+//     // Handle province change
+//     document.getElementById('district').addEventListener('change', function () {
+//         const provinceCode = this.value;
+//         fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+//             .then(response => response.json())
+//             .then(data => {
+//                 const districtSelect = document.getElementById('districtSelect');
+//                 districtSelect.innerHTML = '<option selected>Chọn Quận/Huyện</option>';
+//                 data.districts.forEach(districts => {
+//                     districtSelect.options.add(new Option(districts.name, districts.code));
+//                 });
+//             });
+//     });
+
+//     // Handle district change
+//     document.getElementById('defaultAddress').addEventListener('change', function () {
+//         const districtCode = this.value;
+//         fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+//             .then(response => response.json())
+//             .then(data => {
+//                 const wardSelect = document.getElementById('wardSelect');
+//                 wardSelect.innerHTML = '<option selected>Chọn Phường/Xã</option>';
+//                 data.wards.forEach(wards => {
+//                     wardSelect.options.add(new Option(wards.name, wards.code));
+//                 });
+//             });
+//     });
+// });
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensuring the DOM is fully loaded before attaching the event listener
+    var form = document.getElementById('addressForm');
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // First, check the login and retrieve the user ID
+            fetch('http://localhost:8080/api/auth/check-login', {
+                method: 'GET', // Assuming it's a GET request; adjust if needed
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Include authentication headers if required
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.userId) {
+                    submitAddressForm(data.userId);
+                } else {
+                    throw new Error('Not logged in or no user ID available');
+                }
+            })
+            .catch(error => {
+                console.error('Login check failed:', error);
+                // Handle login check failure, e.g., redirect to login page
+            });
+        });
+    } else {
+        console.error('Form not found. Ensure that the form exists and the ID is correct.');
+    }
+});
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('addressForm');
+    if (form) {
+        form.addEventListener('submit', handleAddressFormSubmit);
+    } else {
+        console.error('Không tìm thấy form `addressForm` trên DOM.');
+    }
+});
+
+/**
+ * Xử lý submit form thêm địa chỉ
+ * @param {Event} event - Sự kiện submit
+ */
+async function handleAddressFormSubmit(event) {
+    if (!event) {
+        console.error("Không nhận được sự kiện submit!");
+        return;
+    }
+    
+    event.preventDefault(); // Đảm bảo chặn form submit
+
+    const form = event.target; // Lấy form từ sự kiện
+    const formData = new FormData(form);
+
+    const userId = await getUserId();
+    if (!userId) {
+        console.error("Không thể lấy userId.");
+        alert("Bạn cần đăng nhập để thêm địa chỉ!");
+        return;
+    }
+
+    const data = {
+        userId: userId,
+        recipientName: document.querySelector('#addressForm input[placeholder="Họ và tên"]').value,
+        phoneNumber: document.querySelector('#addressForm input[placeholder="Số điện thoại"]').value,
+        provinceCity: document.getElementById("provinceSelect")?.selectedOptions[0]?.text || "",
+        district: document.getElementById("districtSelect")?.selectedOptions[0]?.text || "",
+        wardSubdistrict: document.getElementById("wardSelect")?.selectedOptions[0]?.text || "",
+        addressDetail: document.querySelector('#addressForm textarea').value,
+        defaultAddress: document.getElementById("defaultAddressCheck")?.checked || false,
+    };
+
+    try {
+        const response = await fetch("http://localhost:8080/api/addresses/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            throw new Error("Lỗi khi thêm địa chỉ!");
+        }
+
+        alert("Thêm địa chỉ thành công!");
+        form.reset(); // Xóa dữ liệu sau khi thêm thành công
+        loadUserAddresses(); // Cập nhật danh sách địa chỉ
+        fetchDefaultAddress();
+
+    } catch (error) {
+        console.error("Lỗi khi gửi địa chỉ:", error);
+        alert("Không thể thêm địa chỉ. Vui lòng thử lại sau!");
+    }
+}
+
+
+/**
+ * Hàm gọi API để lấy userId
+ */
+async function getUserId() {
+    try {
+        const response = await fetch('http://localhost:8080/api/auth/check-login');
+        if (!response.ok) throw new Error('Không thể lấy userId');
+
+        const data = await response.json();
+        return data.userId || null;
+    } catch (error) {
+        console.error('Lỗi khi lấy userId:', error);
+        return null;
+    }
+}
+
+/**
+ * Hàm tải danh sách địa chỉ của người dùng
+ */
+async function loadUserAddresses() {
+    const userId = await getUserId();
+    if (!userId) {
+        console.error('Không thể lấy userId.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8080/api/addresses/user/${userId}`);
+        if (!response.ok) throw new Error('Không thể lấy danh sách địa chỉ');
+
+        const addresses = await response.json();
+        const container = document.getElementById('address');
+        container.innerHTML = '';
+
+        addresses.forEach(address => {
+            container.innerHTML += renderAddressCard(address);
+        });
+        setupUpdateAddressEvents();
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách địa chỉ:', error);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// hiển thị danh sách địa chỉ
+// Hàm gọi API để lấy userId
+async function getUserId() {
+    try {
+        const response = await fetch('http://localhost:8080/api/auth/check-login');
+        if (!response.ok) {
+            throw new Error('Không thể lấy userId');
+        }
+        const data = await response.json();
+        return data.userId; // Điều chỉnh dựa vào cấu trúc trả về của API
+    } catch (error) {
+        console.error('Lỗi khi lấy userId:', error);
+        return null;
+    }
+}

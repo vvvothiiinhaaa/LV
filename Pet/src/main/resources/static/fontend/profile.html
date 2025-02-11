@@ -25,7 +25,7 @@
                     <img src="./img/5.png" class="rounded-circle"id="avatar" alt="Avatar" >
                 </div>
                 <a href="#" class="list-group-item list-group-item-action" data-page="user">Hồ Sơ</a>
-                <a href="#" class="list-group-item list-group-item-action" data-page="address" >Sổ Địa Chỉ </a>
+                <a href="#" class="list-group-item list-group-item-action" data-page="addr" >Sổ Địa Chỉ </a>
                 <a href="#"class="list-group-item list-group-item-action" data-page="pet">Thông Tin Của Thú Cưng</a>
                 <a href="#" class="list-group-item list-group-item-action" >Đổi Mật Khẩu</a>
                 <a href="#" class="list-group-item list-group-item-action" >Cài Đặt Thông Báo</a>
@@ -208,18 +208,65 @@
             }
 
             // Tải `address.js` nếu đang vào trang "address"
-            if (page === "address") {
+            if (page === "addr") {
                 setTimeout(() => {
-                    loadScript("./js/address.js", function () {
+                    loadScript("./js/profile.js", function () {
                         if (typeof loadUserAddresses === "function") {
-                            loadUserAddresses();
+                            
+                            loadUserAddresses(); // Load danh sách địa chỉ
+                           
+                            // setupEventListeners();
+                            initializeProvinceDropdown();
+                            setupAddressEventListeners();
+                            setupAddressFormEvent(); 
+                            setupSaveAddressEvent();
                         }
+                        // if (typeof loadOptionsFromAPI === "function") {
+                        //     loadOptionsFromAPI('https://provinces.open-api.vn/api/p/', 'provinceSelect'); // Load tỉnh/thành phố
+                           
+                        // } 
+                        // setupEventListeners(); // Đảm bảo các sự kiện change được gán
+                        // setupAddressFormEvent(); // Gọi lại sự kiện thêm địa chỉ
                     });
                 }, 500);
             }
+
         })
         .catch(error => console.error("Lỗi tải trang:", error));
+    }
+
+    document.getElementById('provinceSelect')?.addEventListener('change', async function () {
+        resetSelectOptions('districtSelect', 'Chọn Quận/Huyện');
+        resetSelectOptions('wardSelect', 'Chọn Phường/Xã');
+        
+        if (this.value) {
+            await loadOptionsFromAPI(`https://provinces.open-api.vn/api/p/${this.value}?depth=2`, 'districtSelect');
+        }
+    });
+
+    document.getElementById('districtSelect')?.addEventListener('change', async function () {
+        resetSelectOptions('wardSelect', 'Chọn Phường/Xã');
+        
+        if (this.value) {
+            await loadOptionsFromAPI(`https://provinces.open-api.vn/api/d/${this.value}?depth=2`, 'wardSelect');
+        }
+    });
+
+    function setupAddressFormEvent() {
+    const form = document.getElementById('addressForm');
+    if (form) {
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Ngăn chặn hành vi submit mặc định
+            await handleAddressFormSubmit(event); // Truyền event vào hàm xử lý
+        });
+        console.log("Sự kiện submit form đã được gán!");
+    } else {
+        console.error("Không tìm thấy form thêm địa chỉ!");
+    }
 }
+
+
+
 
 
     function loadScript(scriptUrl, callback) {
@@ -258,7 +305,7 @@
         });
     });
 
-    loadPage("address"); // Load trang mặc định
+    loadPage("addr"); // Load trang mặc định
 });
 
 
