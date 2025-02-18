@@ -52,29 +52,89 @@
 //         return servicePriceRepository.findByServiceforpetId(serviceId);
 //     }
 // }
+ /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// package com.example.Pet.Service;
+
+// import com.example.Pet.Modal.Serviceforpet;
+// import com.example.Pet.Repository.ServiceforpetRepository;
+// import org.springframework.stereotype.Service;
+
+// import java.util.List;
+
+// @Service
+// public class ServiceforpetService {
+
+//     private final ServiceforpetRepository serviceforpetRepository;
+
+//     public ServiceforpetService(ServiceforpetRepository serviceforpetRepository) {
+//         this.serviceforpetRepository = serviceforpetRepository;
+//     }
+
+//     public Serviceforpet addService(String name, String description, Integer duration) {
+//         Serviceforpet serviceforpet = new Serviceforpet(name, description, duration);
+//         return serviceforpetRepository.save(serviceforpet);
+//     }
+
+//     public Serviceforpet updateService(Integer id, String name, String description, Integer duration) {
+//         Serviceforpet service = serviceforpetRepository.findById(id)
+//                 .orElseThrow(() -> new RuntimeException("Service not found"));
+
+//         if (name != null) {
+//             service.setName(name);
+//         }
+//         if (description != null) {
+//             service.setDescription(description);
+//         }
+//         if (duration != null) {
+//             service.setDuration(duration);
+//         }
+
+//         return serviceforpetRepository.save(service);
+//     }
+
+//     public void deleteService(Integer id) {
+//         Serviceforpet service = serviceforpetRepository.findById(id)
+//                 .orElseThrow(() -> new RuntimeException("Service not found"));
+//         serviceforpetRepository.delete(service);
+//     }
+
+//     public List<Serviceforpet> getAllServices() {
+//         return serviceforpetRepository.findAll();
+//     }
+// }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 package com.example.Pet.Service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Pet.Modal.Serviceforpet;
 import com.example.Pet.Repository.ServiceforpetRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ServiceforpetService {
 
     private final ServiceforpetRepository serviceforpetRepository;
+    private final FileStorageService fileStorageService;
 
-    public ServiceforpetService(ServiceforpetRepository serviceforpetRepository) {
+    public ServiceforpetService(ServiceforpetRepository serviceforpetRepository, FileStorageService fileStorageService) {
         this.serviceforpetRepository = serviceforpetRepository;
+        this.fileStorageService = fileStorageService;
     }
 
-    public Serviceforpet addService(String name, String description, Integer duration) {
-        Serviceforpet serviceforpet = new Serviceforpet(name, description, duration);
+    public Serviceforpet addService(String name, String description, Integer duration, MultipartFile file) {
+        String url = fileStorageService.saveFile(file); // Lưu ảnh và lấy đường dẫn
+        if (url == null) {
+            throw new RuntimeException("Lưu ảnh thất bại!");
+        }
+
+        Serviceforpet serviceforpet = new Serviceforpet(name, description, duration, url);
         return serviceforpetRepository.save(serviceforpet);
     }
 
-    public Serviceforpet updateService(Integer id, String name, String description, Integer duration) {
+    public Serviceforpet updateService(Integer id, String name, String description, Integer duration, MultipartFile file) {
         Serviceforpet service = serviceforpetRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found"));
 
@@ -86,6 +146,12 @@ public class ServiceforpetService {
         }
         if (duration != null) {
             service.setDuration(duration);
+        }
+        if (file != null && !file.isEmpty()) {
+            String url = fileStorageService.saveFile(file);
+            if (url != null) {
+                service.setUrl(url);
+            }
         }
 
         return serviceforpetRepository.save(service);

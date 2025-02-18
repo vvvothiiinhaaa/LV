@@ -32,7 +32,7 @@
 }
 /* style của modal */
 /* Modal căn giữa và chiếm phần lớn màn hình */
-/* .modal {
+.modal-change {
 position: fixed;
 top: 0;
 left: 0;
@@ -43,7 +43,7 @@ justify-content: center;
 align-items: center;
 background-color: rgba(0, 0, 0, 0.5); 
 z-index: 1000;
-} */
+}
 
 /* Nội dung modal lớn hơn */
 .modal-content {
@@ -55,6 +55,17 @@ border-radius: 10px;
 box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 animation: fadeIn 0.3s ease-in-out;
 position: relative;
+}
+.modal-content {
+    max-height: 80vh; /* Giới hạn chiều cao tối đa của modal */
+    overflow-y: auto; /* Tạo thanh cuộn dọc khi nội dung vượt quá */
+    padding: 20px;
+}
+#address-list {
+    max-height: 300px; /* Giới hạn chiều cao danh sách địa chỉ */
+    overflow-y: auto; /* Thanh cuộn dọc nếu danh sách dài */
+    border: 1px solid #ddd;
+    padding: 10px;
 }
 
 /* Hiệu ứng hiển thị */

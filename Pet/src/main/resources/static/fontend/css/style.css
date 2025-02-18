@@ -521,3 +521,50 @@ width: 500px;
 }
 
 /* button go to toptop */
+
+/* button đặt lịch */
+
+#goToTopBtn {
+  position: fixed;  /* Cố định vị trí trên màn hình */
+  bottom: 20px;  /* Cách đáy màn hình 20px */
+  right: 20px;  /* Cách mép phải 20px */
+  width: 70px;
+  height: 70px;
+  background-color: #c3a179;  /* Màu xanh dương */
+  color: white;
+  border: none;
+  border-radius: 50%;  /* Làm nút hình tròn */
+  font-size: 24px;
+  cursor: pointer;
+  display: block; /* Hiển thị khi người dùng cuộn xuống */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+
+#goToTopBtn:hover {
+  background-color: #333333; 
+}
+
+/* CSS cho nút Đặt lịch */
+#bookAppointmentBtn {
+  position: fixed;  
+  bottom: 100px; 
+  right: 20px; 
+  width: 70px;
+  height: 70px;
+  background-color: #c3a179; 
+  color: white;
+  border: none;
+  border-radius: 50%;  
+  font-size: 16px;
+  cursor: pointer;
+  display: block;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+
+#bookAppointmentBtn:hover {
+  background-color: #333333; 
+}
+
+/* kết thúc button đặt lịch */

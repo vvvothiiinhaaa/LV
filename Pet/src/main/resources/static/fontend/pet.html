@@ -6,6 +6,8 @@
     <title>Quản Lý Thú Cưng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./css/pet.css">
+    <link rel="stylesheet" href="./css/profile.css">
+
 </head>
 <body class="container mt-4">
     <h2 class="text-center">Danh Sách Thú Cưng</h2>
@@ -14,7 +16,7 @@
     </div>
     <button class="btn btn-custom mt-3" data-bs-toggle="modal" data-bs-target="#petModal">Thêm Thông Tin Thú Cưng</button>
 
-    <!-- Modal Thêm/Cập Nhật -->
+    <!-- Modal Thêm -->
     <div class="modal fade" id="petModal" tabindex="-1" aria-labelledby="petModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -55,11 +57,57 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Cập Nhật -->
+<div class="modal fade" id="updatePetModal" tabindex="-1" aria-labelledby="updatePetModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updatePetModalLabel">Cập Nhật Thông Tin Thú Cưng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updatePetForm">
+                    <input type="hidden" id="updatePetId"> <!-- ID thú cưng, ẩn để xử lý cập nhật -->
+
+                    <div class="mb-3">
+                        <label for="updatePetImage" class="form-label">Ảnh Đại Diện:</label>
+                        <input type="file" class="form-control" id="updatePetImage" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label for="updatePetName" class="form-label">Tên Thú Cưng:</label>
+                        <input type="text" class="form-control" id="updatePetName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateBirthdate" class="form-label">Ngày Sinh:</label>
+                        <input type="date" class="form-control" id="updateBirthdate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateBreed" class="form-label">Giống Loài:</label>
+                        <input type="text" class="form-control" id="updateBreed" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateGender" class="form-label">Giới Tính:</label>
+                        <select id="updateGender" class="form-select">
+                            <option value="male">Đực</option>
+                            <option value="female">Cái</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-custom" id="updatePetBtn">Lưu Thông Tin Cập Nhật</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
     <script src="./js/pet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("savePetBtn").addEventListener("click", savePetInfo);
+            document.getElementById("updatePetBtn").addEventListener("click", updatePetInfo);
         });
 
         async function fetchUserId() {
@@ -142,7 +190,7 @@
 
             const petCard = document.createElement("div");
             petCard.classList.add("card", "p-3", "mt-3", "d-flex", "flex-row", "align-items-center", "position-relative");
-
+            petDiv.setAttribute("data-id", pet.id);
             petCard.innerHTML = `
                 <div class="col-3 text-center">
                     <img src="${pet.url || './img/default-avata.png'}" class="rounded-circle" width="100" height="100" alt="">
@@ -223,7 +271,7 @@ function displayPets(pets) {
                 <p><strong>Giới Tính:</strong> ${pet.gender === "male" ? "Đực" : "Cái"}</p>
             </div>
             <div class="col-2 text-end">
-                <button class="btn btn-custom btn-sm" onclick="updatePet(${pet.id})">Cập Nhật</button>
+                <button class="btn btn-custom btn-sm" onclick="openUpdatePetModal(${pet.id})">Cập Nhật</button>
                 <button class="btn btn-custom btn-sm" onclick="deletePet(${pet.id})">Xóa</button>
             </div>
         `;
@@ -233,6 +281,86 @@ function displayPets(pets) {
 
     console.log("Danh sách thú cưng đã hiển thị trên giao diện.");
 }
+
+
+    </script>
+    <script>
+    // Mở modal cập nhật
+    async function openUpdatePetModal(petId) {
+        const userId = await fetchUserId(); 
+            fetch(`http://localhost:8080/pets/user/${userId}/pet/${petId}`)
+                .then(response => response.json())
+                .then(pet => {
+                    document.getElementById("updatePetId").value = pet.id;
+                    document.getElementById("updatePetName").value = pet.name;
+                    document.getElementById("updateBirthdate").value = pet.birthdate;
+                    document.getElementById("updateBreed").value = pet.breed;
+                    document.getElementById("updateGender").value = pet.gender;
+                    const modal = new bootstrap.Modal(document.getElementById('updatePetModal'));
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error("Error fetching pet:", error);
+                });
+        }
+
+        // Cập nhật thông tin thú cưng
+        async function updatePetInfo() {
+            const petId = document.getElementById("updatePetId").value;
+            const petName = document.getElementById("updatePetName").value;
+            const birthdate = document.getElementById("updateBirthdate").value;
+            const breed = document.getElementById("updateBreed").value;
+            const gender = document.getElementById("updateGender").value;
+            const petImage = document.getElementById("updatePetImage").files[0];
+
+            let formData = new FormData();
+            formData.append("name", petName);
+            formData.append("birthdate", birthdate);
+            formData.append("breed", breed);
+            formData.append("gender", gender);
+            if (petImage) formData.append("file", petImage);
+
+            try {
+                const response = await fetch(`http://localhost:8080/pets/update/${petId}`, {
+                    method: "PUT",
+                    body: formData
+                });
+
+                if (!response.ok) throw new Error("Có lỗi xảy ra khi cập nhật thú cưng");
+                const updatedPet = await response.json();
+                alert("Cập nhật thành công!");
+                // Gọi lại danh sách thú cưng sau khi cập nhật
+                const userId = await fetchUserId();
+                if (userId) {
+                    loadPets(userId);
+                }
+
+        // Đóng modal sau khi cập nhật thành công
+        let updateModal = bootstrap.Modal.getInstance(document.getElementById("updatePetModal"));
+        if (updateModal) updateModal.hide();
+            } catch (error) {
+                console.error("Lỗi khi gọi API:", error);
+                alert("Cập nhật thất bại!");
+            }
+        }
+
+        function addPetToUI(pet) {
+                const petList = document.getElementById("petList");
+                const petDiv = document.createElement("div");
+                petDiv.classList.add("pet-item", "p-3", "mb-2", "border", "rounded");
+                petDiv.setAttribute("data-id", pet.id);  // Thêm thuộc tính data-id cho mỗi phần tử thú cưng
+
+                petDiv.innerHTML = `
+                    <img src="${pet.imageUrl}" alt="Pet" class="pet-image" style="width: 100px; height: 100px;">
+                    <div><strong class="pet-name">${pet.name}</strong> (${pet.breed})</div>
+                    <div class="pet-birthdate">Ngày Sinh: ${pet.birthdate}</div>
+                    <div class="pet-gender">Giới Tính: ${pet.gender}</div>
+                    <button class="btn btn-warning btn-sm mt-2" onclick="openUpdatePetModal(${pet.id})">Cập Nhật</button>
+                `;
+                petList.appendChild(petDiv);  // Đảm bảo phần tử đã được thêm vào DOM
+            }
+
+
 
     </script>
 </body>

@@ -3,11 +3,19 @@
 // });
 function attachPetEventListeners() {
     const savePetBtn = document.getElementById("savePetBtn");
+    
     if (savePetBtn) {
         savePetBtn.addEventListener("click", savePetInfo);
-        console.log("✅ Sự kiện `savePetBtn` đã được gán lại!");
+        console.log(" Sự kiện `savePetBtn` đã được gán lại!");
     } else {
-        console.error("❌ Không tìm thấy `savePetBtn`, không thể gán sự kiện!");
+        console.error(" Không tìm thấy `savePetBtn`, không thể gán sự kiện!");
+    }
+    const updateBtn = document.getElementById("updatePetBtn");
+    if(updateBtn){
+        updateBtn.addEventListener("click",updatePetInfo);
+        console.log(" Sự kiện `updateBtn` đã được gán lại!");
+    } else {
+        console.error(" Không tìm thấy `updateBt`, không thể gán sự kiện!");
     }
 }
 
@@ -85,31 +93,47 @@ console.error("Lỗi khi gọi API:", error);
 alert("Thêm thú cưng thất bại!");
 }
 }
-
 function addPetToUI(pet) {
     const petList = document.getElementById("petList");
+    const petDiv = document.createElement("div");
+    petDiv.classList.add("pet-item", "p-3", "mb-2", "border", "rounded");
+    petDiv.setAttribute("data-id", pet.id);  // Thêm thuộc tính data-id cho mỗi phần tử thú cưng
 
-    const petCard = document.createElement("div");
-    petCard.classList.add("card", "p-3", "mt-3", "d-flex", "flex-row", "align-items-center", "position-relative");
-
-    petCard.innerHTML = `
-        <div class="col-3 text-center">
-            <img src="${pet.url || './img/default-avata.png'}" class="rounded-circle" width="100" height="100" alt="">
-        </div>
-        <div class="col-7">
-            <h5>${pet.name}</h5>
-            <p><strong>Ngày Sinh:</strong> ${pet.birthdate}</p>
-            <p><strong>Giống Loài:</strong> ${pet.breed}</p>
-            <p><strong>Giới Tính:</strong> ${pet.gender === "male" ? "Đực" : "Cái"}</p>
-        </div>
-        <div class="col-2 text-end">
-            <button class="btn btn-custom btn-sm" onclick="updatePet(this)">Cập Nhật</button>
-            <button class="btn btn-custom btn-sm" onclick="deletePet(this)">Xóa</button>
-        </div>
+    petDiv.innerHTML = `
+        <img src="${pet.url}" alt="Pet" class="pet-image" style="width: 100px; height: 100px;">
+        <div><strong class="pet-name">${pet.name}</strong> (${pet.breed})</div>
+        <div class="pet-birthdate">Ngày Sinh: ${pet.birthdate}</div>
+        <div class="pet-gender">Giới Tính: ${pet.gender}</div>
+        <button class="btn btn-warning btn-sm mt-2" onclick="openUpdatePetModal(${pet.id})">Cập Nhật</button>
     `;
-
-    petList.appendChild(petCard);
+    petList.appendChild(petDiv);  // Đảm bảo phần tử đã được thêm vào DOM
 }
+
+
+// function addPetToUI(pet) {
+//     const petList = document.getElementById("petList");
+
+//     const petCard = document.createElement("div");
+//     petCard.classList.add("card", "p-3", "mt-3", "d-flex", "flex-row", "align-items-center", "position-relative");
+
+//     petCard.innerHTML = `
+//         <div class="col-3 text-center">
+//             <img src="${pet.url || './img/default-avata.png'}" class="rounded-circle" width="100" height="100" alt="">
+//         </div>
+//         <div class="col-7">
+//             <h5>${pet.name}</h5>
+//             <p><strong>Ngày Sinh:</strong> ${pet.birthdate}</p>
+//             <p><strong>Giống Loài:</strong> ${pet.breed}</p>
+//             <p><strong>Giới Tính:</strong> ${pet.gender === "male" ? "Đực" : "Cái"}</p>
+//         </div>
+//         <div class="col-2 text-end">
+//             <button class="btn btn-custom btn-sm" onclick="openUpdatePetModal(${pet.id})">Cập Nhật</button>
+//             <button class="btn btn-custom btn-sm" onclick="deletePet(this)">Xóa</button>
+//         </div>
+//     `;
+
+//     petList.appendChild(petCard);
+// }
 
 document.addEventListener("DOMContentLoaded", async function () {
 console.log("Trang đã tải, bắt đầu lấy danh sách thú cưng...");
@@ -127,58 +151,135 @@ loadPets(userId);
 
 // Hàm gọi API để lấy danh sách thú cưng của user
 async function loadPets(userId) {
-console.log(`Gọi API để lấy danh sách thú cưng của userId: ${userId}`);
-console.log(`${userId}`);
-try {
-const response = await fetch(`http://localhost:8080/pets/user/${userId}`);
+        console.log(`Gọi API để lấy danh sách thú cưng của userId: ${userId}`);
+        console.log(`${userId}`);
+        try {
+        const response = await fetch(`http://localhost:8080/pets/user/${userId}`);
 
-if (!response.ok) {
-    throw new Error("Không thể tải danh sách thú cưng.");
-}
+        if (!response.ok) {
+            throw new Error("Không thể tải danh sách thú cưng.");
+        }
 
-const pets = await response.json();
-console.log("Danh sách thú cưng nhận từ API:", pets);
+        const pets = await response.json();
+        console.log("Danh sách thú cưng nhận từ API:", pets);
 
-// Hiển thị danh sách thú cưng trên giao diện
-displayPets(pets);
-} catch (error) {
-console.error("Lỗi khi tải danh sách thú cưng:", error);
-alert("Không thể tải danh sách thú cưng.");
-}
-}
+        // Hiển thị danh sách thú cưng trên giao diện
+        displayPets(pets);
+        } catch (error) {
+        console.error("Lỗi khi tải danh sách thú cưng:", error);
+        alert("Không thể tải danh sách thú cưng.");
+        }
+        }
 
 // Hàm hiển thị danh sách thú cưng trên giao diện
 function displayPets(pets) {
-const petList = document.getElementById("petList");
-petList.innerHTML = ""; // Xóa danh sách cũ trước khi render mới
+            const petList = document.getElementById("petList");
+            petList.innerHTML = ""; // Xóa danh sách cũ trước khi render mới
 
-if (pets.length === 0) {
-petList.innerHTML = "<p class='text-center'>Chưa có thú cưng nào.</p>";
-return;
-}
+            if (pets.length === 0) {
+            petList.innerHTML = "<p class='text-center'>Chưa có thú cưng nào.</p>";
+            return;
+            }
 
-pets.forEach((pet) => {
-const petCard = document.createElement("div");
-petCard.classList.add("card", "p-3", "mt-3", "d-flex", "flex-row", "align-items-center", "position-relative");
+            pets.forEach((pet) => {
+            const petCard = document.createElement("div");
+            petCard.classList.add("card", "p-3", "mt-3", "d-flex", "flex-row", "align-items-center", "position-relative" );
 
-petCard.innerHTML = `
-    <div class="col-3 text-center">
-        <img src="${pet.url || './img/default-avata.png'}" class="rounded-circle" width="100" height="100" alt="${pet.name}">
-    </div>
-    <div class="col-7">
-        <h5>${pet.name}</h5>
-        <p><strong>Ngày Sinh:</strong> ${pet.birthdate}</p>
-        <p><strong>Giống Loài:</strong> ${pet.breed}</p>
-        <p><strong>Giới Tính:</strong> ${pet.gender === "male" ? "Đực" : "Cái"}</p>
-    </div>
-    <div class="col-2 text-end">
-        <button class="btn btn-custom btn-sm" onclick="updatePet(${pet.id})">Cập Nhật</button>
-        <button class="btn btn-custom btn-sm" onclick="deletePet(${pet.id})">Xóa</button>
-    </div>
-`;
+            petCard.innerHTML = `
+                <div class="col-3 text-center">
+                    <img src="${pet.url || './img/default-avata.png'}" class="rounded-circle" width="100" height="100" alt="${pet.name}">
+                </div>
+                <div class="col-7">
+                    <h5>${pet.name}</h5>
+                    <p><strong>Ngày Sinh:</strong> ${pet.birthdate}</p>
+                    <p><strong>Giống Loài:</strong> ${pet.breed}</p>
+                    <p><strong>Giới Tính:</strong> ${pet.gender === "male" ? "Đực" : "Cái"}</p>
+                </div>
+                <div class="col-2 text-end">
+                    <button class="btn btn-custom btn-sm" onclick="openUpdatePetModal(${pet.id})">Cập Nhật</button>
+                    <button class="btn btn-custom btn-sm" onclick="deletePet(${pet.id})">Xóa</button>
+                </div>
+            `;
 
-petList.appendChild(petCard);
-});
+            petList.appendChild(petCard);
+            });
 
-console.log("Danh sách thú cưng đã hiển thị trên giao diện.");
-}
+            console.log("Danh sách thú cưng đã hiển thị trên giao diện.");
+            }
+
+
+  // Mở modal cập nhật
+  async function openUpdatePetModal(petId) {
+    const userId = await fetchUserId(); 
+        fetch(`http://localhost:8080/pets/user/${userId}/pet/${petId}`)
+            .then(response => response.json())
+            .then(pet => {
+                document.getElementById("updatePetId").value = pet.id;
+                document.getElementById("updatePetName").value = pet.name;
+                document.getElementById("updateBirthdate").value = pet.birthdate;
+                document.getElementById("updateBreed").value = pet.breed;
+                document.getElementById("updateGender").value = pet.gender;
+                const modal = new bootstrap.Modal(document.getElementById('updatePetModal'));
+                modal.show();
+            })
+            .catch(error => {
+                console.error("Error fetching pet:", error);
+            });
+    }
+
+    // Cập nhật thông tin thú cưng
+    async function updatePetInfo() {
+        const petId = document.getElementById("updatePetId").value;
+        const petName = document.getElementById("updatePetName").value;
+        const birthdate = document.getElementById("updateBirthdate").value;
+        const breed = document.getElementById("updateBreed").value;
+        const gender = document.getElementById("updateGender").value;
+        const petImage = document.getElementById("updatePetImage").files[0];
+
+        let formData = new FormData();
+        formData.append("name", petName);
+        formData.append("birthdate", birthdate);
+        formData.append("breed", breed);
+        formData.append("gender", gender);
+        if (petImage) formData.append("file", petImage);
+
+        try {
+            const response = await fetch(`http://localhost:8080/pets/update/${petId}`, {
+                method: "PUT",
+                body: formData
+            });
+
+            if (!response.ok) throw new Error("Có lỗi xảy ra khi cập nhật thú cưng");
+            const updatedPet = await response.json();
+            alert("Cập nhật thành công!");
+            // Gọi lại danh sách thú cưng sau khi cập nhật
+            const userId = await fetchUserId();
+            if (userId) {
+                loadPets(userId);
+            }
+
+    // Đóng modal sau khi cập nhật thành công
+    let updateModal = bootstrap.Modal.getInstance(document.getElementById("updatePetModal"));
+    if (updateModal) updateModal.hide();
+        } catch (error) {
+            console.error("Lỗi khi gọi API:", error);
+            alert("Cập nhật thất bại!");
+        }
+    }
+
+    function addPetToUI(pet) {
+            const petList = document.getElementById("petList");
+            const petDiv = document.createElement("div");
+            petDiv.classList.add("pet-item", "p-3", "mb-2", "border", "rounded");
+            petDiv.setAttribute("data-id", pet.id);  // Thêm thuộc tính data-id cho mỗi phần tử thú cưng
+
+            petDiv.innerHTML = `
+                <img src="${pet.imageUrl}" alt="Pet" class="pet-image" style="width: 100px; height: 100px;">
+                <div><strong class="pet-name">${pet.name}</strong> (${pet.breed})</div>
+                <div class="pet-birthdate">Ngày Sinh: ${pet.birthdate}</div>
+                <div class="pet-gender">Giới Tính: ${pet.gender}</div>
+                <button class="btn btn-warning btn-sm mt-2" onclick="openUpdatePetModal(${pet.id})">Cập Nhật</button>
+            `;
+            petList.appendChild(petDiv);  // Đảm bảo phần tử đã được thêm vào DOM
+        }
+

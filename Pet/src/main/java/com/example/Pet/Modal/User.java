@@ -1,6 +1,6 @@
 package com.example.Pet.Modal;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,14 +21,16 @@ public class User {
     private String username;
     private String passwords;
     private String email;
-    private Date birthday;
+    private LocalDate birthday;
     private String url;
     private String phonenumber;
+    private String name;
+    private String gender;
 
     @Column(name = "role")
     private String role;  // Mặc định role là user
 
-    private Integer status;
+    private Boolean status;
 
     @Transient
     private String confirmPassword; // This field is not persisted
@@ -109,14 +111,14 @@ public class User {
     /**
      * @return Date return the birthday
      */
-    public Date getBirthday() {
+    public LocalDate getBirthday() {
         return birthday;
     }
 
     /**
      * @param birthday the birthday to set
      */
-    public void setBirthday(Date birthday) {
+    public void setBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }
 
@@ -151,15 +153,50 @@ public class User {
     /**
      * @return Integer return the status
      */
-    public Integer getStatus() {
+    public Boolean getStatus() {
         return status;
     }
 
     /**
      * @param status the status to set
      */
-    public void setStatus(Integer status) {
+    public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    /**
+     * @return String return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return Boolean return the status
+     */
+    public Boolean isStatus() {
+        return status;
+    }
+
+    /**
+     * @return String return the gender
+     */
+    public String getGender() {
+        return gender;
+    }
+
+    /**
+     * @param gender the gender to set
+     */
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
 }

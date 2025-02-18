@@ -20,7 +20,7 @@
             <p></p>
         </div>
     </header>
-    <!-- service-->
+    <!-- service
     <div class="container mt-5">
         <div class="custom-card position-relative" >
             <div class="custom-image">
@@ -72,7 +72,10 @@
             <div class="custom-circle"></div>
         </div>
     </div>
-
+ -->
+ <div id="services-container" class="services-grid">
+    <!-- Dịch vụ sẽ được tải từ API và hiển thị ở đây -->
+</div>
 
 
     <!-- service -->
@@ -131,7 +134,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+    <!-- <script>
         // Lấy thẻ h1
         const h1 = document.querySelector('h1');
 
@@ -159,8 +162,9 @@
         searchToggleDesktop.addEventListener('click', () => {
             searchForm.classList.toggle('active');
         });
-    </script>
+    </script> -->
     <script src="./js/header.js"></script>
+    <button id="bookAppointmentBtn" title="Đặt lịch" onclick="window.location.href='appointment.html';">Đặt Lịch</button>
     <button id="goToTopBtn" title="Go to top">↑</button>
     <script>
    
@@ -182,5 +186,6 @@
    });
    
    </script>
+   <script src="./js/service.js"></script>
 </body>
 </html>

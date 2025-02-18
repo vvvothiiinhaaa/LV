@@ -228,6 +228,44 @@ public class AppointmentService {
         this.serviceRepository = serviceRepository;
     }
 
+//     @Transactional
+//     public Appointment createAppointment(Long userId, Set<Integer> petIds, Set<Integer> serviceIds, String timeSlot, LocalDate appDate) {
+//         // Kiểm tra danh sách thú cưng
+//         Set<Pet> pets = petRepository.findAllById(petIds).stream().collect(Collectors.toSet());
+//         if (pets.isEmpty() || pets.size() != petIds.size()) {
+//             throw new RuntimeException("Some pets not found");
+//         }
+//         // Kiểm tra danh sách dịch vụ
+//         Set<Serviceforpet> services = serviceRepository.findAllById(serviceIds).stream().collect(Collectors.toSet());
+//         if (services.isEmpty() || services.size() != serviceIds.size()) {
+//             throw new RuntimeException("Some services not found");
+//         }
+//         // **Chuyển đổi `timeSlot` thành `LocalTime` (chỉ lưu giờ và phút)**
+//         String[] times = timeSlot.split("-");
+//         LocalTime startTime = LocalTime.parse(times[0]);
+//         LocalTime endTime = LocalTime.parse(times[1]);
+//         // Kiểm tra số lượng lịch hẹn trong khung giờ đó
+//         Long appointmentCount = appointmentRepository.countByStartTimeAndEndTimeAndAppDate(startTime, endTime, appDate);
+//         if (appointmentCount >= 4) {
+//             throw new RuntimeException("This time slot is fully booked! Choose another slot.");
+//         }
+//         // Tạo lịch hẹn
+//         Appointment appointment = new Appointment(userId, pets, services, startTime, endTime, appDate, "Đã đặt lịch");
+//         appointment = appointmentRepository.save(appointment);
+//         // **Thêm dữ liệu vào bảng trung gian**
+//         for (Pet pet : pets) {
+//             if (appointmentRepository.existsPetInAppointment(appointment.getId(), pet.getId()) == 0) {
+//                 appointmentRepository.addPetToAppointment(appointment.getId(), pet.getId());
+//             }
+//         }
+//         for (Serviceforpet service : services) {
+//             if (appointmentRepository.existsServiceInAppointment(appointment.getId(), service.getId()) == 0) {
+//                 appointmentRepository.addServiceToAppointment(appointment.getId(), service.getId());
+//             }
+//         }
+//         return appointment;
+//     }
+// }
     @Transactional
     public Appointment createAppointment(Long userId, Set<Integer> petIds, Set<Integer> serviceIds, String timeSlot, LocalDate appDate) {
         // Kiểm tra danh sách thú cưng
@@ -244,75 +282,81 @@ public class AppointmentService {
 
         // **Chuyển đổi `timeSlot` thành `LocalTime` (chỉ lưu giờ và phút)**
         String[] times = timeSlot.split("-");
-        LocalTime startTime = LocalTime.parse(times[0]);
-        LocalTime endTime = LocalTime.parse(times[1]);
+        LocalTime startTime = LocalTime.parse(times[0].trim()); // Trim to avoid leading/trailing spaces
+        LocalTime endTime = LocalTime.parse(times[1].trim());   // Trim to avoid leading/trailing spaces
 
-        // Kiểm tra số lượng lịch hẹn trong khung giờ đó
+        // Kiểm tra số lượng lịch hẹn trong khung giờ đó của ngày hôm nay
         Long appointmentCount = appointmentRepository.countByStartTimeAndEndTimeAndAppDate(startTime, endTime, appDate);
         if (appointmentCount >= 4) {
-            throw new RuntimeException("This time slot is fully booked! Choose another slot.");
+            throw new RuntimeException("Vui Lòng Chọn Thời Gian Khác!!!!!");
         }
 
         // Tạo lịch hẹn
         Appointment appointment = new Appointment(userId, pets, services, startTime, endTime, appDate, "Đã đặt lịch");
+
+        // Lưu lịch hẹn vào cơ sở dữ liệu
         appointment = appointmentRepository.save(appointment);
 
-        // **Thêm dữ liệu vào bảng trung gian**
+        // **Thêm dữ liệu vào bảng trung gian giữa appointment và pets**
+        addPetsToAppointment(appointment, pets);
+
+        // **Thêm dữ liệu vào bảng trung gian giữa appointment và services**
+        addServicesToAppointment(appointment, services);
+
+        return appointment;
+    }
+
+// Thêm thú cưng vào lịch hẹn
+    private void addPetsToAppointment(Appointment appointment, Set<Pet> pets) {
         for (Pet pet : pets) {
             if (appointmentRepository.existsPetInAppointment(appointment.getId(), pet.getId()) == 0) {
                 appointmentRepository.addPetToAppointment(appointment.getId(), pet.getId());
             }
         }
+    }
 
+// Thêm dịch vụ vào lịch hẹn
+    private void addServicesToAppointment(Appointment appointment, Set<Serviceforpet> services) {
         for (Serviceforpet service : services) {
             if (appointmentRepository.existsServiceInAppointment(appointment.getId(), service.getId()) == 0) {
                 appointmentRepository.addServiceToAppointment(appointment.getId(), service.getId());
             }
         }
-
-        return appointment;
-    }
-
-    // Hủy lịch hẹn
-    public String cancelAppointment(Integer appointmentId) {
-        Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Appointment not found"));
-
-        // Kiểm tra nếu lịch hẹn đã bắt đầu
-        if (appointment.getStartTime().isBefore(LocalTime.now())) {
-            throw new RuntimeException("Cannot cancel an appointment that has already started or ended.");
-        }
-
-        // Cập nhật trạng thái thành "Canceled"
-        appointment.setStatus("Canceled");
-        appointmentRepository.save(appointment);
-
-        return "Appointment has been canceled successfully. The time slot is now available for booking.";
-    }
-
-    // Lấy danh sách lịch hẹn của người dùng
-    public List<Appointment> getAppointmentsByUserId(Long userId) {
-        return appointmentRepository.findAll().stream()
-                .filter(a -> a.getUserId().equals(userId))
-                .collect(Collectors.toList());
-    }
-
-    // Lấy danh sách lịch hẹn theo khung giờ và ngày
-    public List<Appointment> getAppointmentsByTimeSlot(String slot, LocalDate appDate) {
-        if (!ALLOWED_SLOTS.contains(slot)) {
-            throw new RuntimeException("Invalid time slot! Choose from: " + ALLOWED_SLOTS);
-        }
-
-        String[] times = slot.split("-");
-        LocalTime startTime = LocalTime.of(Integer.parseInt(times[0].split(":")[0]), Integer.parseInt(times[0].split(":")[1]));
-        LocalTime endTime = LocalTime.of(Integer.parseInt(times[1].split(":")[0]), Integer.parseInt(times[1].split(":")[1]));
-
-        return appointmentRepository.findAll().stream()
-                .filter(a -> a.getStartTime().equals(startTime) && a.getEndTime().equals(endTime) && a.getAppDate().equals(appDate))
-                .collect(Collectors.toList());
     }
 }
 
+//     // Hủy lịch hẹn
+//     public String cancelAppointment(Integer appointmentId) {
+//         Appointment appointment = appointmentRepository.findById(appointmentId)
+//                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
+//         // Kiểm tra nếu lịch hẹn đã bắt đầu
+//         if (appointment.getStartTime().isBefore(Time.now())) {
+//             throw new RuntimeException("Cannot cancel an appointment that has already started or ended.");
+//         }
+//         // Cập nhật trạng thái thành "Canceled"
+//         appointment.setStatus("Canceled");
+//         appointmentRepository.save(appointment);
+//         return "Appointment has been canceled successfully. The time slot is now available for booking.";
+//     }
+//     // Lấy danh sách lịch hẹn của người dùng
+//     public List<Appointment> getAppointmentsByUserId(Long userId) {
+//         return appointmentRepository.findAll().stream()
+//                 .filter(a -> a.getUserId().equals(userId))
+//                 .collect(Collectors.toList());
+//     }
+//     // Lấy danh sách lịch hẹn theo khung giờ và ngày
+//     public List<Appointment> getAppointmentsByTimeSlot(String slot, LocalDate appDate) {
+//         if (!ALLOWED_SLOTS.contains(slot)) {
+//             throw new RuntimeException("Invalid time slot! Choose from: " + ALLOWED_SLOTS);
+//         }
+//         String[] times = slot.split("-");
+//         LocalTime startTime = LocalTime.of(Integer.parseInt(times[0].split(":")[0]), Integer.parseInt(times[0].split(":")[1]));
+//         LocalTime endTime = LocalTime.of(Integer.parseInt(times[1].split(":")[0]), Integer.parseInt(times[1].split(":")[1]));
+//         return appointmentRepository.findAll().stream()
+//                 .filter(a -> a.getStartTime().equals(startTime) && a.getEndTime().equals(endTime) && a.getAppDate().equals(appDate))
+//                 .collect(Collectors.toList());
+//     }
+// }
 ///////////////// kiểm tra trùng lịch hẹn
 /// @Transactional
 // public Appointment createAppointment(Long userId, Set<Integer> petIds, Set<Integer> serviceIds, String timeSlot, LocalDate appDate) {

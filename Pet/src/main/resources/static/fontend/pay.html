@@ -68,7 +68,7 @@
   
 
         <!-- div thay đổi địa chỉ -->
-        <div id="address-modal" class="modal" style="display: none;">
+        <div id="address-modal" class="modal-change" style="display: none;">
             <div class="modal-content">
                 <span class="close-modal" onclick="closeModal()">&times;</span>
                 <h3>Chọn Địa Chỉ</h3>
@@ -87,8 +87,49 @@
                         </div>
                     </li>
                 </ul>
+                 <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addressModal">
+                Thêm địa chỉ mới
+            </button>
             </div>
         </div>
+
+
+           <!-- Modal: Cập nhật địa chỉ -->
+    <div class="modal fade" id="updateAddressModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cập nhật địa chỉ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateAddressForm">
+                        <input type="text" class="form-control mb-2" id="addressId" >
+                        <input type="text" class="form-control mb-2" id="recipientName" placeholder="Nhập tên người nhận">
+                        <input type="text" class="form-control mb-2" id="phoneNumber" placeholder="Nhập số điện thoại">
+                        <input type="text" class="form-control mb-2" id="addressDetail" placeholder="Nhập địa chỉ chi tiết">
+                        <select class="form-select mb-2" id="provinceS">
+                            <option value="">Chọn tỉnh/thành phố</option>
+                        </select>
+                        <select class="form-select mb-2" id="districtS">
+                            <option value="">Chọn quận/huyện</option>
+                        </select>
+                        <select class="form-select mb-2" id="wardSubdistrictS">
+                            <option value="">Chọn Phường/Xã</option>
+                        </select>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="defaultAddress">
+                            <label class="form-check-label" for="defaultAddress">Đặt làm địa chỉ mặc định</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveAddressBtn">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
         <!-- Bảng Sản Phẩm -->
         <table class="table">
@@ -188,7 +229,28 @@
    
    </script>
   
-    
+   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    // Lấy các phần tử modal
+    const addressModal = document.getElementById("address-modal");
+    const newAddressModal = new bootstrap.Modal(document.getElementById("addressModal"));
+
+    // Sự kiện khi nhấn nút "Thêm địa chỉ mới"
+    document.querySelector('[data-bs-target="#addressModal"]').addEventListener("click", function () {
+        // Đóng modal thay đổi địa chỉ
+        addressModal.style.display = "none";
+
+        // Mở modal thêm địa chỉ mới
+        newAddressModal.show();
+    });
+});
+
+// Hàm đóng modal thay đổi địa chỉ
+function closeModal() {
+    document.getElementById("address-modal").style.display = "none";
+}
+
+   </script> 
     <!-- <script src="./js/profile.js"></script> -->
     
 </body>

@@ -1,16 +1,21 @@
 package com.example.Pet.Controller;
 
-import com.example.Pet.DTO.PetDTO;
-import com.example.Pet.Service.PetService;
-
 import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Pet.Modal.Pet;
+import com.example.Pet.Service.PetService;
 
 @RestController
 @RequestMapping("/pets")
@@ -47,20 +52,6 @@ public class PetController {
         return ResponseEntity.ok(pets);
     }
 
-    //  API Chỉnh sửa thông tin thú cưng
-    // @PutMapping("/update/{petId}")
-    // public ResponseEntity<Pet> updatePet(
-    //         @PathVariable Integer petId,
-    //         @RequestParam("name") String name,
-    //         @RequestParam("birthdate") String birthdate,
-    //         @RequestParam("breed") String breed,
-    //         @RequestParam("gender") String gender,
-    //         @RequestParam(value = "file", required = false) MultipartFile file) {
-    //     // Chuyển birthdate từ String sang LocalDate
-    //     LocalDate parsedBirthdate = LocalDate.parse(birthdate);
-    //     Pet updatedPet = petService.updatePet(petId, name, parsedBirthdate, breed, gender, file);
-    //     return ResponseEntity.ok(updatedPet);
-    // }
     @PutMapping("/update/{petId}")
     public ResponseEntity<Pet> updatePartialPet(
             @PathVariable Integer petId,
@@ -79,5 +70,11 @@ public class PetController {
     public ResponseEntity<String> deletePet(@PathVariable Integer petId) {
         petService.deletePet(petId);
         return ResponseEntity.ok("Pet deleted successfully.");
+    }
+
+    // lấy chi tiết địa chỉchỉ
+    @GetMapping("/user/{userId}/pet/{petId}")
+    public Pet getPetDetails(@PathVariable Integer userId, @PathVariable Integer petId) {
+        return petService.getPetByIdAndUserId(petId, userId);
     }
 }

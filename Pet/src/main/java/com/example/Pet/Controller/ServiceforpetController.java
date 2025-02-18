@@ -38,12 +38,21 @@
 // }
 package com.example.Pet.Controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.example.Pet.Modal.Serviceforpet;
 import com.example.Pet.Service.ServiceforpetService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/services")
@@ -55,21 +64,25 @@ public class ServiceforpetController {
         this.serviceforpetService = serviceforpetService;
     }
 
-    //  Thêm dịch vụ mới
+    // Thêm dịch vụ mới
     @PostMapping("/add")
-    public ResponseEntity<Serviceforpet> addService(@RequestParam String name,
+    public ResponseEntity<Serviceforpet> addService(
+            @RequestParam String name,
             @RequestParam String description,
-            @RequestParam Integer duration) {
-        return ResponseEntity.ok(serviceforpetService.addService(name, description, duration));
+            @RequestParam Integer duration,
+            @RequestParam MultipartFile file) {
+        return ResponseEntity.ok(serviceforpetService.addService(name, description, duration, file));
     }
 
     // Cập nhật thông tin dịch vụ
     @PutMapping("/update/{id}")
-    public ResponseEntity<Serviceforpet> updateService(@PathVariable Integer id,
+    public ResponseEntity<Serviceforpet> updateService(
+            @PathVariable Integer id,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String description,
-            @RequestParam(required = false) Integer duration) {
-        return ResponseEntity.ok(serviceforpetService.updateService(id, name, description, duration));
+            @RequestParam(required = false) Integer duration,
+            @RequestParam(required = false) MultipartFile file) {
+        return ResponseEntity.ok(serviceforpetService.updateService(id, name, description, duration, file));
     }
 
     // Xóa dịch vụ theo ID

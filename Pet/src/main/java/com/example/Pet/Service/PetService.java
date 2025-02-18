@@ -1,17 +1,16 @@
 package com.example.Pet.Service;
 
-import com.example.Pet.DTO.PetDTO;
-import com.example.Pet.Repository.PetRepository;
-import com.example.Pet.Repository.UserRepository;
-
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Pet.Modal.Pet;
 import com.example.Pet.Modal.User;
+import com.example.Pet.Repository.PetRepository;
+import com.example.Pet.Repository.UserRepository;
 
 @Service
 public class PetService {
@@ -54,7 +53,13 @@ public class PetService {
         return petRepository.findByUserId(userId);
     }
 
+    ///// lấy thông tin chi tiết
+    public Pet getPetByIdAndUserId(Integer petId, Integer userId) {
+        Optional<Pet> pet = petRepository.findByIdAndUserId(petId, userId);
+        return pet.orElseThrow(() -> new RuntimeException("Pet not found for user with ID: " + userId)); // Nếu không tìm thấy pet, sẽ báo lỗi
+    }
 // Chỉnh sửa thông tin thú cưng
+
     public Pet updatePet(Integer petId, String name, LocalDate birthdate, String breed, String gender, MultipartFile file) {
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new RuntimeException("Pet not found"));

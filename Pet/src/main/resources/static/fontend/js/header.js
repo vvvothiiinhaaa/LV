@@ -85,6 +85,7 @@ function checkLoginStatus() {
             const logoutMenu = document.getElementById("logoutMenu"); // Menu đăng xuất
             const logoutBtn = document.getElementById("logoutBtn"); // Nút Đăng xuất
             const cartCountElement = document.getElementById("cartCount"); 
+            const avatarImage = document.querySelector(".avatar"); 
             // Kiểm tra nếu người dùng đã đăng nhập
             if (data.isLoggedIn) {
                 loginBtn.style.display = "none";
@@ -100,6 +101,12 @@ function checkLoginStatus() {
                     .then(userInfo => {
                         if (usernameDisplay) {
                             usernameDisplay.textContent = userInfo.username;  // Hiển thị tên người dùng
+                        }
+                        // Lấy URL ảnh người dùng và cập nhật thẻ <img> có class "avatar"
+                        if (avatarImage && userInfo.url) {
+                            avatarImage.src = userInfo.url;  // Cập nhật ảnh đại diện
+                        } else {
+                            avatarImage.src = './img/default-avata.png';  // Nếu không có ảnh, dùng ảnh mặc định
                         }
                     })
                     .catch(error => console.error('Error fetching user info:', error));
@@ -384,8 +391,9 @@ function performSearch() {
     console.log("Từ khóa tìm kiếm: ", query); // Kiểm tra giá trị nhập vào
 
     if (query.length > 0) {  // Kiểm tra nếu chuỗi tìm kiếm không rỗng sau khi loại bỏ khoảng trắng
-        window.location.href = "http://localhost:8080/fontend/product.html?query=" + encodeURIComponent(query);
+        window.location.href = "http://localhost:8080/fontend/searchproduct.html?query=" + encodeURIComponent(query);
     } else {
         alert("Vui lòng nhập từ khóa tìm kiếm!");
     }
 }
+////////////////////////////

@@ -14,53 +14,32 @@
 </head>
 <body>
   <div id="header"></div>
-<div class="container" style="margin-top:10%;">
+<div class="container" style="margin-top:10%;margin-bottom: 10%;">
     <div class="row">
+        <!-- Sidebar -->
         <!-- Sidebar -->
         <div class="col-md-3">
             <div class="list-group">
-
-                            <!-- Thêm ảnh đại diện -->
-                <div class="d-flex align-items-center justify-content-center p-3" >
-                    <img src="./img/5.png" class="rounded-circle"id="avatar" alt="Avatar" >
+                <!-- Avatar Section -->
+                <div class="d-flex align-items-center justify-content-center p-3">
+                    <!-- <img src="./img/default-avata.png" class="rounded-circle" class="avatar" alt="Avatar"> -->
+                    <img src="./img/default-avata.png" id="avata" alt="Avatar" >
                 </div>
                 <a href="#" class="list-group-item list-group-item-action" data-page="user">Hồ Sơ</a>
-                <a href="#" class="list-group-item list-group-item-action" data-page="addr" >Sổ Địa Chỉ </a>
-                <a href="#"class="list-group-item list-group-item-action" data-page="pet">Thông Tin Của Thú Cưng</a>
-                <a href="#" class="list-group-item list-group-item-action" >Đổi Mật Khẩu</a>
-                <a href="#" class="list-group-item list-group-item-action" >Cài Đặt Thông Báo</a>
+                <a href="#" class="list-group-item list-group-item-action" data-page="addr">Sổ Địa Chỉ</a>
+                <a href="#" class="list-group-item list-group-item-action" data-page="pet">Thông Tin Của Thú Cưng</a>
+                <a href="#" class="list-group-item list-group-item-action">Đổi Mật Khẩu</a>
+                <a href="#" class="list-group-item list-group-item-action">Cài Đặt Thông Báo</a>
                 <a href="#" class="list-group-item list-group-item-action">Lịch sử đặt lịch</a>
-                <!-- Other items -->
             </div>
         </div>
 
-        <!-- Content -->
+        <!-- Content Section -->
         <div class="col-md-9" id="content">
-            <!-- <h3 class="text-center" id="page-title">Địa chỉ của tôi</h3>
-            <div class="card" id="address-container">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title" id="recipient-name">Nhã</h5>
-                        <div>
-                            <button class="btn btn-outline-lg btn-sm" id="update-button">Cập nhật</button>
-                            <button class="btn btn-outline-lg btn-sm" id="delete-button">Xóa</button>
-                        </div>
-                    </div>
-                    <p class="card-text" id="phone-number">(+84) 332 219 196</p>
-                    <p class="card-text" id="address-details">KTX B, ĐH Cần Thơ, Phường Xuân Khánh, Quận Ninh Kiều, Cần Thơ</p>
-                    <p class="card-text">
-                        <small class="text-muted" id="default-status">Mặc định</small>
-                    </p>
-                </div> -->
-            </div>
-        
-            <!-- Button trigger modal -->
-            <!-- <button type="button" class="btn btn-lg" data-bs-toggle="modal" data-bs-target="#addressModal">
-              Thêm địa chỉ mới
-            </button> -->
-            
+            <!-- Content will be dynamically loaded here based on selected sidebar item -->
         </div>
-        
+    </div>
+  </div>
 
                         <!-- Modal -->
               <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
@@ -170,6 +149,58 @@
         </div>
     </div>
 </div>
+<footer class="bg-white text-black py-5">
+    <div class="container">
+        <!-- Logo and Brand -->
+        <div class="text-center mb-4">
+         
+            <h5 class="mt-2">Pettie</h5>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="row text-center">
+            <!-- Services Column -->
+            <div class="col-md-4 mb-4">
+                <h6 class="fw-bold">Dịch Vụ</h6>
+                <ul class="list-unstyled" >
+                    <li><a href="#" class="text-black text-decoration-none">Pet Grooming</a></li>
+                    <li><a href="#" class="text-black text-decoration-none">Veterinary Care</a></li>
+                    <li><a href="#" class="text-black text-decoration-none">Pet Supplies</a></li>
+                </ul>
+            </div>
+
+            <!-- About Column -->
+            <div class="col-md-4 mb-4">
+                <h6 class="fw-bold">Giới Thiệu</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-black text-decoration-none">Pettie</a></li>
+                    <li><a href="#" class="text-black text-decoration-none">dịch vụ</a></li>
+                    <li><a href="#" class="text-black text-decoration-none">cửa hàng</a></li>
+                </ul>
+            </div>
+
+            <!-- Careers Column -->
+            <div class="col-md-4 mb-4">
+                <h6 class="fw-bold">Cam kết</h6>
+                <ul class="list-unstyled">
+                    <li><a href="#" class="text-black text-decoration-none">miễn phí vận chuyển</a></li>
+                    <li><a href="#" class="text-black text-decoration-none">chuyên nghiệp</a></li>
+                    <li><a href="#" class="text-black text-decoration-none">sản phẩm an toàn</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="text-center border-top pt-3">
+            <p class="mb-0">&copy; 2024 Pettie</p>
+            <div class="mt-2">
+                <a href="#" class="text-black me-2"><i class="bi bi-facebook"></i></a>
+                <a href="#" class="text-black me-2"><i class="bi bi-twitter"></i></a>
+                <a href="#" class="text-black"><i class="bi bi-instagram"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="./js/profile.js"></script>
 <script src="./js/header.js"></script>
@@ -187,6 +218,7 @@
 
             // Cập nhật class "active" trong sidebar
             updateActiveLink(page);
+            updateAvatarImage();
 
             // Tải `pet.js` nếu đang vào trang "pet"
             if (page === "pet") {
@@ -200,12 +232,25 @@
                             console.log("Lấy lại userId sau khi tải pet.js:", userId);
                             loadPets(userId);
                             attachPetEventListeners();
+                            //  updatePetInfo();
                         } else {
                             console.error("Không lấy được userId sau khi tải pet.js");
                         }
                     });
                 }, 500);
             }
+
+            if (page === "user") {
+                    setTimeout(() => {
+                        loadScript("./js/user.js", function () {
+                            console.log("user.js đã được tải thành công!");
+                            // Sau khi tải xong `user.js`, gọi hàm để hiển thị thông tin người dùng
+                            loadUserInfo();
+                            // updateProfile();  
+                        });
+                    }, 500);
+                }
+
 
             // Tải `address.js` nếu đang vào trang "address"
             if (page === "addr") {
@@ -220,6 +265,7 @@
                             setupAddressEventListeners();
                             setupAddressFormEvent(); 
                             setupSaveAddressEvent();
+                            
                         }
                         // if (typeof loadOptionsFromAPI === "function") {
                         //     loadOptionsFromAPI('https://provinces.open-api.vn/api/p/', 'provinceSelect'); // Load tỉnh/thành phố
@@ -309,6 +355,31 @@
 });
 
 
+function updateAvatarImage() {
+    fetch('/api/auth/check-login', { credentials: 'include' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.isLoggedIn) {
+                const userId = data.userId;  
+
+                // Gọi API để lấy thông tin người dùng
+                fetch(`/api/auth/info/${userId}`, { credentials: 'include' })
+                    .then(response => response.json())
+                    .then(userInfo => {
+                        const avatarImage = document.getElementById("avata");
+
+                        // Kiểm tra nếu có URL ảnh người dùng
+                        if (userInfo.url) {
+                            avatarImage.src = userInfo.url;  // Cập nhật ảnh đại diện
+                        } else {
+                            avatarImage.src = './img/default-avata.png';  // Nếu không có ảnh, dùng ảnh mặc định
+                        }
+                    })
+                    .catch(error => console.error('Lỗi khi lấy thông tin người dùng:', error));
+            }
+        })
+        .catch(error => console.error('Lỗi khi kiểm tra trạng thái đăng nhập:', error));
+}
 
 
 </script>

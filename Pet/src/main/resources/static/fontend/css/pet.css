@@ -8,3 +8,42 @@
     color:#fff;
     border: none;
 }
+.card {
+        margin-bottom: 20px; /* Khoảng cách giữa các card */
+        border: 2px solid black; /* Đường viền nhẹ */
+        border-radius: 8px; /* Bo góc */
+        box-shadow: 2px 2px 4px 6px rgba(0, 0, 0, 0.15); /* Đổ bóng */
+        transition: transform 0.2s, box-shadow 0.2s; /* Hiệu ứng hover */
+        background-color: #fff;
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Nâng lên một chút khi hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Đổ bóng mạnh hơn khi hover */
+}
+
+.card .card-title {
+    font-size: 1.25rem; /* Kích thước tiêu đề */
+    color: #333; /* Màu tiêu đề */
+    font-weight: bold;
+}
+
+.card .card-text {
+    font-size: 1rem; /* Kích thước chữ nội dung */
+    color: #555; /* Màu nội dung */
+    margin-bottom: 8px; /* Khoảng cách giữa các đoạn */
+}
+
+.card .btn {
+    font-size: 0.875rem; /* Kích thước chữ của nút */
+    padding: 5px 10px; /* Khoảng cách trong nút */
+    border-radius: 4px; /* Bo góc cho nút */
+}
+
+.card .btn:hover {
+    background-color: #f0f0f0; /* Màu nền khi hover nút */
+}
+.box-shadow-custom {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  

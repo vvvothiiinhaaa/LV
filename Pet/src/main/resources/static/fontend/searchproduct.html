@@ -86,7 +86,7 @@
 
         <div class="row">
             <!-- Sidebar for Filters -->
-            <div class="col-md-3">
+            <!-- <div class="col-md-3">
                 <div class="border p-2">
                     <h5>Filters</h5>
                     <div class="mb-2">
@@ -110,7 +110,7 @@
                     </div>
                     <button class="btn btn-sm btn-lg w-100" id="applyFilters">Áp dụng</button>
                 </div>
-            </div>
+            </div> -->
             
             <!-- Product Display Section -->
             <div class="col-md-9">
@@ -204,5 +204,102 @@
     <script src="./js/script-product-detail.js"></script>
     <script src="./js/header.js"></script>
     <script src="./js/search.js"></script>
+    <!-- <script src="./js/script.js"></script> -->
+    <script>
+        
+// Lắng nghe sự kiện khi người dùng chọn bộ lọc và bấm nút "Áp dụng"
+document.getElementById("applyFilters").addEventListener("click", function() {
+    // Lấy giá trị bộ lọc category và price
+    const categoryFilter = document.getElementById("categoryFilter").value;
+    const priceFilter = document.getElementById("priceFilter").value;
+
+    // Cập nhật breadcrumb với category đã chọn
+    updateBreadcrumb(categoryFilter);
+
+    // Gọi API hoặc xử lý logic lọc sản phẩm
+    fetchFilteredProducts(categoryFilter, priceFilter);
+});
+
+document.getElementById("categoryBreadcrumb").addEventListener("click", function(event) {
+    event.preventDefault(); // Ngăn không cho chuyển trang khi click vào thẻ <a>
+    const categoryFilter = document.getElementById("categoryFilter").value;
+    // Cập nhật breadcrumb để hiển thị category đang chọn
+    updateBreadcrumb(categoryFilter);
+
+    // Lọc sản phẩm theo category đã chọn
+    fetchFilteredProducts(categoryFilter);
+});
+// Hàm gọi API để lọc sản phẩm theo category
+function fetchFilteredProducts(category) {
+    // Giả sử bạn có API lọc sản phẩm theo category
+    fetch(`/api/products/filter?category=${category}&price=all`)
+        .then(response => response.json())
+        .then(data => {
+            displayProducts(data); // Hiển thị sản phẩm đã lọc
+        })
+        .catch(error => {
+            console.error("Error fetching filtered products:", error);
+        });
+}
+// Hàm cập nhật breadcrumb
+function updateBreadcrumb(category) {
+    const categoryBreadcrumb = document.querySelector(".breadcrumb-item:last-child a");
+    
+    // Cập nhật nội dung của breadcrumb
+    if (category === "thức ăn cho chó") {
+        categoryBreadcrumb.textContent = "thức ăn cho chó";
+    } else if (category === "thức ăn cho mèo") {
+        categoryBreadcrumb.textContent = "thức ăn cho mèo";
+    } else if (category === "Dụng cụ vệ sinh") {
+        categoryBreadcrumb.textContent = "Dụng cụ vệ sinh";
+    }   else if (category === "Đồ chơi cho chó mèo") {
+        categoryBreadcrumb.textContent = "Đồ chơi cho chó mèo";
+    } 
+    else {
+        categoryBreadcrumb.textContent = "Tất cả sản phẩm";
+    }
+}
+// Hàm gọi API để lọc sản phẩm theo category
+function fetchFilteredProducts(category) {
+    // Giả sử bạn có một API để lọc sản phẩm theo category
+    fetch(`/api/products/filter?category=${category}&price=all`)
+        .then(response => response.json())
+        .then(data => {
+            displayProducts(data); // Hiển thị sản phẩm sau khi lọc
+        })
+        .catch(error => {
+            console.error("Error fetching filtered products:", error);
+        });
+}
+
+// Hàm gọi API để lấy sản phẩm đã lọc
+function fetchFilteredProducts(category, price) {
+    // Giả sử API trả về một mảng các sản phẩm đã lọc
+    fetch(`/api/products/filter?category=${category}&price=${price}`)
+        .then(response => response.json())
+        
+        .then(data => {
+            console.log("Category:", category);
+            console.log("Price:", price);
+
+            displayProducts(data); // Hiển thị sản phẩm đã lọc
+        })
+        .catch(error => {
+            console.error("Error fetching filtered products:", error);
+        });
+}
+
+// Hàm hiển thị danh sách sản phẩm
+function displayProducts(products) {
+    const productList = document.getElementById("productList");
+    productList.innerHTML = ""; // Xóa tất cả sản phẩm hiện tại
+
+    products.forEach(product => {
+        const productDiv = createProductItem(product); // Sử dụng hàm createProductItem đã có
+        productList.appendChild(productDiv); // Thêm sản phẩm vào danh sách
+    });
+}
+
+    </script>
 </body>
 </html>

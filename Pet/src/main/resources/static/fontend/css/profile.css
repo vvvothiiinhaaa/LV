@@ -9,6 +9,7 @@ body {
 .card {
     margin-top: 20px;
     border: none; /* Remove default border */
+    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); Đổ bóng */
 }
 .card-title {
     font-size: 1.25rem; /* Slightly larger font size */
@@ -27,20 +28,35 @@ body {
     background-color: #dc3545 !important; 
 } */
 /* Additional styling for the sidebar */
+/* Scrollbar for content */
 
-.list-group-item {
-    border: none; /* Remove borders from sidebar items */
-    padding-left: 30px; /* Increased left padding for better alignment */
-    background-color: #ffff;
+#content {
+    /* position: fixed; */
+    overflow-y: scroll;
+    max-height: 70vh; /* Allow content to scroll */
+    
 }
-.list-group-item:hover {
-    background-color: #9f7143; /* Hover effect for sidebar items */
-    font-size: 1rem;
+/* Sidebar - Danh sách các mục trong thanh sidebar */
+.list-group {
+    /* position: fixed; Giữ thanh sidebar cố định khi cuộn trang */
+    top: 60px; /* Khoảng cách từ trên xuống */
+    
+    left: 0; /* Đặt sidebar ở phía bên trái */
+    width: 300px; /* Chiều rộng cố định cho sidebar */
+    height: calc(100vh - 245px); /* Chiều cao đầy đủ của màn hình trừ phần margin trên */
+    border: 2px solid #ddd; /* Đặt viền cho sidebar */
+    border-radius: 10px; /* Bo góc cho sidebar */
+    background-color: #fff; /* Nền màu trắng cho sidebar */
+    padding: 10px; 
+   
+    overflow-y: auto; /* Thêm thanh cuộn dọc nếu danh sách quá dài */
 }
+
+/* Các mục trong danh sách sidebar */
 .list-group-item.active {
-    background-color: #9f7143; /* Màu nền sau khi click */
-    color: #ffffff; /* Màu chữ */
-    border-color: #9f7143; /* Viền màu xanh */
+    background-color: #9f7143; /* Màu nền khi mục được chọn */
+    color: white; /* Màu chữ khi mục được chọn */
+    border-color: #9f7143; /* Màu viền khi mục được chọn */
 }
 
 .modal-content {
@@ -75,7 +91,7 @@ body {
     color:black;
 }
 
-#avatar {
+.avatar {
     width: 150px; 
     height: 150px; 
     border-radius: 50%;
@@ -85,6 +101,15 @@ body {
     margin: 15px auto;
 }
 
+#avata {
+    width: 150px; 
+    height: 150px; 
+    border-radius: 50%;
+    object-fit: cover; 
+    align-items: center;
+    justify-self: center;
+    margin: 15px auto;
+}
 
 /* Phần tiêu đề */
 h3 {
@@ -103,24 +128,24 @@ img.rounded-circle {
 
 /* Nút hành động */
 .btn-primary {
-    background-color: #ff5722;
-    border-color: #ff5722;
+    background-color: #495057;
+    border-color: black;
     font-weight: bold;
 }
 
 .btn-primary:hover {
-    background-color: #e64a19;
-    border-color: #e64a19;
+    background-color: #9f7143;
+    border-color: #9f7143;
 }
 
 .btn-outline-primary {
-    color: #ff5722;
-    border-color: #ff5722;
+    color: #3333;
+    border-color: black;
     font-weight: bold;
 }
 
 .btn-outline-primary:hover {
-    background-color: #ff5722;
+    background-color: #9f7143;
     color: #fff;
 }
 
@@ -148,10 +173,12 @@ img.rounded-circle {
     border-radius: 8px; /* Bo góc */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng */
     transition: transform 0.2s, box-shadow 0.2s; /* Hiệu ứng hover */
+    background-color: #fff;
 
 }
 .card {
-    background-color: #f8f9fa;
+    background-color: #ffffff;
+    /* box-shadow: 2px 2px 4px 6px rgba(0, 0, 0, 0.15); Đổ bóng */
 }
 
 .custom-card:hover {
@@ -179,4 +206,24 @@ img.rounded-circle {
 
 .custom-card .btn:hover {
     background-color: #f0f0f0; /* Màu nền khi hover nút */
+}
+
+
+#content {
+    padding: 20px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    height: calc(100vh - 50px); /* Height of content area minus the top margin */
+    border: 2px solid #ddd; /* Border around the content */
+    border-radius: 10px; /* Round the corners of the content area */
+    background-color: #fff; /* White background for content */
+}
+.btn-custom{
+    background-color: #333333;
+    color: #fff;
+    border:none;
+}
+.btn-custom:hover{
+    background-color: #a57a5e;
+    color:#fff;
+    border: none;
 }

@@ -227,7 +227,7 @@ async function changeAddress() {
                             <span>${address.addressDetail}, ${address.wardSubdistrict}, ${address.district}, ${address.provinceCity}</span>
                         </div>
                         <div>
-                            <button class="btn btn-sm btn-primary" onclick="updateAddress()">Cập nhật</button>
+                                <button class="btn btn-sm btn-primary" onclick="openUpdateModal(${address.id})">Cập nhật</button>
                             <button class="btn btn-sm btn-danger" onclick="deleteAddress(${address.id}); event.stopPropagation();">Xóa</button>
                         </div>
                     </div>
@@ -1148,3 +1148,305 @@ async function getUserId() {
         return null;
     }
 }
+////// delete address
+async function deleteAddress(addressId) {
+    try {
+        const userId = await getUserId();
+        if (!userId) {
+            alert('Bạn cần đăng nhập để xóa địa chỉ.');
+            return;
+        }
+
+        // Xác nhận trước khi xóa
+        const confirmDelete = confirm("Bạn có chắc chắn muốn xóa địa chỉ này?");
+        if (!confirmDelete) return;
+
+        // Gửi yêu cầu DELETE đến API
+        const response = await fetch(`http://localhost:8080/api/addresses/delete/${userId}/${addressId}`, {
+            method: 'DELETE',
+            headers: { "Content-Type": "application/json" }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Lỗi khi xóa địa chỉ!");
+        }
+
+        alert("Xóa địa chỉ thành công!");
+
+        // Cập nhật danh sách địa chỉ ngay lập tức trong modal
+        await changeAddress();
+
+    } catch (error) {
+        console.error("Lỗi khi xóa địa chỉ:", error);
+        alert("Không thể xóa địa chỉ. Vui lòng thử lại!");
+    }
+}
+////////////////////////////////////////////
+
+
+// Hàm mở modal và tải dữ liệu của địa chỉ vào modal
+
+async function openUpdateModal(addressId) {
+    const userId = await getUserId();
+    if (!userId) {
+        alert('Bạn cần đăng nhập để cập nhật địa chỉ!');
+        return;
+    }
+
+    try {
+        // Lấy thông tin địa chỉ từ API
+        const response = await fetch(`http://localhost:8080/api/addresses/${userId}/${addressId}`);
+        if (!response.ok) throw new Error('Không thể lấy thông tin địa chỉ');
+
+        const address = await response.json();
+        console.log('Dữ liệu địa chỉ nhận được:', address); // Kiểm tra dữ liệu
+
+        // Điền dữ liệu vào form trong modal
+        populateUpdateAddressForm(address);
+
+        // Gán lại sự kiện "Lưu" cho địa chỉ
+        setupSaveAddressEvent(addressId);
+
+        // Mở modal
+        const modal = new bootstrap.Modal(document.getElementById('updateAddressModal'));
+        modal.show();
+    } catch (error) {
+        console.error('Lỗi khi mở modal cập nhật địa chỉ:', error);
+    }
+}
+
+
+// Hàm điền dữ liệu vào form trong modal cập nhật
+// Hàm điền dữ liệu vào form trong modal cập nhật
+function populateUpdateAddressForm(address) {
+    console.log('Điền dữ liệu vào form cập nhật...');
+
+    // Điền dữ liệu vào các trường trong form
+    document.getElementById('recipientName').value = address.recipientName || '';
+    document.getElementById('phoneNumber').value = address.phoneNumber || '';
+    document.getElementById('addressDetail').value = address.addressDetail || '';
+    document.getElementById('defaultAddress').checked = address.defaultAddress || false;
+
+    console.log('Điền xong dữ liệu, tiếp tục tải danh sách tỉnh/thành phố...');
+
+    // Tải danh sách tỉnh/thành phố và thiết lập giá trị mặc định cho tỉnh
+    loadOptionsFromAPI('https://provinces.open-api.vn/api/p/', 'provinceS', address.provinceCity);
+    loadOptionsFromAPI('https://provinces.open-api.vn/api/d/', 'districtS', address.district);
+    loadOptionsFromAPI('https://provinces.open-api.vn/api/w/', 'wardSubdistrictS', address.wardSubdistrict);
+    
+}
+
+
+
+// Hàm gán sự kiện "Lưu" cho nút lưu địa chỉ
+function setupSaveAddressEvent(addressId) {
+    console.log(`Gán lại sự kiện "Lưu" cho địa chỉ ID: ${addressId}`);
+
+    const saveButton = document.getElementById('saveAddressBtn');
+    if (!saveButton) {
+        console.error('Không tìm thấy nút "Lưu"!'); 
+        return;
+    }
+
+    // Xóa sự kiện cũ và gán sự kiện mới
+    saveButton.removeEventListener('click', saveUpdatedAddress);
+    saveButton.addEventListener('click', function () {
+        saveUpdatedAddress(addressId);
+    });
+}
+
+// Hàm lưu địa chỉ cập nhật
+async function saveUpdatedAddress(addressId) {
+    const userId = await getUserId();
+    if (!userId) {
+        console.error('Không thể lấy userId.');
+        alert('Không thể lấy thông tin người dùng.');
+        return;
+    }
+
+    const updatedData = {
+        recipientName: document.getElementById('recipientName').value.trim(),
+        phoneNumber: document.getElementById('phoneNumber').value.trim(),
+        addressDetail: document.getElementById('addressDetail').value.trim(),
+        provinceCity: document.getElementById('provinceS').selectedOptions[0]?.text || '',
+        district: document.getElementById('districtS').selectedOptions[0]?.text || '',
+        wardSubdistrict: document.getElementById('wardSubdistrictS').selectedOptions[0]?.text || '',
+        defaultAddress: document.getElementById('defaultAddress').checked
+    };
+
+    console.log('Dữ liệu gửi lên API:', updatedData);
+
+    try {
+        const response = await fetch(`http://localhost:8080/api/addresses/update/user/${userId}/address/${addressId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedData)
+        });
+
+        if (!response.ok) throw new Error('Lỗi khi cập nhật địa chỉ');
+
+        console.log('Cập nhật thành công! Làm mới danh sách địa chỉ...');
+        alert('Cập nhật địa chỉ thành công!');
+        const modal = bootstrap.Modal.getInstance(document.getElementById('updateAddressModal'));
+        modal.hide();
+        loadUserAddresses(); // Cập nhật danh sách địa chỉ sau khi sửa thành công
+    } catch (error) {
+        console.error('Lỗi khi cập nhật địa chỉ:', error);
+        alert('Không thể cập nhật địa chỉ. Vui lòng thử lại sau.');
+    }
+}
+
+// Hàm tải danh sách tỉnh/thành phố
+async function loadProvinces() {
+    const provinceSelect = document.getElementById('provinceS');
+    provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+
+    try {
+        console.log('Start fetching provinces...');
+        const response = await fetch('https://provinces.open-api.vn/api/p/');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const provinces = await response.json();
+        console.log('Provinces data:', provinces);
+
+        provinces.forEach(province => {
+            const option = document.createElement('option');
+            option.value = province.code;
+            option.textContent = province.name;
+            provinceSelect.appendChild(option);
+        });
+
+        console.log('Provinces added to dropdown.');
+    } catch (error) {
+        console.error('Error while fetching provinces:', error);
+    }
+}
+
+// Hàm tải danh sách quận/huyện
+async function loadDistricts(provinceCode, selectedDistrict = null, selectedWard = null) {
+    const districtSelect = document.getElementById('districtS');
+    const wardSelect = document.getElementById('wardSubdistrictS');
+    districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>'; // Reset danh sách quận/huyện
+    wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>'; // Reset danh sách phường/xã
+
+    try {
+        console.log(`Fetching districts for province code: ${provinceCode}...`);
+        const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Districts data:', data.districts);
+
+        data.districts.forEach(district => {
+            const option = document.createElement('option');
+            option.value = district.code;
+            option.textContent = district.name;
+            districtSelect.appendChild(option);
+
+            if (district.code === selectedDistrict) {
+                option.selected = true;
+            }
+        });
+
+        // Tải danh sách phường/xã nếu quận/huyện được chọn
+        if (selectedDistrict) {
+            await loadWards(selectedDistrict, selectedWard);
+        }
+
+        console.log('Districts added to dropdown.');
+    } catch (error) {
+        console.error('Error while fetching districts:', error);
+    }
+}
+
+// Hàm tải danh sách phường/xã
+async function loadWards(districtCode, selectedWard = null) {
+    const wardSelect = document.getElementById('wardSubdistrictS');
+    wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>'; // Reset danh sách phường/xã
+
+    try {
+        console.log(`Fetching wards for district code: ${districtCode}...`);
+        const response = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Wards data:', data.wards);
+
+        data.wards.forEach(ward => {
+            const option = document.createElement('option');
+            option.value = ward.code;
+            option.textContent = ward.name;
+            wardSelect.appendChild(option);
+
+            if (ward.code === selectedWard) {
+                option.selected = true;
+            }
+        });
+
+        console.log('Wards added to dropdown.');
+    } catch (error) {
+        console.error('Error while fetching wards:', error);
+    }
+}
+// Xử lý khi người dùng chọn tỉnh/thành phố
+document.getElementById('provinceS').addEventListener('change', async (event) => {
+    const provinceCode = event.target.value;
+    if (provinceCode) {
+        console.log(`Province selected: ${provinceCode}`);
+        await loadDistricts(provinceCode); // Tải danh sách quận/huyện
+    } else {
+        document.getElementById('districtS').innerHTML = '<option value="">Chọn quận/huyện</option>';
+        document.getElementById('wardSubdistrictS').innerHTML = '<option value="">Chọn phường/xã</option>';
+    }
+});
+
+// Xử lý khi người dùng chọn quận/huyện
+document.getElementById('districtS').addEventListener('change', async (event) => {
+    const districtCode = event.target.value;
+    if (districtCode) {
+        console.log(`District selected: ${districtCode}`);
+        await loadWards(districtCode); // Tải danh sách phường/xã
+    } else {
+        document.getElementById('wardSubdistrictS').innerHTML = '<option value="">Chọn phường/xã</option>';
+    }
+});
+
+// Hàm tải dữ liệu từ API và đặt giá trị mặc định
+async function loadOptionsFromAPI(apiUrl, selectId, defaultValue = null) {
+    const selectElement = document.getElementById(selectId);
+    if (!selectElement) {
+        console.error(`Không tìm thấy thẻ <select> với id: ${selectId}`);
+        return;
+    }
+
+    try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('Không thể tải dữ liệu');
+
+        const data = await response.json();
+
+        data.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.code;
+            option.textContent = item.name;
+            selectElement.appendChild(option);
+        });
+
+        if (defaultValue) {
+            selectElement.value = defaultValue;
+        }
+    } catch (error) {
+        console.error('Lỗi khi tải dữ liệu:', error);
+    }
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+

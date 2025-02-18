@@ -1,6 +1,7 @@
 package com.example.Pet.Controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +12,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Pet.Modal.User;
 import com.example.Pet.Service.CartService;
+import com.example.Pet.Service.FileStorageService;
 import com.example.Pet.Service.UserService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,6 +35,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private CartService cartService;
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User registrationRequest) {
@@ -53,34 +60,6 @@ public class UserController {
         }
     }
 
-    // @PostMapping("/login")
-    // public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginRequest) {
-    //     try {
-    //         // Lấy thông tin từ yêu cầu đăng nhập
-    //         String username = loginRequest.get("username");
-    //         String passwords = loginRequest.get("passwords");
-    //         // Kiểm tra yêu cầu đăng nhập hợp lệ
-    //         if (username == null || username.isEmpty()) {
-    //             return ResponseEntity.badRequest().body("Tên người dùng không được để trống");
-    //         }
-    //         if (passwords == null || passwords.isEmpty()) {
-    //             return ResponseEntity.badRequest().body("Mật khẩu không được để trống");
-    //         }
-    //         // Đăng nhập người dùng và lấy đối tượng User
-    //         User user = userService.loginUser(username, passwords);
-    //         // Kiểm tra nếu người dùng đăng nhập thành công
-    //         if (user != null) {
-    //             // Nếu đăng nhập thành công, trả về thông báo thành công
-    //             return ResponseEntity.ok().body("Đăng nhập thành công");
-    //         } else {
-    //             // Nếu không tìm thấy người dùng, trả về lỗi
-    //             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Sai tên người dùng hoặc mật khẩu");
-    //         }
-    //     } catch (RuntimeException e) {
-    //         // Nếu có lỗi trong quá trình đăng nhập, trả về lỗi 400
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginRequest, HttpSession session) {
         try {
@@ -118,68 +97,6 @@ public class UserController {
         }
     }
 
-    // @CrossOrigin(origins = "http://localhost:8080")
-    // @PostMapping("/login")
-    // public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginRequest) {
-    //     try {
-    //         // Lấy thông tin từ yêu cầu đăng nhập
-    //         String username = loginRequest.get("username");
-    //         String passwords = loginRequest.get("passwords");
-    //         // Kiểm tra yêu cầu đăng nhập hợp lệ
-    //         if (username == null || username.isEmpty()) {
-    //             return ResponseEntity.badRequest().body("Tên người dùng không được để trống");
-    //         }
-    //         if (passwords == null || passwords.isEmpty()) {
-    //             return ResponseEntity.badRequest().body("Mật khẩu không được để trống");
-    //         }
-    //         // Đăng nhập người dùng và lấy đối tượng User
-    //         User user = userService.loginUser(username, passwords);
-    //         // Log giá trị của role để kiểm tra
-    //         System.out.println("User role in Controller: " + user.getRole());
-    //         if (user.getRole() != null && user.getRole().trim().equals("user")) {
-    //             // Nếu vai trò là user, trả về thông báo thành công và chuyển hướng đến trang chủ
-    //             return ResponseEntity.status(HttpStatus.FOUND) // 302 Found
-    //                     .location(URI.create("http://localhost:8080/fontend/trangchu.html")) // Đảm bảo đường dẫn đúng
-    //                     .build();
-    //         } else {
-    //             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-    //                     .body("Vai trò không hợp lệ");
-    //         }
-    //     } catch (RuntimeException e) {
-    //         return ResponseEntity.badRequest().body(e.getMessage());
-    //     }
-    // }
-    // @PostMapping("/register")
-    // public ResponseEntity<?> registerUser(@RequestBody User registrationRequest) {
-    //     System.out.println("Dữ liệu nhận được từ frontend: " + registrationRequest);
-    //     // Tiến hành xử lý đăng ký người dùng
-    //     // Đảm bảo rằng bạn có các getter/setter cho các trường trong User
-    //     return ResponseEntity.ok("Đăng ký thành công");
-    // }
-    // @PostMapping("/register")
-    // public ResponseEntity<User> registerUser(@RequestBody User registrationRequest) {
-    //     try {
-    //         // Gọi service để đăng ký người dùng
-    //         User registeredUser = userService.registerUser(registrationRequest.getUsername(), registrationRequest.getPasswords());
-    //         // Trả về HTTP status 201 (Created) cùng với thông tin người dùng
-    //         return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
-    //     } catch (RuntimeException e) {
-    //         // Trả về lỗi nếu username đã tồn tại
-    //         return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-    //     }
-    // }
-    // @GetMapping("/is-logged-in")
-    // public ResponseEntity<Boolean> isLoggedIn(HttpSession session) {
-    //     // Lấy userId từ session
-    //     Object userIdObj = session.getAttribute("userId");
-    //     // Kiểm tra xem userId có tồn tại và không phải là null
-    //     boolean isLoggedIn = userIdObj != null;
-    //     // In ra trạng thái đăng nhập và Session ID
-    //     System.out.println("User logged-in status: " + isLoggedIn);
-    //     System.out.println("Session ID: " + session.getId());
-    //     // Trả về ResponseEntity với trạng thái của người dùng
-    //     return ResponseEntity.ok(isLoggedIn);
-    // }
     @GetMapping("/info")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
@@ -218,4 +135,61 @@ public class UserController {
             return ResponseEntity.ok(response);
         }
     }
+
+    // Cập nhật thông tin người dùng (không cập nhật mật khẩu)
+    // @PutMapping("/{id}")
+    // public ResponseEntity<User> updateUser(@PathVariable("id") Long userId, @RequestBody User userDetails) {
+    //     // Cập nhật người dùng qua service
+    //     User updatedUser = userService.updateUser(userId, userDetails);
+    //     if (updatedUser != null) {
+    //         return ResponseEntity.ok(updatedUser); // Trả về người dùng đã được cập nhật
+    //     } else {
+    //         return ResponseEntity.notFound().build(); // Trả về lỗi 404 nếu không tìm thấy người dùng
+    //     }
+    // }
+    // API cập nhật thông tin người dùng (kể cả ảnh)
+    @PutMapping("/{userId}")
+    public ResponseEntity<User> updateUser(
+            @PathVariable Long userId,
+            @RequestParam(value = "file", required = false) MultipartFile file, // Đón nhận file ảnh (không bắt buộc)
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "phonenumber", required = false) String phoneNumber,
+            @RequestParam(value = "gender", required = false) String gender,
+            @RequestParam(value = "birthday", required = false) LocalDate birthday,
+            @RequestParam(value = "status", required = false) Boolean status,
+            @RequestParam(value = "role", required = false) String role
+    ) {
+        try {
+            // Gọi service để cập nhật thông tin người dùng
+            User userDetails = new User();
+            userDetails.setEmail(email);
+            userDetails.setPhonenumber(phoneNumber);
+            userDetails.setGender(gender);
+            userDetails.setBirthday(birthday);
+            userDetails.setStatus(status);
+            userDetails.setRole(role);
+
+            // Cập nhật thông tin người dùng và lưu URL ảnh (nếu có)
+            User updatedUser = userService.updateUser(userId, userDetails, file);
+
+            // Trả về kết quả
+            return ResponseEntity.ok(updatedUser); // Trả về người dùng đã cập nhật
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    // API để lấy URL ảnh của người dùng
+    @GetMapping("/{userId}/image")
+    public ResponseEntity<String> getUserImageUrl(@PathVariable Long userId) {
+        String imageUrl = userService.getUserImageUrl(userId);
+
+        if (imageUrl == null) {
+            return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy ảnh
+        }
+
+        return ResponseEntity.ok(imageUrl); // Trả về URL ảnh nếu tìm thấy
+    }
+
 }
