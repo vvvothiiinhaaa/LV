@@ -151,25 +151,27 @@ function createProductItem(product) {
 
     // Kiểm tra trạng thái còn hàng
     const stockStatus = product.quantity === 0 
-        ? '<span style="color:blue; font-weight:bold;">(HẾT HÀNG)</span>' 
+        ? '<span style="color:blue; font-weight:bold;">SẢN PHẨM HẾT HÀNG</span>' 
         : "";
+    
     const imageUrl = product.url.replace(/.*\/html\//, "/img/");
 
     // Nội dung HTML của sản phẩm
     productDiv.innerHTML = `
-   
-    <div class="card product-card h-150">
-    <a href="product-detail.html?id=${product.id}" class="product-link">
-        <img src="${imageUrl || 'default-image.png'}" class="card-img-top product-image" alt="${product.name}">
-    </a>
-    <div class="card-body">
-        <h6 class="card-title product-title">${product.name}</h6>
-        <p class="card-text product-price">${formatPrice(product.price)} VND</p>
-        <div class="product-actions">
-            <button class="buy-now" data-product-id="${product.id}">Thêm vào giỏ hàng</button>
+        <div class="card product-card h-150">
+            <a href="product-detail.html?id=${product.id}" class="product-link">
+                <img src="${imageUrl || 'default-image.png'}" class="card-img-top product-image" alt="${product.name}">
+            </a>
+            <div class="card-body">
+                <h6 class="card-title product-title">${product.name}</h6>
+                <p class="card-text product-price">${formatPrice(product.price)} VND</p>
+                <div class="product-actions">
+                    ${stockStatus}
+                    ${product.quantity === 0 ? '' : '<button class="buy-now" data-product-id="' + product.id + '">Thêm vào giỏ hàng</button>'}
+                </div>
+            </div>
         </div>
-    </div>
-</div> `;
+    `;
 
     return productDiv;
 }

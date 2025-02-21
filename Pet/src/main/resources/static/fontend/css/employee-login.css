@@ -1,0 +1,66 @@
+/* style.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px; /* Đảm bảo form có chiều rộng tối đa */
+}
+
+h2 {
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px; /* Thêm khoảng cách giữa các nhóm input */
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px; /* Thêm khoảng cách giữa label và input */
+}
+
+input {
+    width: 100%;
+    padding: 12px; /* Tăng padding cho input để đẹp hơn */
+    margin-top: 5px;
+    margin-bottom: 10px; /* Thêm khoảng cách giữa các input */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Đảm bảo padding được tính vào chiều rộng */
+}
+
+button {
+    width: 100%;
+    padding: 12px; /* Tăng padding cho nút button */
+    background-color: #333333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    box-sizing: border-box; /* Đảm bảo padding của button được tính vào chiều rộng */
+}
+
+button:hover {
+    background-color: #9f7143;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+}

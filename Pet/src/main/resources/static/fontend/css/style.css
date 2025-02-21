@@ -196,6 +196,33 @@ body {
     padding: 20px 0;
   }
    */
+/* reponsive */
+/* Mobile-specific styles */
+@media (max-width: 992px) {
+  /* Khi tìm kiếm hiển thị */
+  #searchForm {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 10px;
+      background-color: white;
+      border-bottom: 1px solid #ccc;
+      z-index: 100;
+      display: none;
+  }
+}
+
+/* Điều chỉnh khi navbar mở rộng (desktop) */
+@media (min-width: 992px) {
+  #searchForm {
+      display: block; /* Hiển thị tìm kiếm trên desktop */
+  }
+}
+
+
+
+
    #userSection {
     display: none;  /* Ẩn mặc định */
     visibility: visible; /* Đảm bảo không bị ẩn */
@@ -210,6 +237,7 @@ body {
 .navbar-nav .nav-link {
     color: black !important;
     text-transform: uppercase;
+    font-size: 1rem;
 }
 .navbar {
     background-color: #fef0e6;
@@ -321,7 +349,7 @@ body {
 
 
 .navbar-brand {
-    font-size: 2rem;
+    font-size: 1rem;
     font-weight: bold;
     color: black;
 }

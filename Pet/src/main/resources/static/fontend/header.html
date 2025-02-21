@@ -1,6 +1,7 @@
-<header class="navbar navbar-expand-lg navbar-light fixed-top" style="display:block;">
-    <div class="container" >
-        <a class="navbar-brand" href="#">PETTIE</a>
+<!-- <header class="navbar navbar-expand-lg navbar-light fixed-top" style="display:block;">
+    <div class="container" > -->
+        <!-- <a class="navbar-brand" href="#">PETTIE</a> -->
+         <!-- <a class="navbar-brand" href="#" style="font-size: 1rem;"> <img src="./img/logo.png" alt="" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">  PETTIE</a>
         <div class="d-flex d-lg-none align-items-center">
             <i class="bi bi-search search-icon me-3" id="searchToggle"></i>
             <a href="./login.html" class="btn btn-lg" id="loginBtn1">Đăng Nhập</a>
@@ -17,7 +18,6 @@
             </ul>
            
             <div class="d-none d-lg-flex align-items-center">
-                 <!-- Form tìm kiếm nằm ngay dưới container navbar -->
                 <div class="container" >
                     <form class="d-flex justify-content-center" id="searchForm">
                         <input class="form-control me-2" type="text" id="searchquery" placeholder="Tìm kiếm">
@@ -40,7 +40,6 @@
                     
                     <span id="uname" class="navbar-text me-3">Username</span>
 
-                     <!-- Menu Đăng xuất -->
                     <div id="logoutMenu" style="display: none; position: absolute; background-color: white; border: 1px solid #ccc; padding: 10px; z-index: 100;">
                         <a href="./profile.html">Hồ sơ của tôi</a>
                         <a href="./order.html">Đơn hàng của tôi</a>
@@ -54,56 +53,72 @@
     </div>
     
 </header> 
-
-
-<!-- 
-
-<header class="navbar navbar-expand-lg navbar-light fixed-top" style="display:block;">
+ -->
+ <header class="navbar navbar-expand-lg navbar-light fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="#">PETTIE</a>
+        <!-- Brand logo and text -->
+        <a class="navbar-brand" href="./trangchu.html">
+            <img src="./img/logo.png" alt="" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+            <h6>PETTIE</h6>
+        </a>
+
+        <!-- Mobile Search and Login buttons -->
         <div class="d-flex d-lg-none align-items-center">
             <i class="bi bi-search search-icon me-3" id="searchToggle"></i>
             <a href="./login.html" class="btn btn-lg" id="loginBtn1">Đăng Nhập</a>
         </div>
+
+        <!-- Toggler for Navbar (collapsed on mobile) -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+
+        <!-- Collapsible Navbar -->
         <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Navbar links -->
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item"><a class="nav-link" href="./trangchu.html">Trang Chủ</a></li>
                 <li class="nav-item"><a class="nav-link" href="./service.html">Dịch Vụ</a></li>
                 <li class="nav-item"><a class="nav-link" href="./product.html">Cửa Hàng</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Liên Hệ</a></li>
             </ul>
+
+            <!-- Desktop Search form and user section -->
             <div class="d-none d-lg-flex align-items-center">
+                <div class="container">
+                    <!-- Desktop search form -->
+                    <form class="d-flex justify-content-center" id="searchForm">
+                        <input class="form-control me-2" type="text" id="searchquery" placeholder="Tìm kiếm">
+                        <button id="btnsearch" class="btn btn-warning" type="submit">
+                            <i class="bi bi-search" style="color: black;"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Login button (visible on desktop) -->
                 <a href="./login.html" class="btn btn-lg ms-3" id="loginBtn">Đăng Nhập</a>
-                <div id="userSection" class="hidden">
+
+                <!-- User section (visible on desktop) -->
+                <div id="userSection">
                     <a href="./cartt.html" id="cartLink" class="me-3">
                         <i class="bi bi-cart3"></i>
                         <span class="cartCount" id="cartCount">0</span>
                     </a>
                     <a href="#" id="profileLink">
-                        <i class="bi bi-person-circle"></i>
+                        <img src="./img/default-avata.png" alt="" class="avatar" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
                     </a>
                     <span id="uname" class="navbar-text me-3">Username</span>
-                      <div id="logoutMenu" style="display: none; position: absolute; background-color: white; border: 1px solid #ccc; padding: 10px; z-index: 100;">
+
+                    <!-- Dropdown Menu (Logout options) -->
+                    <div id="logoutMenu" style="display: none; position: absolute; background-color: white; border: 1px solid #ccc; padding: 10px; z-index: 100;">
                         <a href="./profile.html">Hồ sơ của tôi</a>
                         <a href="./order.html">Đơn hàng của tôi</a>
                         <a href="#">Danh sách yêu thích</a>
                         <a href="#">Địa Chỉ</a>
                         <a href="#" id="logoutBtn">Đăng Xuất</a>
-                    </div> 
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="container" >
-        <form class="d-flex justify-content-center" id="searchForm">
-            <input class="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Search">
-            <button class="btn btn-warning" type="submit">
-                <i class="bi bi-search" style="color: black;"></i>
-            </button>
-        </form>
-    </div>
-</header> -->
+</header>

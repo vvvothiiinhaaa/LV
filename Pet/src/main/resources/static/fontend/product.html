@@ -14,15 +14,22 @@
     <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
     <style>
-        .mySwiper {
-            width: 80%; /* Adjust the width for responsiveness */
-            height: 350px; /* Set an appropriate height */
-            margin-top: 10%; /* Center and add spacing */
+            .hero-image {
+            width: 100%; /* Đảm bảo ảnh chiếm toàn bộ chiều rộng */
+            height: 600px; /* Chiều cao ảnh */
+            overflow: hidden; /* Đảm bảo ảnh không bị tràn */
         }
-        .mySwiper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Ensure the images fill the container */
+
+        .hero-image img {
+            width: 100%; /* Đảm bảo ảnh bao phủ toàn bộ chiều rộng */
+            height: 100%; /* Đảm bảo ảnh bao phủ toàn bộ chiều cao */
+            object-fit: cover; /* Đảm bảo ảnh không bị biến dạng */
+        }
+
+        @media (max-width: 768px) {
+            .swiper-container {
+                height: 250px; /* Reduce height for mobile */
+            }
         }
         /* Responsive adjustments for tablets and phones */
         @media (max-width: 1024px) {
@@ -50,29 +57,17 @@
                 font-size: 0.8rem; /* Smaller breadcrumb for phones */
             }
         }
+
     </style>
 </head>
 <body>
    <div id="header"></div>
-    <!-- Swiper Section -->
-    <div class="swiper mySwiper">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                <img src="https://via.placeholder.com/1200x400?text=Slide+1" alt="Slide 1">
-            </div>
-            <div class="swiper-slide">
-                <img src="https://via.placeholder.com/1200x400?text=Slide+2" alt="Slide 2">
-            </div>
-            <div class="swiper-slide">
-                <img src="https://via.placeholder.com/1200x400?text=Slide+3" alt="Slide 3">
-            </div>
-        </div>
-        <!-- Add Pagination -->
-        <div class="swiper-pagination"></div>
-        <!-- Add Navigation -->
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-    </div>
+  
+<!-- Hero Section with a single image -->
+<div class="hero-image">
+    <img src="./img/bnn6.png" alt="Hero Image" class="w-100">
+</div>
+
 
     <div class="container py-5">
         <!-- Breadcrumb Navigation -->

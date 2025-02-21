@@ -3,7 +3,7 @@
     border-radius: 999em 999em 999em 999em;
     padding: 20px;
     height: 300px;
-    width: 80%;
+    width: 100%;
     display: flex;
     align-items: center;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -13,7 +13,7 @@
 }
 
 .custom-image {
-    width: 500px;
+    width: 900px;
     height: 250px;
     border-radius: 50%;
     overflow: hidden;
@@ -66,15 +66,14 @@ h3 {
 @media (max-width: 1024px) {
     .custom-card {
         flex-direction: column;
-        height: auto; 
+        height: 100%; 
         width: 90%; 
-        
         padding: 15px;
     }
 
     .custom-image {
-        width: 350px;
-        height: 200px;
+        width: 250px;
+        height: 250px;
         margin-bottom: 15px;
     }
 
@@ -89,10 +88,11 @@ h3 {
 
 
 .hero {
-    background: url('../img/bnser.png') no-repeat center center;
+    background: url('../img/bn12.png') no-repeat center center;
     background-size: cover;
     padding: 150px 0;
     margin-top:4%;
+    height:500px;
 }
 h1 {
     opacity: 0; /* Ẩn ban đầu */
@@ -111,7 +111,7 @@ h1.active {
     .custom-card {
         flex-direction: column; /* Sắp xếp dọc */
         border-radius: 100px;
-        height: 550px; /* Tự điều chỉnh chiều cao */
+        height: 900px; /* Tự điều chỉnh chiều cao */
         width: 90%; /* Chiều rộng gần đầy màn hình */
         padding: 10px;
         box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
@@ -144,7 +144,7 @@ h1.active {
     }
 
     .custom-image {
-        width: 400px; /* Tăng kích thước ảnh */
+        width: 300px; /* Tăng kích thước ảnh */
         height: auto;
         margin-right: 20px; /* Khoảng cách giữa ảnh và nội dung */
         margin-top: 0;

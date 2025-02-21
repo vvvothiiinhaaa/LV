@@ -1,0 +1,46 @@
+.solution-card {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: left;
+    height: 250px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    transition: all 0.3s ease-in-out;
+    width: 100%; /* Tăng chiều ngang */
+  }
+  /* Hiệu ứng khi hover */
+  .solution-card:hover {
+    background-color: #a78b71;
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  .solution-card img {
+    width: 100px;
+    height: 100px;
+    margin-right: 15px;
+    transition: all 0.3s ease-in-out;
+  }
+  .solution-card h4 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .solution-card p {
+    font-size: 16px;
+  }
+  .bg-custom {
+    background-color: #f5f1eb !important; /* Màu nền giống footer */
+    width: 100%; /* Đảm bảo section chiếm toàn bộ chiều rộng */
+    padding: 50px 0; /* Tạo khoảng cách hợp lý */
+  }
+  
+  .bg-custom .container {
+    max-width: 1200px; /* Giữ nội dung ở giữa với chiều rộng tối ưu */
+    margin: 0 auto; /* Căn giữa nội dung */
+  }
+  

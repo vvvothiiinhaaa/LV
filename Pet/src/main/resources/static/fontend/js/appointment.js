@@ -173,6 +173,11 @@ async function handleSubmit(event) {
     .then(data => {
         if (data && data.status === 'Đã đặt lịch') {
             alert("Đặt lịch thành công!");
+            document.getElementById('appointmentForm').reset();
+
+            // Thêm mã để reset các lựa chọn trong select "pet" và "service"
+            document.getElementById('pet').selectedIndex = -1;  // Không chọn gì trong select "pet"
+            document.getElementById('service').selectedIndex = -1;
         } else {
             alert("Đặt lịch thất bại. Vui lòng thử lại." + data.message);
         }

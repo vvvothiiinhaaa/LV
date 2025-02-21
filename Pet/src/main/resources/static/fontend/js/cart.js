@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 });
                             
                                 // Định dạng và cập nhật DOM
-                                const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'decimal' }).format(total) + ' VNĐ';;
+                                const formattedTotal = new Intl.NumberFormat('vi-VN', { style: 'decimal' }).format(total) + ' VNĐ';
                                 document.getElementById('subtotal').textContent = formattedTotal;
                                 document.getElementById('total').textContent = formattedTotal;
                             }
@@ -296,69 +296,7 @@ function updateCartCount(userId) {
         });
     }
     
-//////////////////////////////////////////////////////
-
-// function updateCheckboxStatus(productId, isSelected) {
-//     const apiUrl = '/api/cart/update-selected'; // Đường dẫn API cập nhật
-//     const payload = {
-//         productId: productId,
-//         selected: isSelected
-//     };
-
-//     fetch(apiUrl, {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         credentials: 'include',
-//         body: JSON.stringify(payload),
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             return response.text().then(text => {
-//                 throw new Error(text || 'Lỗi khi cập nhật trạng thái checkbox');
-//             });
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         console.log("Trạng thái checkbox đã được cập nhật:", data);
-//     })
-//     .catch(error => {
-//         console.error('Lỗi:', error.message);
-//     });
-// }
-///////////////////////////////////////
-// /**
-//  * Hàm cập nhật trạng thái selected của sản phẩm
-//  * @param {number|string} productId - ID của sản phẩm
-//  * @param {boolean} isSelected - Trạng thái checkbox (true: được chọn, false: không được chọn)
-//  */
-// function updateSelected(productId, isSelected) {
-//     fetch('/api/cart/update-selected', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         credentials: 'include',
-//         body: JSON.stringify({
-//             productId: productId,
-//             selected: isSelected,
-//         }),
-//     })
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Lỗi khi cập nhật trạng thái selected');
-//         }
-//         return response.json();
-//     })
-//     .then(data => {
-//         console.log(`Cập nhật trạng thái selected thành công cho sản phẩm ID: ${productId}`, data);
-//     })
-//     .catch(error => {
-//         console.error('Lỗi khi cập nhật trạng thái selected:', error);
-//     });
-// }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 document.getElementById("checkout").addEventListener("click", function () {
     const selectedProducts = [];
@@ -376,6 +314,27 @@ document.getElementById("checkout").addEventListener("click", function () {
         alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
         return;
     }
+            const formatCurrency = (value) => {
+                return new Intl.NumberFormat('vi-VN').format(value) + " VNĐ";
+            };
+
+        // Lấy thông tin mã giảm giá và số tiền giảm từ giao diện
+        const couponCode = document.getElementById('coupon-code').value.trim();
+        const discountAmountText = document.querySelector('#sale').innerText;
+        const discountAmount = parseFloat(discountAmountText.replace(/\.|\s+/g, '').replace(',', '.')); // Loại bỏ ký tự không phải số từ giá trị giảm giá
+    
+        // Kiểm tra nếu mã giảm giá hợp lệ
+        if (couponCode && discountAmount > 0) {
+            // Lưu thông tin mã giảm giá và số tiền giảm vào localStorage
+            // const formattedDiscountAmount = formatCurrency(discountAmount);
+            localStorage.setItem('couponCode', couponCode);
+            localStorage.setItem('discountAmount', discountAmount);
+
+            // In ra thông tin đã lưu vào localStorage
+    console.log("Mã giảm giá đã lưu: " + localStorage.getItem('couponCode'));
+    console.log("Số tiền giảm đã lưu: " + localStorage.getItem('discountAmount'));
+        }
+    
 
     // Gọi API để lấy userId
     fetch('/api/auth/check-login', {
@@ -431,3 +390,80 @@ document.getElementById("checkout").addEventListener("click", function () {
         alert(error.message || "Đã xảy ra lỗi khi xử lý thanh toán. Vui lòng thử lại.");
     });
 });
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+document.getElementById('apply-coupon').addEventListener('click', function() {
+    // Lấy mã giảm giá người dùng nhập vào
+    const couponCode = document.getElementById('coupon-code').value.trim();
+    
+    // Kiểm tra nếu người dùng không nhập mã
+    if (!couponCode) {
+        alert("Vui lòng nhập mã giảm giá.");
+        return;
+    }
+
+    // Gọi API để kiểm tra mã giảm giá
+// Gọi API để kiểm tra mã giảm giá
+fetch(`/api/discounts/validate/${couponCode}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data) {
+            // Log ra để kiểm tra phản hồi API
+            console.log("Phản hồi từ API:", data);
+
+            // Lấy mức tối thiểu để áp dụng mã giảm giá từ phản hồi API
+            const minOrderAmount = data.minOrderAmount; // Lấy minOrderAmount từ phản hồi API
+            const usageLimit = data.usageLimit;
+           
+            // Log để kiểm tra minOrderAmount và ngày bắt đầu/kết thúc
+            console.log("Mức tối thiểu để áp dụng mã giảm giá:", minOrderAmount);
+            
+            // Kiểm tra nếu usageLimit nhỏ hơn hoặc bằng 0
+            if (usageLimit <= 0) {
+                alert(`Mã Giảm Giá đã hết lượt sử dụng.`);
+                return;
+            }
+
+
+
+            // Kiểm tra nếu subtotal lớn hơn hoặc bằng minOrderAmount
+            if (subtotal < minOrderAmount) {
+                alert(`Tổng giá trị đơn hàng không đủ để áp dụng mã giảm giá.`);
+                return;
+            }
+            
+
+
+            const formatCurrency = (value) => {
+                return new Intl.NumberFormat('vi-VN').format(value) + " VNĐ";
+            };
+
+            // Tính toán số tiền giảm giá
+            const discountPercentage = data.discountPercentage;
+            const discountAmount = (subtotal * discountPercentage) / 100;
+
+            // Cập nhật phần tử #sale với số tiền giảm giá
+            document.querySelector('#sale').innerText = formatCurrency(discountAmount);
+
+            // Cập nhật tổng tiền (optional, nếu bạn muốn hiển thị tổng tiền sau khi giảm giá)
+            const totalAmount = subtotal - discountAmount;
+            document.querySelector('#total').innerText = formatCurrency(totalAmount);
+
+        } else {
+            alert("Mã giảm giá không hợp lệ.");
+        }
+    })
+    .catch(error => {
+        console.error("Lỗi khi áp dụng mã giảm giá:", error);
+        alert("Đã có lỗi xảy ra, vui lòng thử lại sau.");
+    });
+
+});
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+

@@ -73,6 +73,12 @@
 //         .catch(error => console.error('Error checking login status:', error));
 // }
 //hàm trên đúng
+
+// //////// xử lý searchForm trên header
+
+
+// //////// xử lý searchForm trên header
+
 function checkLoginStatus() {
     // Kiểm tra trạng thái đăng nhập
     fetch('/api/auth/check-login', { credentials: 'include' })
@@ -396,4 +402,4 @@ function performSearch() {
         alert("Vui lòng nhập từ khóa tìm kiếm!");
     }
 }
-////////////////////////////
+////////////////////////////// fetch footẻ

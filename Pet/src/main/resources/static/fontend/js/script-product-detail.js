@@ -458,3 +458,63 @@ function generateStarRating(rating) {
     }
     return stars;
 }
+/////////////////////////////////////// hiển thị đánh giá trung bình
+document.addEventListener("DOMContentLoaded", function () {
+    // Lấy productId từ URL
+    const productId = getProductIdFromURL(); // Hàm lấy productId từ URL
+
+    // Gọi API để lấy đánh giá trung bình cho sản phẩm
+    fetch(`http://localhost:8080/reviews/product/${productId}/average-rating`)
+        .then(response => response.json())  // Lấy dữ liệu từ API
+        .then(data => {
+            let averageRating = parseFloat(data);  // Chuyển giá trị trung bình từ API thành số
+
+            // Kiểm tra nếu giá trị trả về là số hợp lệ
+            if (isNaN(averageRating)) {
+                console.error("Invalid average rating:", data);  // Hiển thị lỗi nếu không phải số
+                document.querySelector('.product-rating span').textContent = "(Không có đánh giá)";
+                return;  // Dừng lại nếu giá trị không hợp lệ
+            }
+
+            updateRatingStars(averageRating);  // Cập nhật sao dựa trên giá trị trung bình trả về
+        })
+        .catch(error => {
+            console.error("Error fetching average rating:", error);
+            document.querySelector('.product-rating span').textContent = "(Không thể tải đánh giá)";
+        });
+
+    // Cập nhật sao dựa trên đánh giá trung bình
+    function updateRatingStars(averageRating) {
+        let stars = document.querySelectorAll('.product-rating i');
+        
+        let rating = Math.floor(averageRating);  // Làm tròn giá trị xuống
+        let hasHalfStar = (averageRating % 1) !== 0; // Kiểm tra nếu có sao nửa
+
+        stars.forEach((star, index) => {
+            // Đặt sao đầy
+            if (index < rating) {
+                star.classList.remove('fa-star-half-alt');
+                star.classList.add('fa-star');
+            }
+            // Đặt sao nửa
+            else if (index === rating && hasHalfStar) {
+                star.classList.remove('fa-star');
+                star.classList.add('fa-star-half-alt');
+            }
+            // Đặt sao trống
+            else {
+                star.classList.remove('fa-star');
+                star.classList.remove('fa-star-half-alt');
+            }
+        });
+
+        // Hiển thị số sao trung bình trong span
+        document.querySelector('.product-rating span').textContent = `(${averageRating.toFixed(1)} sao trung bình)`;
+    }
+
+    // Hàm lấy productId từ URL
+    function getProductIdFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get("id");
+    }
+});

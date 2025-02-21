@@ -234,3 +234,9 @@ function updateAvatarImage() {
 // Tải thông tin người dùng khi trang được tải
 loadUserInfo();
 
+// Lắng nghe sự kiện thay đổi của input file
+document.getElementById('fileInput').addEventListener('change', function(event) {
+    const fileInput = event.target;
+    const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : "Chưa chọn ảnh";
+    document.getElementById('fileName').textContent = "file đã được chọn: " + fileName;
+});

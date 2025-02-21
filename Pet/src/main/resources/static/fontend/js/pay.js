@@ -253,29 +253,6 @@ function closeModal() {
     document.getElementById('address-modal').style.display = 'none';
 }
 
-// function selectAddress(address) {
-//     // Cập nhật nội dung địa chỉ nhận hàng
-//     document.getElementById('address-name').innerHTML = 
-//         `<strong>${address.name || 'Không có tên'}</strong> (+84) ${address.phone || 'Không có số'}`;
-//     document.getElementById('address-location').innerText = 
-//         `${address.addressDetail}, ${address.wardSubdistrict}, ${address.district}, ${address.provinceCity}`;
-
-//     // Đóng modal
-//     closeModal();
-// }
-// function selectAddress(address) {
-//     // Cập nhật nội dung địa chỉ nhận hàng phía ngoài
-//     document.getElementById('address-name').innerHTML = 
-//         `<strong>${address.recipientName || 'Không có tên'}</strong> ${address.phoneNumber || 'Không có số'}`;
-//     document.getElementById('address-location').innerText = 
-//         `${address.addressDetail}, ${address.wardSubdistrict}, ${address.district}, ${address.provinceCity}`;
-
-//            // Lưu ID địa chỉ vào thuộc tính data-address-id
-//     const addressBox = document.getElementById('address-box');
-//     addressBox.setAttribute('data-address-id', address.id);
-//     // Đóng modal
-//     closeModal();
-// }
 
 
 // Hàm đóng modal
@@ -285,6 +262,15 @@ function closeModal() {
 }
 
 /////////////////////////////////////////////////////////////////////////////// chức năng hiển thị hình ảnh số lượng
+// Lắng nghe sự kiện khi trang bị thoát hoặc reload
+window.addEventListener("beforeunload", function () {
+    // Xóa dữ liệu trong localStorage khi người dùng thoát khỏi trang
+    localStorage.removeItem('couponCode');
+    localStorage.removeItem('discountAmount');
+    console.log("Dữ liệu trong localStorage đã được reset.");
+});
+
+
 document.addEventListener("DOMContentLoaded", async function () {
     // === Hàm định dạng tiền tệ theo chuẩn VNĐ ===
     const formatCurrency = (value) => {
@@ -297,13 +283,22 @@ document.addEventListener("DOMContentLoaded", async function () {
         // const shippingFee = totalPrice > 0 ? 30000 : 0; // Phí vận chuyển
         // const discount = totalPrice >= 100000 ? 50000 : 0; // Khuyến mãi
         const shippingFee = 0;
-        const discount = 0;
-        const totalPayment = totalPrice + shippingFee - discount; // Tổng thanh toán
-        
+        // const discount = 0;
+   
+        let discountAmount = parseFloat(localStorage.getItem('discountAmount')) || 0; // Đảm bảo là số thực
+
+        // Định dạng số tiền giảm theo kiểu tiền tệ
+        const formattedDiscountAmount = formatCurrency(discountAmount);
+
+        // Hiển thị lên giao diện
+        document.querySelector("#discount").innerText = formattedDiscountAmount;
+
+        console.log("Số tiền giảm đã lưu: " + localStorage.getItem('formattedDiscountAmount'));
+        const totalPayment = totalPrice + shippingFee - discountAmount; // Tổng thanh toán
         // Cập nhật giao diện
         document.querySelector("#total-price").innerText = formatCurrency(totalPrice);
         document.querySelector("#shipping-fee").innerText = formatCurrency(shippingFee);
-        document.querySelector("#discount").innerText = formatCurrency(discount);
+        // document.querySelector("#discount").innerText = discountAmount;
         document.querySelector("#total-payment").innerText = formatCurrency(totalPayment);
     };
 
@@ -514,6 +509,28 @@ async function submitPayment() {
             responseData = await response.text(); // Xử lý text nếu không phải JSON
             console.log('Phản hồi dạng plain text:', responseData);
         }
+
+        ///////////////////////////// nhã thêm tại đây ngày 21 thấng 2
+          // Sau khi tạo đơn hàng thành công, giảm usageLimit nếu có mã giảm giá
+          const couponCode = localStorage.getItem('couponCode');
+          if (couponCode) {
+              // Gửi yêu cầu API để giảm usageLimit của mã giảm giá
+              const discountResponse = await fetch(`/api/discounts/update-UsageLimit/${couponCode}`, {
+                  method: 'PUT',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ usageLimit: -1 }), // Giảm usageLimit đi 1
+              });
+  
+              if (!discountResponse.ok) {
+                  const errorText = await discountResponse.text();
+                  throw new Error(errorText || 'Đã xảy ra lỗi khi cập nhật usageLimit.');
+              }
+  
+              console.log('Cập nhật usageLimit thành công.');
+          }
+        /////////////////////////////////////////
          // Sau khi tạo đơn hàng thành công
          const deleteCartPromises = orderItems.map(async (item) => {
             try {
@@ -529,6 +546,7 @@ async function submitPayment() {
                 console.error(`Lỗi khi xóa sản phẩm ID: ${item.productId} khỏi giỏ hàng:`, error.message);
             }
         });
+
 
         // Đợi tất cả các sản phẩm được xóa khỏi giỏ hàng
         await Promise.all(deleteCartPromises);

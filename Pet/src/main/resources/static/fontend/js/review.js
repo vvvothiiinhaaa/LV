@@ -67,4 +67,10 @@ document.addEventListener("DOMContentLoaded", function () {
         const params = new URLSearchParams(window.location.search);
         return params.get("productId") || 1; // Mặc định là 1 nếu không tìm thấy
     }
+
+
 });
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+

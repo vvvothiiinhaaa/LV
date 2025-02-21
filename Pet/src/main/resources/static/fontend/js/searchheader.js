@@ -60,7 +60,7 @@ function performSearch() {
     }
 
     // Chuyển hướng đến trang tìm kiếm
-    const searchUrl = "searchproduct.html?query=" + encodeURIComponent(query);
+    const searchUrl = "product.html?query=" + encodeURIComponent(query);
     console.log(" Chuyển hướng đến:", searchUrl);
     window.location.href = searchUrl;
 }
