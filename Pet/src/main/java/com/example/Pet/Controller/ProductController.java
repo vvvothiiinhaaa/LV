@@ -75,11 +75,61 @@ public class ProductController {
 
     /////////////////////////////////////////// thêm sản phẩm mớimới
 
+    // @PostMapping("/add")
+    // public Product addProduct(
+    //         @RequestParam("name") String name,
+    //         @RequestParam("price") Double price,
+    //         // @RequestParam("sold") Integer sold,
+    //         @RequestParam("genre") String genre,
+    //         @RequestParam("origin") String origin,
+    //         @RequestParam("brand") String brand,
+    //         @RequestParam("component") String component,
+    //         @RequestParam("description") String description,
+    //         @RequestParam("quantity") Integer quantity,
+    //         @RequestParam("ingredient") String ingredient,
+    //         @RequestParam("url") MultipartFile urlFile,
+    //         @RequestParam("url1") MultipartFile url1,
+    //         @RequestParam("url2") MultipartFile url2,
+    //         @RequestParam("url3") MultipartFile url3,
+    //         @RequestParam("url4") MultipartFile url4) {
+
+    //     // Lưu ảnh chính của sản phẩm
+    //     String mainImageUrl = fileStorageService.saveFile(urlFile);  // Lưu ảnh chính
+
+    //     // Tạo mới sản phẩm
+    //     Product product = new Product();
+    //     product.setName(name);
+    //     product.setPrice(price);
+    //     // product.setSold(sold);
+    //     product.setGenre(genre);
+    //     product.setOrigin(origin);
+    //     product.setBrand(brand);
+    //     product.setComponent(component);
+    //     product.setDescription(description);
+    //     product.setQuantity(quantity);
+    //     product.setIngredient(ingredient);
+    //     product.setUrl(mainImageUrl);  // Đường dẫn của ảnh chính
+
+    //     // Lưu sản phẩm vào cơ sở dữ liệu
+    //     product = productRepository.save(product);
+
+    //     // Lưu ảnh phụ
+    //     imgProduct imgProd = new imgProduct();
+    //     imgProd.setProductId(product.getId());
+    //     imgProd.setUrl1(fileStorageService.saveFile(url1));  // Lưu ảnh phụ 1
+    //     imgProd.setUrl2(fileStorageService.saveFile(url2));  // Lưu ảnh phụ 2
+    //     imgProd.setUrl3(fileStorageService.saveFile(url3));  // Lưu ảnh phụ 3
+    //     imgProd.setUrl4(fileStorageService.saveFile(url4));  // Lưu ảnh phụ 4
+
+    //     // Lưu ảnh phụ vào cơ sở dữ liệu
+    //     imgproductRepository.save(imgProd);
+
+    //     return product;  // Trả về sản phẩm vừa được lưu
+    // }
     @PostMapping("/add")
     public Product addProduct(
             @RequestParam("name") String name,
             @RequestParam("price") Double price,
-            @RequestParam("sold") Integer sold,
             @RequestParam("genre") String genre,
             @RequestParam("origin") String origin,
             @RequestParam("brand") String brand,
@@ -88,19 +138,19 @@ public class ProductController {
             @RequestParam("quantity") Integer quantity,
             @RequestParam("ingredient") String ingredient,
             @RequestParam("url") MultipartFile urlFile,
-            @RequestParam("url1") MultipartFile url1,
-            @RequestParam("url2") MultipartFile url2,
-            @RequestParam("url3") MultipartFile url3,
-            @RequestParam("url4") MultipartFile url4) {
+            @RequestParam(value = "url1", required = false) MultipartFile url1,
+            @RequestParam(value = "url2", required = false) MultipartFile url2,
+            @RequestParam(value = "url3", required = false) MultipartFile url3,
+            @RequestParam(value = "url4", required = false) MultipartFile url4) {
 
         // Lưu ảnh chính của sản phẩm
-        String mainImageUrl = fileStorageService.saveFile(urlFile);  // Lưu ảnh chính
+        String mainImageUrl = fileStorageService.saveFile(urlFile);
 
-        // Tạo mới sản phẩm
+        // Tạo mới sản phẩm với `sold = 0` mặc định
         Product product = new Product();
         product.setName(name);
         product.setPrice(price);
-        product.setSold(sold);
+        product.setSold(0);  // 🔹 Mặc định giá trị `sold` là 0
         product.setGenre(genre);
         product.setOrigin(origin);
         product.setBrand(brand);
@@ -108,21 +158,25 @@ public class ProductController {
         product.setDescription(description);
         product.setQuantity(quantity);
         product.setIngredient(ingredient);
-        product.setUrl(mainImageUrl);  // Đường dẫn của ảnh chính
+        product.setUrl(mainImageUrl);
 
         // Lưu sản phẩm vào cơ sở dữ liệu
         product = productRepository.save(product);
 
-        // Lưu ảnh phụ
+        // Tạo đối tượng `imgProduct` chỉ khi có ảnh phụ
         imgProduct imgProd = new imgProduct();
         imgProd.setProductId(product.getId());
-        imgProd.setUrl1(fileStorageService.saveFile(url1));  // Lưu ảnh phụ 1
-        imgProd.setUrl2(fileStorageService.saveFile(url2));  // Lưu ảnh phụ 2
-        imgProd.setUrl3(fileStorageService.saveFile(url3));  // Lưu ảnh phụ 3
-        imgProd.setUrl4(fileStorageService.saveFile(url4));  // Lưu ảnh phụ 4
 
-        // Lưu ảnh phụ vào cơ sở dữ liệu
-        imgproductRepository.save(imgProd);
+        // Chỉ lưu ảnh phụ nếu được tải lên
+        imgProd.setUrl1(url1 != null && !url1.isEmpty() ? fileStorageService.saveFile(url1) : null);
+        imgProd.setUrl2(url2 != null && !url2.isEmpty() ? fileStorageService.saveFile(url2) : null);
+        imgProd.setUrl3(url3 != null && !url3.isEmpty() ? fileStorageService.saveFile(url3) : null);
+        imgProd.setUrl4(url4 != null && !url4.isEmpty() ? fileStorageService.saveFile(url4) : null);
+
+        // Kiểm tra nếu có ít nhất một ảnh phụ thì mới lưu vào DB
+        if (imgProd.getUrl1() != null || imgProd.getUrl2() != null || imgProd.getUrl3() != null || imgProd.getUrl4() != null) {
+            imgproductRepository.save(imgProd);
+        }
 
         return product;  // Trả về sản phẩm vừa được lưu
     }
