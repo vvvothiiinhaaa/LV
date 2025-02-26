@@ -1,10 +1,14 @@
 package com.example.Pet.Controller;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,26 +31,6 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    // @PostMapping("/create")
-    // public ResponseEntity<String> createOrder(
-    //         @RequestParam Integer userId,
-    //         @RequestParam BigDecimal discount,
-    //         @RequestParam BigDecimal totalPayment,
-    //         @RequestParam String paymentMethod,
-    //         @RequestParam Integer addressId,
-    //         @RequestBody List<OrderItem> orderItems) {
-    //     try {
-    //         // Kiểm tra danh sách sản phẩm
-    //         if (orderItems == null || orderItems.isEmpty()) {
-    //             return ResponseEntity.badRequest().body("Danh sách sản phẩm (orderItems) không được để trống.");
-    //         }
-    //         // Gọi service để tạo đơn hàng
-    //         Order savedOrder = orderService.createOrder(userId, discount, totalPayment, paymentMethod, orderItems, addressId);
-    //         return ResponseEntity.ok("Đơn hàng đã được tạo thành công với ID: " + savedOrder.getId());
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body("Lỗi khi tạo đơn hàng: " + e.getMessage());
-    //     }
-    // }
     @PostMapping("/create")
     public ResponseEntity<String> createOrder(
             @RequestParam Integer userId,
@@ -78,6 +62,12 @@ public class OrderController {
         return ResponseEntity.ok(orderDetails);
     }
 
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Order>> getOrdersByStatus(@PathVariable String status) {
+        List<Order> orders = orderService.getOrdersByStatus(status);
+        return ResponseEntity.ok(orders);
+    }
+
     ////// api lấy đơn hàng theo trạng thái
     @GetMapping("/user/{userId}/status/{status}")
     public ResponseEntity<List<Order>> getOrdersByUserAndStatus(
@@ -92,6 +82,12 @@ public class OrderController {
     public ResponseEntity<List<Order>> getOrdersByUserId(@PathVariable Integer userId) {
         List<Order> orders = orderService.getOrdersByUserId(userId);
         return ResponseEntity.ok(orders);
+    }
+    // Lấy tất cả đơn hàng cho admin
+
+    @GetMapping("/employee")
+    public List<Order> getAllOrders() {
+        return orderService.getAllOrders();
     }
 
     /////////////////////////////////////// hủy đơn hàng 
@@ -115,4 +111,28 @@ public class OrderController {
             return ResponseEntity.status(404).body("Order not found");
         }
     }
+
+    @GetMapping("/date")
+    public List<Order> getOrdersByDate(
+            @RequestParam("orderDate")
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate orderDate) {
+        return orderService.getOrdersByDate(orderDate);
+    }
+
+    @GetMapping("/filter")
+    public List<Order> getOrdersByStatusAndDate(
+            @RequestParam(value = "orderStatus", required = false) String status,
+            @RequestParam(value = "orderDate", required = false)
+            @DateTimeFormat(pattern = "yyyy-MM-dd") Date orderDate) {
+
+        // Convert date to string in the format yyyy-MM-dd if orderDate is provided
+        String orderDateString = null;
+        if (orderDate != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            orderDateString = sdf.format(orderDate);
+        }
+
+        return orderService.getOrders(status, orderDateString); // Gọi service để lấy đơn hàng
+    }
+
 }

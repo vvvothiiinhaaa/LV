@@ -1,6 +1,7 @@
 package com.example.Pet.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -162,6 +163,16 @@ public class OrderService {
         return orderRepository.findByUserIdAndOrderStatus(userId, status);
     }
 
+    // Lấy tất cả đơn hàng
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    public List<Order> getOrdersByStatus(String status) {
+        // Giả sử Order có thuộc tính 'orderStatus' là trạng thái của đơn hàng
+        return orderRepository.findByOrderStatus(status);
+    }
+
     /// lấy tất cả đơn hàng
     public List<Order> getOrdersByUserId(Integer userId) {
         return orderRepository.findByUserId(userId);
@@ -215,6 +226,18 @@ public class OrderService {
         } else {
             throw new RuntimeException("Order not found");
         }
+    }
+
+    ////////////////////////////////////////////////////////////
+    /// 
+    /// 
+  public List<Order> getOrdersByDate(LocalDate orderDate) {
+        return orderRepository.findOrdersByOrderDate(orderDate); // Truy vấn từ repository
+    }
+
+    // Phương thức lấy đơn hàng theo trạng thái và ngày (hoặc thiếu một trong hai)
+    public List<Order> getOrders(String status, String orderDate) {
+        return orderRepository.findOrdersByStatusAndDate(status, orderDate);
     }
 
 }

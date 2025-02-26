@@ -273,13 +273,75 @@ public class ProductController {
 
     //     return ResponseEntity.ok(product);
     // }
-    /////////////////// cậpp nhật có thể vắng các cột 
+    // /////////////////// cậpp nhật có thể vắng các cột 
+    // @PutMapping("/{productId}/update")
+    // public ResponseEntity<Product> updateProduct(
+    //         @PathVariable Long productId,
+    //         @RequestParam(value = "name", required = false) String name,
+    //         @RequestParam(value = "price", required = false) Double price,
+    //         @RequestParam(value = "sold", required = false) Integer sold, // Thêm required = false
+    //         @RequestParam(value = "genre", required = false) String genre,
+    //         @RequestParam(value = "origin", required = false) String origin,
+    //         @RequestParam(value = "brand", required = false) String brand,
+    //         @RequestParam(value = "component", required = false) String component,
+    //         @RequestParam(value = "description", required = false) String description,
+    //         @RequestParam(value = "quantity", required = false) Integer quantity,
+    //         @RequestParam(value = "ingredient", required = false) String ingredient,
+    //         @RequestParam(value = "url", required = false) MultipartFile urlFile) {
+
+    //     Optional<Product> productOptional = productRepository.findById(productId);
+    //     if (!productOptional.isPresent()) {
+    //         return ResponseEntity.notFound().build();
+    //     }
+
+    //     Product product = productOptional.get();
+    //     if (name != null) {
+    //         product.setName(name);
+    //     }
+    //     if (price != null) {
+    //         product.setPrice(price);
+    //     }
+    //     if (sold != null) {
+    //         product.setSold(sold);  // Chỉ cập nhật nếu có giá trị
+
+    //     }
+    //     if (genre != null) {
+    //         product.setGenre(genre);
+    //     }
+    //     if (origin != null) {
+    //         product.setOrigin(origin);
+    //     }
+    //     if (brand != null) {
+    //         product.setBrand(brand);
+    //     }
+    //     if (component != null) {
+    //         product.setComponent(component);
+    //     }
+    //     if (description != null) {
+    //         product.setDescription(description);
+    //     }
+    //     if (quantity != null) {
+    //         product.setQuantity(quantity);
+    //     }
+    //     if (ingredient != null) {
+    //         product.setIngredient(ingredient);
+    //     }
+
+    //     if (urlFile != null) {
+    //         product.setUrl(fileStorageService.saveFile(urlFile));
+    //     }
+
+    //     product = productRepository.save(product);
+
+    //     return ResponseEntity.ok(product);
+    // }
+
     @PutMapping("/{productId}/update")
     public ResponseEntity<Product> updateProduct(
             @PathVariable Long productId,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "price", required = false) Double price,
-            @RequestParam(value = "sold", required = false) Integer sold, // Thêm required = false
+            @RequestParam(value = "sold", required = false) Integer sold,
             @RequestParam(value = "genre", required = false) String genre,
             @RequestParam(value = "origin", required = false) String origin,
             @RequestParam(value = "brand", required = false) String brand,
@@ -287,14 +349,21 @@ public class ProductController {
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "quantity", required = false) Integer quantity,
             @RequestParam(value = "ingredient", required = false) String ingredient,
-            @RequestParam(value = "url", required = false) MultipartFile urlFile) {
+            @RequestParam(value = "url", required = false) MultipartFile urlFile,
+            @RequestParam(value = "url1", required = false) MultipartFile url1,
+            @RequestParam(value = "url2", required = false) MultipartFile url2,
+            @RequestParam(value = "url3", required = false) MultipartFile url3,
+            @RequestParam(value = "url4", required = false) MultipartFile url4) {
 
+        // Kiểm tra sản phẩm tồn tại
         Optional<Product> productOptional = productRepository.findById(productId);
         if (!productOptional.isPresent()) {
             return ResponseEntity.notFound().build();
         }
 
         Product product = productOptional.get();
+
+        // Cập nhật các trường của sản phẩm nếu có giá trị
         if (name != null) {
             product.setName(name);
         }
@@ -302,8 +371,7 @@ public class ProductController {
             product.setPrice(price);
         }
         if (sold != null) {
-            product.setSold(sold);  // Chỉ cập nhật nếu có giá trị
-
+            product.setSold(sold);
         }
         if (genre != null) {
             product.setGenre(genre);
@@ -327,11 +395,35 @@ public class ProductController {
             product.setIngredient(ingredient);
         }
 
+        // Cập nhật ảnh chính nếu có
         if (urlFile != null) {
             product.setUrl(fileStorageService.saveFile(urlFile));
         }
 
+        // Lưu sản phẩm đã cập nhật
         product = productRepository.save(product);
+
+        // Kiểm tra ảnh phụ cũ
+        Optional<imgProduct> imgProductOptional = imgproductRepository.findByProductId(productId);
+        imgProduct imgProd = imgProductOptional.orElse(new imgProduct());
+        imgProd.setProductId(product.getId());
+
+        // Cập nhật ảnh phụ nếu có thay đổi
+        if (url1 != null && !url1.isEmpty()) {
+            imgProd.setUrl1(fileStorageService.saveFile(url1));
+        }
+        if (url2 != null && !url2.isEmpty()) {
+            imgProd.setUrl2(fileStorageService.saveFile(url2));
+        }
+        if (url3 != null && !url3.isEmpty()) {
+            imgProd.setUrl3(fileStorageService.saveFile(url3));
+        }
+        if (url4 != null && !url4.isEmpty()) {
+            imgProd.setUrl4(fileStorageService.saveFile(url4));
+        }
+
+        // Lưu ảnh phụ vào cơ sở dữ liệu nếu có ít nhất một ảnh phụ
+        imgproductRepository.save(imgProd);
 
         return ResponseEntity.ok(product);
     }
