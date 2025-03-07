@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Lịch Hẹn Cho Thú Cưng</title>
+    
+    <!-- Bootstrap & Icons -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+
+    </style>
+    <style>
+   
+        /* Điều chỉnh khoảng cách để tránh bị header che khuất */
+        body {
+            padding-top: 90px; /* Điều chỉnh theo chiều cao header */
+            background-color: #f8f9fa; /* Nền nhẹ giúp nổi bật nội dung */
+            padding-left:0px !important;
+            padding-right: 0px !important;
+        }
+
+        /* Căn chỉnh hai div trong section có cùng kích thước */
+        .custom-container {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 30px; /* Khoảng cách giữa 2 div */
+        }
+
+        .custom-box {
+            flex: 1; /* Chia đều kích thước */
+            min-height: 400px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+        .custom-box {
+            background-color: #FEFEFE; /* Màu nền */
+            border-radius: 8px; /* Bo góc */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Hiệu ứng bóng */
+            padding: 20px;
+        }
+
+
+        .contact-box {
+            background: white;
+        }
+
+        .form-box {
+            background: #f0f0f0;
+        }
+
+        .custom-box {
+    width: 100%;
+    max-width: 550px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #FEFEFE;
+    border-radius: 0px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Định dạng chung cho input và select */
+#appointmentForm .form-control {
+    width: 100%;
+    height: 45px;
+    padding: 10px;
+    font-size: 16px;
+    background-color: white;
+    border: 2px solid #ddd; /* Viền đồng nhất */
+    border-radius: 8px; /* Bo góc nhẹ */
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+}
+
+/* Hiệu ứng khi focus */
+#appointmentForm .form-control:focus {
+    border-color: #007bff; /* Màu xanh nổi bật */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+/* Định dạng cho select */
+#appointmentForm select.form-control {
+    appearance: none; /* Ẩn giao diện mặc định */
+    background: white;
+    cursor: pointer;
+}
+
+/* Biểu tượng dropdown cho select */
+#appointmentForm select.form-control::after {
+    content: "\f078"; /* Biểu tượng mũi tên từ Bootstrap Icons */
+    font-family: "Bootstrap-icons";
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+/* Định dạng cho input date */
+#appointmentForm input[type="date"] {
+    text-align: center;
+    padding-left: 15px;
+    cursor: pointer;
+}
+
+/* Định dạng nút đặt lịch */
+#appointmentForm button {
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 12px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+#appointmentForm button:hover {
+    background-color: #333;
+}
+
+/* Điều chỉnh hiển thị Select2 */
+.select2-container .select2-selection--single {
+    height: 45px !important;
+    border: 2px solid #ddd !important;
+    border-radius: 8px !important;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+/* Định dạng Select2 Multiple */
+.select2-container .select2-selection--multiple {
+    border: 2px solid #ddd !important;
+    border-radius: 8px !important;
+    padding: 5px;
+    min-height: 45px;
+}
+
+.select2-container .select2-selection--multiple .select2-selection__choice {
+    background: #007bff;
+    color: white;
+    border-radius: 15px;
+    padding: 5px 10px;
+    margin: 3px;
+}
+
+/* contact boxbox */
+/* Định dạng chung cho khung Liên Hệ */
+.contact-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Căn giữa theo chiều dọc */
+    align-items: center; /* Căn giữa theo chiều ngang */
+    text-align: center;
+    /* height: 100%; Đảm bảo chiều cao để căn giữa */
+    padding: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+/* Tiêu đề */
+.contact-box h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* Đoạn mô tả */
+.contact-box p.text-muted {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* Phần thông tin liên hệ */
+.contact-box .mt-3 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Căn giữa nội dung theo chiều dọc */
+    gap: 15px; /* Tạo khoảng cách giữa các dòng */
+}
+
+/* Các dòng thông tin */
+.contact-box p {
+    font-size: 20px; /* Tăng kích thước chữ */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Kích thước biểu tượng */
+.contact-box i {
+    font-size: 24px; /* Tăng kích thước icon */
+    color: black; /* Màu xanh nổi bật */
+}
+
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div id="header"></div>
+
+    <!-- Nội dung chính -->
+    <section class="container py-5">
+        <div class="custom-container">
+            <!-- Thông tin liên hệ -->
+            <div class="custom-box contact-box">
+                <h2 class="text-dark font-weight-bold">Liên Hệ Với Chúng Tôi</h2>
+                <p class="text-muted">Bạn có thể ghé thăm chúng tôi trong giờ làm việc nếu cần hỗ trợ trực tiếp.</p>
+                <div class="mt-3">
+                    <p><i class="bi bi-telephone"></i> +123 456 7890</p>
+                    <p><i class="bi bi-envelope"></i> info@pettie.com</p>
+                    <p><i class="bi bi-geo-alt"></i> 3/2 Phường Xuân Khánh, Ninh Kiều, Cần Thơ</p>
+                </div>
+            </div>
+
+            <!-- Form đặt lịch hẹn -->
+            <div class="custom-box form-box">
+                <h3 class="text-dark text-center">Đặt Lịch Hẹn Cho Thú Cưng</h3>
+                <form id="appointmentForm" class="mt-3">
+                    <label for="pet" class="font-weight-bold">Chọn Thú Cưng:</label>
+                    <select id="pet" class="form-control"></select>
+
+                    <label for="service" class="font-weight-bold mt-2">Chọn Dịch Vụ:</label>
+                    <select id="service" class="form-control" multiple></select>
+
+                    <label for="time" class="font-weight-bold mt-2">Chọn Thời Gian:</label>
+                    <select id="time" class="form-control">
+                        <option value="09:00-10:30">09:00-10:30</option>
+                        <option value="11:00-12:00">11:00-12:00</option>
+                        <option value="12:30-14:00">12:30-14:00</option>
+                        <option value="14:00-15:30">14:00-15:30</option>
+                        <option value="16:00-17:30">16:00-17:30</option>
+                        <option value="18:00-19:30">18:00-19:30</option>
+                        <option value="20:00-21:20">20:00-21:20</option>
+                    </select>
+
+                    <label for="appDate" class="font-weight-bold mt-2">Chọn Ngày:</label>
+                    <input type="date" id="appDate" class="form-control" required>
+
+                    <button type="submit" class="btn btn-dark btn-block mt-3">Đặt Lịch</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div id="footer"></div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+    <script src="./js/appointment.js"></script>
+    <script src="./js/header.js"></script>
+    <script src="./js/footer.js"></script>
+</body>
+</html>

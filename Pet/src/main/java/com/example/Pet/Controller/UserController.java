@@ -78,15 +78,21 @@ public class UserController {
             // Đăng nhập và lấy đối tượng người dùng
             User user = userService.loginUser(username, passwords);
 
-            // Kiểm tra nếu người dùng đăng nhập thành công
+            // Kiểm tra nếu người dùng tồn tại
             if (user != null) {
+                // Kiểm tra trạng thái của tài khoản
+                if (!user.getStatus()) {  // Giả sử `getStatus()` trả về `true` nếu tài khoản đang hoạt động
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Tài khoản của bạn đã bị vô hiệu hóa");
+                }
+
                 // Lưu thông tin người dùng vào session
                 session.setAttribute("user", user); // Lưu đối tượng user vào session
 
                 // Trả về thông tin người dùng
                 Map<String, Object> response = new HashMap<>();
                 response.put("username", user.getUsername());
-                response.put("cartId", cartService.findCartByUserId(user.getId()) != null ? cartService.findCartByUserId(user.getId()).getId() : null);
+                response.put("cartId", cartService.findCartByUserId(user.getId()) != null
+                        ? cartService.findCartByUserId(user.getId()).getId() : null);
 
                 return ResponseEntity.ok(response);
             } else {

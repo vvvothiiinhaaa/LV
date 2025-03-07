@@ -1,406 +1,86 @@
-// document.addEventListener("DOMContentLoaded", function () {
-//     // Fetch orders data from the API
-//     fetch(`http://localhost:8080/api/orders/employee`)
-//         .then(response => response.json())
-//         .then(data => {
-//             const tableBody = document.getElementById("tableBody");
+// kiểm tra trạng thái đăng nhập
+async function checkLoginStatus() {
+    try {
+        const response = await fetch('/employee/check-login'); // Đợi phản hồi
+        if (response.ok) {
+            const employee = await response.json(); // Đợi chuyển đổi JSON
+            console.log("Đã đăng nhập:", employee.username);
 
-//             // Check if the data is an array
-//             const orders = Array.isArray(data) ? data : [data];
+            // Lưu thông tin vào localStorage
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("username", employee.username);
+            return true;
+        } else {
+            console.log("Chưa đăng nhập.");
+            localStorage.removeItem("isLoggedIn");
+            return false;
+        }
+    } catch (error) {
+        console.error("Lỗi khi kiểm tra đăng nhập:", error);
+        localStorage.removeItem("isLoggedIn");
+        return false;
+    }
+}
 
-//             // Process each order and fetch username
-//             const orderPromises = orders.map(order => {
-//                 return fetch(`http://localhost:8080/api/auth/info/${order.userId}`)
-//                     .then(response => response.json())
-//                     .then(userData => {
-//                         const row = document.createElement("tr");
+document.addEventListener("DOMContentLoaded", async function () {
+    const isLoggedIn = await checkLoginStatus(); // Đợi kết quả
 
-//                         // Populate the table row with order data and username
-//                         row.innerHTML = `
-//                             <td><input type="checkbox" class="order-checkbox"></td> <!-- Checkbox -->
-//                             <td>${order.id}</td>
-//                             <td>${userData.username}</td> <!-- Display username -->
-//                             <td>${new Date(order.orderDate).toLocaleDateString()}</td>
-//                             <td>${formatVND(order.totalPayment)}</td>
-//                             <td>${order.paymentMethod}</td>
-//                             <td>${order.orderStatus}</td>
-//                             <td><button onclick="viewOrderDetails(${order.id})" class="btn btn-info">Chi tiết</button></td>
-//                             <td><button onclick="approveOrder(${order.id})" class="btn btn-info">Duyệt</button></td>
-//                         `;
+    if (!isLoggedIn) {
+        alert("Vui lòng đăng nhập để truy cập trang này.");
+        window.location.href = "/fontend/employee-login.html";
+        return;
+    }
 
-//                         // Append the row to the table body
-//                         tableBody.appendChild(row);
-//                     })
-//                     .catch(error => console.error("Error fetching user data:", error));
-//             });
+});
 
-//             // Wait for all user data to be fetched before initializing DataTables
-//             Promise.all(orderPromises).then(() => {
-//                 // Initialize DataTables
-//                 $('#datatablesSimple').DataTable({
-//                     "stripeClasses": [],
-//                     "paging": true,        // Enable pagination
-//                     "searching": true,     // Enable search box
-//                     "ordering": true,      // Enable sorting
-//                     "info": true,          // Show record info
-//                     "lengthMenu": [5, 10, 30, 100], // Records per page
-//                     "language": {
-//                         "lengthMenu": "Hiển thị _MENU_ bản ghi mỗi trang",
-//                         "zeroRecords": "Không tìm thấy dữ liệu",
-//                         "info": "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
-//                         "infoEmpty": "Không có bản ghi nào",
-//                         "infoFiltered": "(Lọc từ _MAX_ bản ghi)",
-//                         "search": "Tìm kiếm:",
-//                         "paginate": {
-//                             "first": "Đầu",
-//                             "last": "Cuối",
-//                             "next": ">",
-//                             "previous": "<"
-//                         }
-//                     }
-//                 });
-//             });
-//         })
-//         .catch(error => console.error("Error fetching data:", error));
-// });
-// function formatVND(amount) {
-//     const number = parseFloat(amount).toFixed(0);
-    
-//     const formattedNumber = number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+async function viewOrderDetails(orderId) {
+    const isLoggedIn =  checkLoginStatus();
+    if (!isLoggedIn) {
+        alert("Vui lòng đăng nhập trước khi xem chi tiết đơn hàng.");
+        window.location.href = "/frontend/employee-login.html";
+        return;
+    }
 
-//     return formattedNumber + " VND";
-// }
-// ////////////////////////////////////////////////////////////////////
-
-// document.addEventListener("DOMContentLoaded", function () {
-//     const orderStatusSelect = document.getElementById("orderStatus");
-
-//     // Function to fetch and display orders based on selected status
-//     function fetchOrders(status = 'ALL') {
-//         // Clear previous DataTable instance before fetching new data
-//         if ($.fn.dataTable.isDataTable('#datatablesSimple')) {
-//             $('#datatablesSimple').DataTable().destroy();
-//         }
-
-//         let apiUrl = '';
-
-//         if (status === 'ALL') {
-//             // Fetch all orders (no status filter)
-//             apiUrl = 'http://localhost:8080/api/orders/employee';
-//         } else {
-//             // Fetch orders filtered by status
-//             apiUrl = `http://localhost:8080/api/orders/status/${encodeURIComponent(status)}`;
-//         }
-
-//         // Fetch orders from the API
-//         fetch(apiUrl)
-//             .then(response => response.json())
-//             .then(data => {
-//                 console.log("Fetched Data:", data); // Log the fetched data
-
-//                 const tableBody = document.getElementById("tableBody");
-//                 tableBody.innerHTML = ''; // Clear the existing rows before adding new ones
-
-//                 if (Array.isArray(data) && data.length > 0) {
-//                     const orderPromises = data.map(order => {
-//                         return fetch(`http://localhost:8080/api/auth/info/${order.userId}`)
-//                             .then(response => response.json())
-//                             .then(userData => {
-//                                 const row = document.createElement("tr");
-
-//                                 // Populate the table row with order data and username
-//                                 row.innerHTML = `
-//                                     <td><input type="checkbox" class="order-checkbox"></td> <!-- Checkbox -->
-//                                     <td>${order.id}</td>
-//                                     <td>${userData.username}</td> <!-- Display username -->
-//                                     <td>${new Date(order.orderDate).toLocaleDateString()}</td>
-//                                     <td>${formatVND(order.totalPayment)}</td>
-//                                     <td>${order.paymentMethod}</td>
-//                                     <td>${order.orderStatus}</td>
-//                                     <td><button onclick="viewOrderDetails(${order.id})" class="btn btn-info">Chi tiết</button></td>
-//                                     <td><button onclick="approveOrder(${order.id})" class="btn btn-info">Duyệt</button></td>
-//                                 `;
-                                
-//                                 console.log("Row added:", row); // Log the row being added
-
-//                                 // Append the row to the table body
-//                                 tableBody.appendChild(row);
-//                             })
-//                             .catch(error => console.error("Error fetching user data:", error));
-//                     });
-
-//                     Promise.all(orderPromises).then(() => {
-//                         // Reinitialize the DataTable after data is added
-//                         $('#datatablesSimple').DataTable({
-//                             "stripeClasses": [],
-//                             "paging": true,        // Enable pagination
-//                             "searching": true,     // Enable search box
-//                             "ordering": true,      // Enable sorting
-//                             "info": true,          // Show record info
-//                             "lengthMenu": [5, 10, 30, 100], // Records per page
-//                             "language": {
-//                                 "lengthMenu": "Hiển thị _MENU_ bản ghi mỗi trang",
-//                                 "zeroRecords": "Không tìm thấy dữ liệu",
-//                                 "info": "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
-//                                 "infoEmpty": "Không có bản ghi nào",
-//                                 "infoFiltered": "(Lọc từ _MAX_ bản ghi)",
-//                                 "search": "Tìm kiếm:",
-//                                 "paginate": {
-//                                     "first": "Đầu",
-//                                     "last": "Cuối",
-//                                     "next": ">",
-//                                     "previous": "<"
-//                                 }
-//                             }
-//                         });
-//                     });
-//                 } else {
-//                     console.log("No data found for status:", status);
-//                 }
-//             })
-//             .catch(error => console.error("Error fetching data:", error));
+    // Nếu đã đăng nhập, chuyển hướng đến trang chi tiết đơn hàng
+    window.location.href = `staff-order-detail.html?orderId=${orderId}`;
+}
+// document.getElementById("orderStatus").addEventListener("change", async function () {
+//     const isLoggedIn = checkLoginStatus();
+//     if (!isLoggedIn) {
+//         alert("Vui lòng đăng nhập để lọc danh sách đơn hàng.");
+//         window.location.href = "/frontend/employee-login.html";
+//         return;
 //     }
 
-//     // Initial fetch with "ALL" status
-//     fetchOrders('ALL');
-
-//     // Event listener for the orderStatus select element
-//     orderStatusSelect.addEventListener('change', function () {
-//         const selectedStatus = orderStatusSelect.value;
-//         fetchOrders(selectedStatus); // Fetch orders based on the selected status
-//     });
+//     const selectedStatus = document.getElementById("orderStatus").value;
+//     const selectedDate = document.getElementById("searchDate").value;
+//     fetchOrders(selectedStatus, selectedDate);
 // });
 
-// // Format function for displaying VND currency
-// function formatVND(amount) {
-//     const number = parseFloat(amount).toFixed(0);
-//     const formattedNumber = number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-//     return formattedNumber + " VND";
-// }
-//////////////////////////////////////////////////////////////
-// document.addEventListener("DOMContentLoaded", function () {
-//     const orderStatusSelect = document.getElementById("orderStatus");
 
-//     // Function to fetch and display orders based on selected status
-//     function fetchOrders(status = 'ALL') {
-//         // Clear previous DataTable instance before fetching new data
-//         if ($.fn.dataTable.isDataTable('#datatablesSimple')) {
-//             $('#datatablesSimple').DataTable().destroy();
-//         }
-
-//         let apiUrl = '';
-
-//         if (status === 'ALL') {
-//             // Fetch all orders (no status filter)
-//             apiUrl = 'http://localhost:8080/api/orders/employee';
-//         } else {
-//             // Fetch orders filtered by status
-//             apiUrl = `http://localhost:8080/api/orders/status/${encodeURIComponent(status)}`;
-//         }
-
-//         // Fetch orders from the API
-//         fetch(apiUrl)
-//             .then(response => response.json())
-//             .then(data => {
-//                 console.log("Fetched Data:", data); // Log the fetched data
-
-//                 const tableBody = document.getElementById("tableBody");
-//                 tableBody.innerHTML = ''; // Clear the existing rows before adding new ones
-
-//                 if (Array.isArray(data) && data.length > 0) {
-//                     const orderPromises = data.map(order => {
-//                         return fetch(`http://localhost:8080/api/auth/info/${order.userId}`)
-//                             .then(response => response.json())
-//                             .then(userData => {
-//                                 const row = document.createElement("tr");
-
-//                                 // Populate the table row with order data and username
-//                                 row.innerHTML = `
-//                                     <td><input type="checkbox" class="order-checkbox"></td> <!-- Checkbox -->
-//                                     <td>${order.id}</td>
-//                                     <td>${userData.username}</td> <!-- Display username -->
-//                                     <td>${new Date(order.orderDate).toLocaleDateString()}</td>
-//                                     <td>${formatVND(order.totalPayment)}</td>
-//                                     <td>${order.paymentMethod}</td>
-//                                     <td>${order.orderStatus}</td>
-//                                     <td><button onclick="viewOrderDetails(${order.id})" class="btn btn-info">Chi tiết</button></td>
-//                                     <td><button onclick="approveOrder(${order.id})" class="btn btn-info">Duyệt</button></td>
-//                                 `;
-                                
-//                                 console.log("Row added:", row); // Log the row being added
-
-//                                 // Append the row to the table body
-//                                 tableBody.appendChild(row);
-//                             })
-//                             .catch(error => console.error("Error fetching user data:", error));
-//                     });
-
-//                     Promise.all(orderPromises).then(() => {
-//                         // Reinitialize the DataTable after data is added
-//                         $('#datatablesSimple').DataTable({
-//                             "stripeClasses": [],
-//                             "paging": true,        // Enable pagination
-//                             "searching": true,     // Enable search box
-//                             "ordering": true,      // Enable sorting
-//                             "info": true,          // Show record info
-//                             "lengthMenu": [5, 10, 30, 100], // Records per page
-//                             "language": {
-//                                 "lengthMenu": "Hiển thị _MENU_ bản ghi mỗi trang",
-//                                 "zeroRecords": "Không tìm thấy dữ liệu",
-//                                 "info": "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
-//                                 "infoEmpty": "Không có bản ghi nào",
-//                                 "infoFiltered": "(Lọc từ _MAX_ bản ghi)",
-//                                 "search": "Tìm kiếm:",
-//                                 "paginate": {
-//                                     "first": "Đầu",
-//                                     "last": "Cuối",
-//                                     "next": ">",
-//                                     "previous": "<"
-//                                 }
-//                             }
-//                         });
-//                     });
-//                 } else {
-//                     console.log("No data found for status:", status);
-//                 }
-//             })
-//             .catch(error => console.error("Error fetching data:", error));
+// document.addEventListener("DOMContentLoaded", async function () {
+//     const isLoggedIn = await checkLoginStatus(); // Kiểm tra trạng thái đăng nhập trước khi thực hiện các thao tác
+//     if (!isLoggedIn) {
+//         alert("Vui lòng đăng nhập để xem danh sách đơn hàng.");
+//         window.location.href = "/frontend/employee-login.html"; // Điều hướng đến trang đăng nhập nếu chưa đăng nhập
+//         return;
 //     }
 
-//     // Initial fetch with "ALL" status
+//     // Nếu đã đăng nhập, tiếp tục tải danh sách đơn hàng
 //     fetchOrders('ALL');
-
-//     // Event listener for the orderStatus select element
-//     orderStatusSelect.addEventListener('change', function () {
-//         const selectedStatus = orderStatusSelect.value;
-//         fetchOrders(selectedStatus); // Fetch orders based on the selected status
-//     });
 // });
 
-// // Format function for displaying VND currency
-// function formatVND(amount) {
-//     const number = parseFloat(amount).toFixed(0);
-//     const formattedNumber = number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-//     return formattedNumber + " VND";
-// }
-// document.addEventListener("DOMContentLoaded", function () {
-//     const orderStatusSelect = document.getElementById("orderStatus");
-//     const searchDateInput = document.getElementById("searchDate");
 
-//     // Function to fetch and display orders based on selected status and date
-//     function fetchOrders(status = 'ALL', searchDate = '') {
-//         // Clear previous DataTable instance before fetching new data
-//         if ($.fn.dataTable.isDataTable('#datatablesSimple')) {
-//             $('#datatablesSimple').DataTable().destroy();
-//         }
 
-//         let apiUrl = '';
-
-//         if (status === 'ALL') {
-//             // Fetch all orders (no status filter)
-//             apiUrl = 'http://localhost:8080/api/orders/employee';
-//         } else {
-//             // Fetch orders filtered by status
-//             apiUrl = `http://localhost:8080/api/orders/status/${encodeURIComponent(status)}`;
-//         }
-
-//         // Add the searchDate parameter if available
-//         if (searchDate) {
-//             apiUrl = `http://localhost:8080/api/orders/date?orderDate=${searchDate}`;
-//         }
-
-//         console.log("API Request URL:", apiUrl); // Check the final URL to ensure it's correct
-
-//         // Fetch orders from the API
-//         fetch(apiUrl)
-//             .then(response => response.json())
-//             .then(data => {
-//                 console.log("Fetched Data:", data); // Log the fetched data
-
-//                 const tableBody = document.getElementById("tableBody");
-//                 tableBody.innerHTML = ''; // Clear the existing rows before adding new ones
-
-//                 if (Array.isArray(data) && data.length > 0) {
-//                     const orderPromises = data.map(order => {
-//                         return fetch(`http://localhost:8080/api/auth/info/${order.userId}`)
-//                             .then(response => response.json())
-//                             .then(userData => {
-//                                 const row = document.createElement("tr");
-
-//                                 row.innerHTML = `
-//                                     <td><input type="checkbox" class="order-checkbox"></td>
-//                                     <td>${order.id}</td>
-//                                     <td>${userData.username}</td>
-//                                     <td>${new Date(order.orderDate).toLocaleDateString()}</td>
-//                                     <td>${formatVND(order.totalPayment)}</td>
-//                                     <td>${order.paymentMethod}</td>
-//                                     <td>${order.orderStatus}</td>
-//                                     <td><button onclick="viewOrderDetails(${order.id})" class="btn btn-info">Chi tiết</button></td>
-//                                     <td><button onclick="approveOrder(${order.id})" class="btn btn-info">Duyệt</button></td>
-//                                 `;
-                                
-//                                 tableBody.appendChild(row);
-//                             })
-//                             .catch(error => console.error("Error fetching user data:", error));
-//                     });
-
-//                     Promise.all(orderPromises).then(() => {
-//                         // Reinitialize the DataTable after data is added
-//                         $('#datatablesSimple').DataTable({
-//                             "stripeClasses": [],
-//                             "paging": true,        // Enable pagination
-//                             "searching": true,     // Enable search box
-//                             "ordering": true,      // Enable sorting
-//                             "info": true,          // Show record info
-//                             "lengthMenu": [5, 10, 30, 100], // Records per page
-//                             "language": {
-//                                 "lengthMenu": "Hiển thị _MENU_ bản ghi mỗi trang",
-//                                 "zeroRecords": "Không tìm thấy dữ liệu",
-//                                 "info": "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
-//                                 "infoEmpty": "Không có bản ghi nào",
-//                                 "infoFiltered": "(Lọc từ _MAX_ bản ghi)",
-//                                 "search": "Tìm kiếm:",
-//                                 "paginate": {
-//                                     "first": "Đầu",
-//                                     "last": "Cuối",
-//                                     "next": ">",
-//                                     "previous": "<"
-//                                 }
-//                             }
-//                         });
-//                     });
-//                 } else {
-//                     console.log("No data found for status:", status);
-//                 }
-//             })
-//             .catch(error => console.error("Error fetching data:", error));
-//     }
-
-//     // Initial fetch with "ALL" status and no date filter
-//     fetchOrders('ALL');
-
-//     // Event listener for the orderStatus select element
-//     orderStatusSelect.addEventListener('change', function () {
-//         const selectedStatus = orderStatusSelect.value;
-//         const selectedDate = searchDateInput.value; // Get the selected date
-//         fetchOrders(selectedStatus, selectedDate); // Fetch orders based on the selected status and date
-//     });
-
-//     // Event listener for the searchDate input element
-//     searchDateInput.addEventListener('change', function () {
-//         const selectedStatus = orderStatusSelect.value;
-//         const selectedDate = searchDateInput.value; // Get the selected date
-//         fetchOrders(selectedStatus, selectedDate); // Fetch orders based on the selected status and date
-//     });
-// });
-
-// // Format function for displaying VND currency
-// function formatVND(amount) {
-//     const number = parseFloat(amount).toFixed(0);
-//     const formattedNumber = number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-//     return formattedNumber + " VND";
-// }
 document.addEventListener("DOMContentLoaded", function () {
+
+    const isLoggedIn =  checkLoginStatus(); // Kiểm tra trạng thái đăng nhập trước khi thực hiện các thao tác
+        if (!isLoggedIn) {
+            alert("Vui lòng đăng nhập để xem danh sách đơn hàng.");
+            window.location.href = "/frontend/employee-login.html"; // Điều hướng đến trang đăng nhập nếu chưa đăng nhập
+            return;
+        }
+
     const orderStatusSelect = document.getElementById("orderStatus");
     const searchDateInput = document.getElementById("searchDate");
 
@@ -451,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 const row = document.createElement("tr");
 
                                 row.innerHTML = `
-                                    <td><input type="checkbox" class="order-checkbox"></td>
+                                   <td><input type="checkbox" class="order-checkbox" data-order-id="${order.id}"></td>
                                     <td>${order.id}</td>
                                     <td>${userData.username}</td>
                                     <td>${new Date(order.orderDate).toLocaleDateString()}</td>
@@ -533,7 +213,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function viewOrderDetails(orderId) {
     // Chuyển hướng sang trang chi tiết đơn hàng và truyền order.id qua URL
-    window.location.href = `employee-order-detail.html?orderId=${orderId}`;
+    window.location.href = `staff-order-detail.html?orderId=${orderId}`;
 }
 
 // Format function for displaying VND currency
@@ -576,50 +256,149 @@ $(document).on('change', '.order-checkbox', function() {
 });
 
 
+// document.addEventListener("DOMContentLoaded", function () {
+//     const approveOrderModal = new bootstrap.Modal(document.getElementById('approveOrderModal'));  // Lấy modal
+//     const approveOrderBtn = document.getElementById('approveOrderBtn'); // Nút mở modal
+//     const selectedOrdersCount = document.getElementById('selectedOrdersCount'); // Phần hiển thị số đơn hàng
+//     const checkAllCheckbox = document.getElementById('checkAll'); // Checkbox chọn tất cả
+
+//     // Lắng nghe sự kiện khi nhấn nút "Duyệt Đơn Hàng"
+//     approveOrderBtn.addEventListener('click', function () {
+//         const checkboxes = $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox');
+//         const checkedCount = checkboxes.filter(':checked').length; // Đếm số đơn hàng được chọn
+
+//         // Hiển thị số đơn hàng đã chọn trong modal
+//         selectedOrdersCount.textContent = `Số đơn hàng được chọn: ${checkedCount}`;
+
+//         // Nếu không có đơn hàng nào được chọn, cảnh báo và không mở modal
+//         if (checkedCount === 0) {
+//             alert("Vui lòng chọn ít nhất một đơn hàng để duyệt!");
+//             return;
+//         }
+
+//         // Mở modal
+//         approveOrderModal.show();
+//     });
+
+//     // Cập nhật số lượng đơn hàng được chọn khi chọn checkbox "Tất cả"
+//     checkAllCheckbox.addEventListener('change', function () {
+//         const checkboxes = $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox');
+//         checkboxes.prop('checked', this.checked);
+
+//         const checkedCount = checkboxes.filter(':checked').length;
+//         console.log(`Số đơn hàng được chọn: ${checkedCount}`);
+//     });
+
+//     // Cập nhật số lượng đơn hàng được chọn khi chọn từng đơn hàng
+//     $(document).on('change', '.order-checkbox', function () {
+//         const checkboxes = $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox');
+//         const checkedCount = checkboxes.filter(':checked').length;
+
+//         console.log(`Số đơn hàng được chọn: ${checkedCount}`);
+//     });
+
+//     // Đóng modal khi nhấn nút "Đóng"
+//     const hideBtnModal = document.getElementById("hideBtnModal");
+//     hideBtnModal.addEventListener('click', function () {
+//         approveOrderModal.hide();
+//     });
+// });
+
 document.addEventListener("DOMContentLoaded", function () {
-    const approveOrderModal = new bootstrap.Modal(document.getElementById('approveOrderModal'));  // Lấy modal
-    const approveOrderBtn = document.getElementById('approveOrderBtn'); // Nút mở modal
-    const selectedOrdersCount = document.getElementById('selectedOrdersCount'); // Phần hiển thị số đơn hàng
-    const checkAllCheckbox = document.getElementById('checkAll'); // Checkbox chọn tất cả
+    const approveOrderModal = new bootstrap.Modal(document.getElementById('approveOrderModal')); 
+    const approveOrderBtn = document.getElementById('approveOrderBtn'); 
+    const selectedOrdersCount = document.getElementById('selectedOrdersCount'); 
+    const checkAllCheckbox = document.getElementById('checkAll'); 
 
-    // Lắng nghe sự kiện khi nhấn nút "Duyệt Đơn Hàng"
-    approveOrderBtn.addEventListener('click', function () {
-        const checkboxes = $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox');
-        const checkedCount = checkboxes.filter(':checked').length; // Đếm số đơn hàng được chọn
+    let selectedOrderIds = []; // Mảng lưu ID đơn hàng đã chọn
 
-        // Hiển thị số đơn hàng đã chọn trong modal
-        selectedOrdersCount.textContent = `Số đơn hàng được chọn: ${checkedCount}`;
-
-        // Nếu không có đơn hàng nào được chọn, cảnh báo và không mở modal
-        if (checkedCount === 0) {
-            alert("Vui lòng chọn ít nhất một đơn hàng để duyệt!");
-            return;
-        }
-
-        // Mở modal
-        approveOrderModal.show();
-    });
-
-    // Cập nhật số lượng đơn hàng được chọn khi chọn checkbox "Tất cả"
+    // Khi checkbox "Tất cả" thay đổi trạng thái
     checkAllCheckbox.addEventListener('change', function () {
         const checkboxes = $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox');
         checkboxes.prop('checked', this.checked);
 
-        const checkedCount = checkboxes.filter(':checked').length;
-        console.log(`Số đơn hàng được chọn: ${checkedCount}`);
+        selectedOrderIds = []; // Xóa danh sách cũ nếu có
+        if (this.checked) {
+            checkboxes.each(function () {
+                selectedOrderIds.push($(this).data('order-id')); 
+            });
+        }
+
+        localStorage.setItem('selectedOrderIds', JSON.stringify(selectedOrderIds));
+        updateSelectedOrdersCount();
     });
 
-    // Cập nhật số lượng đơn hàng được chọn khi chọn từng đơn hàng
+    // Khi từng checkbox đơn hàng thay đổi
     $(document).on('change', '.order-checkbox', function () {
-        const checkboxes = $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox');
-        const checkedCount = checkboxes.filter(':checked').length;
+        const orderId = $(this).data('order-id');
 
-        console.log(`Số đơn hàng được chọn: ${checkedCount}`);
+        if ($(this).is(':checked')) {
+            if (!selectedOrderIds.includes(orderId)) {
+                selectedOrderIds.push(orderId);
+            }
+        } else {
+            selectedOrderIds = selectedOrderIds.filter(id => id !== orderId);
+        }
+
+        localStorage.setItem('selectedOrderIds', JSON.stringify(selectedOrderIds));
+        updateSelectedOrdersCount();
     });
 
-    // Đóng modal khi nhấn nút "Đóng"
-    const hideBtnModal = document.getElementById("hideBtnModal");
-    hideBtnModal.addEventListener('click', function () {
+    function updateSelectedOrdersCount() {
+        const checkedCount = selectedOrderIds.length;
+        selectedOrdersCount.textContent = `Số đơn hàng được chọn: ${checkedCount}`;
+        console.log(`Danh sách ID đơn hàng đã chọn:`, selectedOrderIds);
+    }
+
+    approveOrderBtn.addEventListener('click', function () {
+        if (selectedOrderIds.length === 0) {
+            alert("Vui lòng chọn ít nhất một đơn hàng để duyệt!");
+            return;
+        }
+        approveOrderModal.show();
+    });
+
+    document.getElementById("hideBtnModal").addEventListener('click', function () {
         approveOrderModal.hide();
     });
+});
+
+//////////////////////////// cập nhật đơn hàng
+document.getElementById('updateStatusBtn').addEventListener('click', function () {
+    const selectedOrderIds = JSON.parse(localStorage.getItem('selectedOrderIds')) || [];
+    const newStatus = document.getElementById('orderStatusSelect').value;
+
+    if (selectedOrderIds.length === 0) {
+        alert("Vui lòng chọn ít nhất một đơn hàng để cập nhật trạng thái!");
+        return;
+    }
+
+    // Tạo mảng các promise từ fetch requests
+    const updatePromises = selectedOrderIds.map(orderId => {
+        return fetch(`/api/orders/${orderId}/status?newStatus=${encodeURIComponent(newStatus)}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Lỗi cập nhật đơn hàng ${orderId}`);
+            }
+            return response.text(); // Đọc phản hồi từ server
+        })
+        .then(data => console.log(`Đơn hàng ${orderId} cập nhật: ${data}`))
+        .catch(error => console.error(error));
+    });
+
+    // Đợi tất cả request hoàn thành trước khi thông báo
+    Promise.all(updatePromises)
+        .then(() => {
+            alert(`Cập nhật trạng thái "${newStatus}" thành công cho tất cả đơn hàng!`);
+            location.reload(); // Tải lại trang sau khi hoàn tất cập nhật
+        })
+        .catch(error => {
+            console.error("Có lỗi xảy ra:", error);
+            alert("Có lỗi xảy ra khi cập nhật trạng thái đơn hàng!");
+        });
 });

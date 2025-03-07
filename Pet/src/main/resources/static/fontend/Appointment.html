@@ -9,192 +9,135 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
     <style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #fff9f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column; 
-    height: 100vh;
-}
 
-.contact-section {
-    display: flex;
-    justify-content: space-between;
-    width: 80%;
-    max-width: 1200px;
-    padding-top: 40px;
-    margin-top:25%;
     
-    margin-bottom: 20px;  /* Thêm khoảng cách dưới */
-}
-
-
 #footer {
     width: 100%;
     /* padding: 20px; */
     background-color: #f1f1f1;
     text-align: center;
     margin-top: 20px;  /* Thêm khoảng cách giữa section và footer */
-}
+}    
 
-.contact-form, .contact-info, .map-container {
-    background-color: #fff;
-    border-radius: 10px;
-    border: 3px solid #fef0e6;
- 
-}
-
-.contact-info {
-    flex: 1;
-    /* padding-right: 20px; */
-    margin-right: 20px;
-    padding:50px;
-    /* display: flex; */
-    justify-content: center;
+/* Định dạng body để tránh bị header che khuất */
+body {
+    padding-top: 60px; /* Điều chỉnh theo chiều cao header */
+    background-color: #fff9f4;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
     align-items: center;
 }
 
-.contact-info h1 {
-    font-size: 2em;
+/* Định dạng section chính */
+section.container {
+    width: 90%;
+    max-width: 1400px;
+    margin: 50px auto; /* Đảm bảo có khoảng cách với header */
+    padding: 50px 20px;
+    position: relative; /* Đảm bảo không bị header đè */
+    z-index: 1; /* Đặt cao hơn header nếu cần */
+}
+
+/* Bố cục container chính */
+.custom-container {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    gap: 40px; /* Khoảng cách giữa 2 div */
+    flex-wrap: wrap; /* Để responsive tốt hơn */
+}
+
+/* Định dạng chung cho các box (Liên hệ & Form đặt lịch) */
+.custom-box {
+    flex: 1;
+    min-height: 400px;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    width: 100%;
+    max-width: 600px; /* Mở rộng tối đa mỗi box */
+}
+
+/* Điều chỉnh hiển thị liên hệ */
+.contact-box {
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px;
+}
+
+/* Tiêu đề của phần liên hệ */
+.contact-box h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* Định dạng thông tin liên hệ */
+.contact-box p {
+    font-size: 18px;
     margin-bottom: 10px;
-    /* justify-content: center; */
-    /* align-items: center;  */
-    text-align: center;
-}
-
-.contact-info p {
-    margin-bottom: 20px;
-    font-size: 1.2em;
-    text-align: center;
-}
-
-.contact-item {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    /* background-color: #7d5a20; */
-    padding: 12px;
-    border-radius: 8px;
-    
+    gap: 10px;
 }
 
-.icon {
-    font-size: 24px;
-    margin-right: 10px;
-    color: #7d5a50;
+/* Kích thước icon */
+.contact-box i {
+    font-size: 22px;
+    color: #007bff;
 }
 
-.text {
-    font-size: 16px;
-    color: #333;
+/* Form đặt lịch */
+.form-box {
+    background: #ffffff;
 }
 
-.map-container {
-    flex: 1;
-    /* padding-left: 20px; */
-    margin: 20px 20px;
-    height: 400px;
-}
-
-#map {
-    height: 100%;
+/* Định dạng input và select */
+#appointmentForm .form-control {
     width: 100%;
+    height: 45px;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #ddd;
     border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
 }
 
-.contact-form {
-    flex: 1;
-    padding: 40px;
-   /* border: 2px solid #ddd;*/
+/* Hiệu ứng khi focus vào input */
+#appointmentForm .form-control:focus {
+    border-color: #333333;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
 }
 
-.contact-form h3 {
-    margin-bottom: 20px;
-    font-size: 1.8em;
-    color: #7d5a50;
-    text-align: center;
-}
-
-.contact-form label {
-    font-size: 16px;
-    margin-bottom: 5px;
-    display: block;
-    color: #333;
-}
-
-.contact-form select, .contact-form textarea {
-    width: 70vh;
-    /* height:40px; */
-    /* padding: 5px; */
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 16px;
-    background-color: #f9f9f9;
-    color: #333;
-}
-.contact-form input {
-    width: 70vh;
-    height:40px;
-    border-radius: 5px;
-    font-size: 16px;
-    background-color: #f9f9f9;
-    color: #333;
-}
-
-.contact-form select {
-    height: 40px;
-}
-
-.contact-form textarea {
-    height: 100px;
-}
-
-.contact-form button {
+/* Định dạng nút đặt lịch */
+#appointmentForm button {
     background-color: #333333;
     color: white;
-    border: none;
-    padding: 12px 20px;
-    font-size: 18px;
-    cursor: pointer;
-    width:30%;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-    margin-left: 35%;
-    margin-right: 35%;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 12px;
+    transition: background-color 0.3s ease-in-out;
 }
 
-.contact-form button:hover {
-    background-color: #6a4e42;
+#appointmentForm button:hover {
+    background-color: #333333;
 }
 
-/* Responsive design */
-@media screen and (max-width: 768px) {
-    .contact-section {
-        flex-direction: column;
-        padding: 20px;
+/* Responsive - Khi màn hình nhỏ hơn 992px */
+@media (max-width: 992px) {
+    .custom-container {
+        flex-direction: column; /* Stack các box theo chiều dọc */
+        align-items: center;
     }
 
-    .contact-info, .map-container, .contact-form {
-        flex: none;
-        margin-bottom: 20px;
-    }
-
-    .contact-info h1 {
-        font-size: 1.5em;
-    }
-
-    .contact-item {
-        font-size: 14px;
-    }
-
-    .contact-form h3 {
-        font-size: 1.5em;
+    .custom-box {
+        max-width: 100%;
     }
 }
 
@@ -203,68 +146,47 @@ body {
 </head>
 <body>
     <div id="header"></div>
-    <section class="contact-section">
-        <div class="contact-info">
-            <h1>Liên Hệ Với Chúng Tôi</h1>
-            <p>Bạn có thể ghé thăm chúng tôi trong giờ làm việc nếu bạn cần được hỗ trợ trực tiếp từ đội ngũ nhân viên.
-             Chúng tôi luôn sẵn sàng giúp đỡ và giải đáp mọi thắc mắc của bạn</p>
-
-            <div class="contact-item">
-                <span class="icon">&#9742;</span>
-                <span class="text">Phone Number: +123 456 7890</span>
+    <!-- Nội dung chính -->
+    <section class="container py-5">
+        <div class="custom-container">
+            <!-- Thông tin liên hệ -->
+            <div class="custom-box contact-box">
+                <h2 class="text-dark font-weight-bold">Liên Hệ Với Chúng Tôi</h2>
+                <p class="text-muted">Bạn có thể ghé thăm chúng tôi trong giờ làm việc nếu cần hỗ trợ trực tiếp.</p>
+                <div class="mt-3">
+                    <p><i class="bi bi-telephone"></i> +123 456 7890</p>
+                    <p><i class="bi bi-envelope"></i> info@pettie.com</p>
+                    <p><i class="bi bi-geo-alt"></i> 3/2 Phường Xuân Khánh, Ninh Kiều, Cần Thơ</p>
+                </div>
             </div>
 
-            <div class="contact-item">
-                <span class="icon">&#9993;</span>
-                <span class="text">Email Address: info@pettie.com</span>
+            <!-- Form đặt lịch hẹn -->
+            <div class="custom-box form-box">
+                <h3 class="text-dark text-center">Đặt Lịch Hẹn Cho Thú Cưng</h3>
+                <form id="appointmentForm" class="mt-3">
+                    <label for="pet" class="font-weight-bold">Chọn Thú Cưng:</label>
+                    <select id="pet" class="form-control"></select>
+
+                    <label for="service" class="font-weight-bold mt-2">Chọn Dịch Vụ:</label>
+                    <select id="service" class="form-control" multiple></select>
+
+                    <label for="time" class="font-weight-bold mt-2">Chọn Thời Gian:</label>
+                    <select id="time" class="form-control">
+                        <option value="09:00-10:30">09:00-10:30</option>
+                        <option value="11:00-12:00">11:00-12:00</option>
+                        <option value="12:30-14:00">12:30-14:00</option>
+                        <option value="14:00-15:30">14:00-15:30</option>
+                        <option value="16:00-17:30">16:00-17:30</option>
+                        <option value="18:00-19:30">18:00-19:30</option>
+                        <option value="20:00-21:20">20:00-21:20</option>
+                    </select>
+
+                    <label for="appDate" class="font-weight-bold mt-2">Chọn Ngày:</label>
+                    <input type="date" id="appDate" class="form-control" required>
+
+                    <button type="submit" class="btn btn-dark btn-block mt-3">Đặt Lịch</button>
+                </form>
             </div>
-
-            <div class="contact-item">
-                <span class="icon">&#127970;</span>
-                <span class="text">Address: 3/2 Phường Xuân Khánh Ninh Kiều Cần Thơ</span>
-            </div>
-        </div>
-
-        <!-- Bản đồ Google
-        <div class="map-container">
-            <div id="map"></div>
-        </div> -->
-
-        <!-- Form đặt lịch -->
-        <div class="contact-form">
-            <form id="appointmentForm">
-                <h3>Đặt Lịch Hẹn Cho Thú Cưng</h3>
-
-                <label for="pet">Chọn Thú Cưng:</label>
-                <select id="pet" multiple="multiple">
-                    <!-- Các option sẽ được thêm vào đây -->
-                </select>
-                <br>
-                
-
-                <label for="service">Chọn Dịch Vụ:</label>
-                <select id="service" name="service" multiple="multiple">
-                    
-                </select><br>
-
-                <label for="time">Chọn Thời Gian:</label>
-                <select id="time" name="time">
-                    <option value="09:00-10:30">09:00-10:30</option>
-                    <option value="11:00-12:00">11:00-12:00</option>
-                    <option value="12:30-14:00">12:30-14:00</option>
-                    <option value="14:00-15:30">14:00-15:30</option>
-                    <option value="16:00-17:30">16:00-17:30</option>
-                    <option value="18:00-19:30">18:00-19:30</option>
-                    <option value="20:00-21:20">20:00-21:20</option>
-                </select>
-
-                <label for="appDate">Chọn Ngày:</label>
-                <input type="date" id="appDate" name="appDate" required>
-                <br><br>
-                
-
-                <button type="submit">Đặt Lịch</button>
-            </form>
         </div>
     </section>
 

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập Dành Cho ADMIN Pettie</title>
+    <link rel="stylesheet" href="./css/employee-login.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Đăng Nhập ADMIN</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Tên Đăng Nhập:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Mật Khẩu:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" onclick="handleLogin(event)">Đăng Nhập</button>
+        </form>
+        <p id="error-message" class="error-message"></p>
+    </div>
+<script src="./js/admin-login.js"></script>
+    <!-- <script src="script.js"></script> -->
+</body>
+</html>

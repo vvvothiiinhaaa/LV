@@ -428,4 +428,10 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
+    // API lấy danh sách 10 sản phẩm bán chạy nhất
+    @GetMapping("/best-sellers")
+    public List<Product> getBestSellers() {
+        return productService.getBestSellers();
+    }
+
 }

@@ -166,4 +166,8 @@ public class ServiceforpetService {
     public List<Serviceforpet> getAllServices() {
         return serviceforpetRepository.findAll();
     }
+
+    public Serviceforpet getServiceById(Integer id) {
+        return serviceforpetRepository.findById(id).orElse(null);
+    }
 }

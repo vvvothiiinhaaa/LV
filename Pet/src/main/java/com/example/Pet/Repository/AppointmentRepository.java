@@ -2,6 +2,8 @@ package com.example.Pet.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -33,4 +35,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Transactional
     @Query(value = "INSERT INTO appointment_services (appointment_id, service_id) VALUES (:appointmentId, :serviceId)", nativeQuery = true)
     void addServiceToAppointment(@Param("appointmentId") Integer appointmentId, @Param("serviceId") Integer serviceId);
+
+    // LỌC THEO TRẠNG THÁI
+    List<Appointment> findByStatus(String status);
+
+    Optional<Appointment> findById(Long id);
+
+    List<Appointment> findByPets_Id(Integer petId);
 }

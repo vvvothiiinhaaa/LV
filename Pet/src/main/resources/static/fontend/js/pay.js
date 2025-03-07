@@ -1,44 +1,3 @@
-// url thanh toán VNPay
-//https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?vnp_Amount=1806000&vnp_Command=pay&vnp_CreateDate=20210801153333&vnp_CurrCode=VND&vnp_IpAddr=127.0.0.1&vnp_Locale=vn&vnp_OrderInfo=Thanh+toan+don+hang+%3A5&vnp_OrderType=other&vnp_ReturnUrl=https%3A%2F%2Fdomainmerchant.vn%2FReturnUrl&vnp_TmnCode=DEMOV210&vnp_TxnRef=5&vnp_Version=2.1.0&vnp_SecureHash=3e0d61a0c0534b2e36680b3f7277743e8784cc4e1d68fa7d276e79c23be7d6318d338b477910a27992f5057bb1582bd44bd82ae8009ffaf6d141219218625c42
-//url thanh toán VNPayVNPay
-
-
-/// lấy thông tin địa chỉ có default là true
-// async function fetchDefaultAddress() {
-//     try {
-//         // Gọi API lấy userId
-//         const authResponse = await fetch('/api/auth/check-login');
-//         const authData = await authResponse.json();
-
-//         if (authData.userId) {
-//             const userId = authData.userId;
-
-//             // Gọi API lấy địa chỉ mặc định
-//             const addressResponse = await fetch(`/api/addresses/user/${userId}`);
-//             const addressData = await addressResponse.json();
-
-//             // Tìm địa chỉ mặc định
-//             const defaultAddress = addressData.find(addr => addr.defaultAddress === true);
-
-//             if (defaultAddress) {
-//                 // Hiển thị thông tin địa chỉ mặc định lên HTML
-//                 document.getElementById('address-name').innerHTML = 
-//                     `<strong style="margin-right:10px">${defaultAddress.recipientName}</strong>${defaultAddress.phoneNumber}`;
-//                     document.getElementById('address-location').innerText = 
-//                     `${defaultAddress.addressDetail}, ${defaultAddress.wardSubdistrict}, ${defaultAddress.district}, ${defaultAddress.provinceCity}`;
-
-//                 // Hiển thị khung địa chỉ
-//                 document.getElementById('address-box').style.display = 'block';
-//             } else {
-//                 console.error('Không tìm thấy địa chỉ mặc định.');
-//             }
-//         } else {
-//             console.error('Không thể lấy userId.');
-//         }
-//     } catch (error) {
-//         console.error('Lỗi khi lấy dữ liệu:', error);
-//     }
-// }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -171,26 +130,6 @@ fetchDefaultAddress();
 
 
 
-// // js của thay đổi địa chỉ tại trang thanh toán
-// // Hàm mở modal
-// function changeAddress() {
-//     // Hiển thị modal
-//     const modal = document.getElementById('address-modal');
-//     modal.style.display = 'flex';
-
-//     // Load nội dung từ address.html
-//     const iframe = document.getElementById('modal-iframe');
-//     iframe.src = './address.html'; // Đường dẫn đến file address.html
-// }
-
-// // Hàm đóng modal
-// function closeModal() {
-//     const modal = document.getElementById('address-modal');
-//     modal.style.display = 'none';
-
-//     // Reset iframe để giảm tải tài nguyên khi modal đóng
-//     document.getElementById('modal-iframe').src = '';
-// }
 async function changeAddress() {
     try {
         // Gọi API lấy userId
@@ -448,6 +387,10 @@ async function submitPayment() {
             console.error('Không có sản phẩm nào để thanh toán!');
             return;
         }
+        // Lấy số tiền giảm giá từ ID "discount"
+        const discountElement = document.getElementById('discount');
+        const discount = discountElement ? parseFloat(discountElement.innerText.replace(' VNĐ', '').replace(/\./g, '')) || 0 : 0;
+
 
         const orderItems = [];
         checkoutItems.forEach((row) => {
@@ -455,7 +398,7 @@ async function submitPayment() {
             const productId = productImage.getAttribute('data-product-id'); // Lấy productId từ thuộc tính data-product-id
             const quantity = row.querySelector('td:nth-child(4)').innerText.trim();
             const total = row.querySelector('td:nth-child(5)').innerText.trim().replace(' VNĐ', '').replace(/\./g, '');
-
+            
             if (!productId) {
                 console.error('Không thể lấy productId từ hàng:', row);
                 throw new Error('Không thể lấy productId từ sản phẩm. Vui lòng kiểm tra lại giao diện.');
@@ -478,7 +421,7 @@ async function submitPayment() {
         // Gửi orderItems qua body và các thông tin khác qua query parameters
         const queryParams = new URLSearchParams({
             userId: userId,
-            discount: 0,
+            discount: discount,
             totalPayment: parseInt(totalPayment),
             paymentMethod: paymentMethod.toUpperCase(),
             addressId: parseInt(addressId),
@@ -682,184 +625,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Hàm xử lý thanh toán
-// async function submitPayment() {
-//     try {
-//         // 1. Lấy thông tin đăng nhập của người dùng
-//         const authResponse = await fetch('/api/auth/check-login', {
-//             method: 'GET',
-//             headers: { 'Content-Type': 'application/json' },
-//             credentials: 'include', // Gửi cookie xác thực
-//         });
-
-//         if (!authResponse.ok) {
-//             throw new Error('Không thể lấy thông tin đăng nhập. Vui lòng đăng nhập lại.');
-//         }
-
-//         const authData = await authResponse.json();
-//         const userId = authData.userId;
-
-//         if (!userId || isNaN(parseInt(userId))) {
-//             throw new Error('userId không hợp lệ. Vui lòng đăng nhập lại.');
-//         }
-
-//         console.log('userId hợp lệ:', userId);
-
-//         // 2. Kiểm tra phương thức thanh toán
-//         const paymentMethodElement = document.querySelector('input[name="paymentMethod"]:checked');
-//         if (!paymentMethodElement) {
-//             throw new Error('Vui lòng chọn phương thức thanh toán!');
-//         }
-//         const paymentMethod = paymentMethodElement.value;
-
-//         // 3. Lấy thông tin địa chỉ nhận hàng
-//         const addressBox = document.getElementById('address-box');
-//         const addressId = addressBox?.getAttribute('data-address-id');
-
-//         if (!addressId || isNaN(parseInt(addressId))) {
-//             throw new Error('Vui lòng chọn địa chỉ nhận hàng hợp lệ!');
-//         }
-
-//         console.log('addressId hợp lệ:', addressId);
-
-//         // 4. Lấy danh sách sản phẩm từ bảng
-//         const checkoutItems = document.querySelectorAll('#checkout-items tr');
-//         if (checkoutItems.length === 0) {
-//             alert('Không có sản phẩm nào để thanh toán!');
-//             return;
-//         }
-
-//         const orderItems = [];
-//         checkoutItems.forEach((row) => {
-//             const productImage = row.querySelector('img');
-//             const productId = productImage?.getAttribute('data-product-id');
-//             const quantity = row.querySelector('td:nth-child(4)')?.innerText.trim();
-//             const total = row.querySelector('td:nth-child(5)')?.innerText.trim().replace(' VNĐ', '').replace(/\./g, '');
-
-//             if (!productId || isNaN(parseInt(productId))) {
-//                 console.error('Không thể lấy productId từ hàng:', row);
-//                 throw new Error('Không thể lấy productId từ sản phẩm. Vui lòng kiểm tra lại giao diện.');
-//             }
-
-//             orderItems.push({
-//                 productId: parseInt(productId),
-//                 quantity: parseInt(quantity),
-//                 total: parseInt(total),
-//             });
-//         });
-
-//         console.log('Danh sách sản phẩm:', orderItems);
-
-//         // 5. Lấy tổng tiền thanh toán
-//         const totalPaymentElement = document.getElementById('total-payment');
-//         if (!totalPaymentElement) {
-//             throw new Error('Không thể tìm thấy phần tử tổng tiền thanh toán!');
-//         }
-
-//         const totalPayment = totalPaymentElement.innerText.trim().replace(' VNĐ', '').replace(/\./g, '');
-
-//         console.log('Tổng tiền thanh toán:', totalPayment);
-
-//         // 6. Xử lý thanh toán COD
-//         const requestPayload = {
-//             userId: parseInt(userId),
-//             discount: 0, // Giảm giá mặc định là 0
-//             totalPayment: parseInt(totalPayment),
-//             paymentMethod: paymentMethod.toUpperCase(),
-//             addressId: parseInt(addressId),
-//             orderItems: orderItems,
-//         };
-
-//         console.log('Payload gửi tới API /api/orders/create:', requestPayload);
-
-//         const response = await fetch('/api/orders/create', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify(requestPayload),
-//         });
-
-//         if (!response.ok) {
-//             const errorData = await response.json();
-//             throw new Error(errorData.message || 'Đã xảy ra lỗi khi tạo đơn hàng!');
-//         }
-
-//         alert('Đơn hàng của bạn đã được đặt thành công!');
-//     } catch (error) {
-//         console.error('Lỗi trong quá trình thanh toán:', error.message);
-//         alert(error.message || 'Đã xảy ra lỗi trong quá trình thanh toán!');
-//     }
-// }
-
-
-
-// document.addEventListener('DOMContentLoaded', async () => {
-//     const urlParams = new URLSearchParams(window.location.search);
-//     const message = urlParams.get('message');
-//     const userId = urlParams.get('userId');
-//     const totalPayment = urlParams.get('amount');
-//     const addressId = urlParams.get('addressId');
-
-//     if (message === 'success') {
-//         // Gọi API tạo đơn hàng
-//         try {
-//             const orderItems = JSON.parse(sessionStorage.getItem('orderItems')) || [];
-//             const response = await fetch('/api/orders/create', {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//                 body: JSON.stringify({
-//                     userId: parseInt(userId),
-//                     totalPayment: parseInt(totalPayment),
-//                     discount: 0,
-//                     paymentMethod: 'ONLINE',
-//                     addressId: parseInt(addressId),
-//                     orderItems: orderItems,
-//                 }),
-//             });
-
-//             if (!response.ok) {
-//                 throw new Error('Đã xảy ra lỗi khi tạo đơn hàng!');
-//             }
-
-//             alert('Thanh toán và tạo đơn hàng thành công!');
-//         } catch (error) {
-//             console.error(error);
-//             alert(error.message || 'Đã xảy ra lỗi trong quá trình tạo đơn hàng.');
-//         }
-//     } else if (message === 'failure') {
-//         alert('Thanh toán thất bại! Vui lòng thử lại.');
-//     }
-// });
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Lấy tham chiếu đến modal
     var addressModal = document.getElementById('addressModal');
+    if (!addressModal) {
+        console.error("Không tìm thấy modal 'addressModal'");
+        return;
+    }
 
-    // Khởi tạo modal bằng Bootstrap Modal API
     var modalInstance = new bootstrap.Modal(addressModal);
 
-    // Lắng nghe sự kiện click trên button mở modal
-    document.querySelector('[data-bs-toggle="modal"]').addEventListener('click', function () {
-        modalInstance.show(); // Mở modal
-    });
+    var openModalBtn = document.querySelector('[data-bs-toggle="modal"]');
+    if (openModalBtn) {
+        openModalBtn.addEventListener('click', function () {
+            modalInstance.show();
+        });
+    } else {
+        console.error("Không tìm thấy button mở modal");
+    }
 
-    // Tùy chọn: Xử lý khi modal được đóng
     addressModal.addEventListener('hidden.bs.modal', function () {
         console.log('Modal đã được đóng');
     });
 
-    // Tùy chọn: Xử lý khi modal được hiển thị
     addressModal.addEventListener('shown.bs.modal', function () {
         console.log('Modal đã được hiển thị');
     });
 });
+
+
 document.addEventListener('DOMContentLoaded', function () {
     initializeProvinceDropdown();
     setupAddressEventListeners();
@@ -966,47 +764,7 @@ function resetDropdown(selectElement, placeholderText) {
     selectElement.innerHTML = `<option value="">${placeholderText}</option>`;
 }
 
-// ///////////////////////////////////////////////////////////////////////////////////form câpj nhậtnhật
 
-// document.addEventListener('DOMContentLoaded', function () {
-    // Fetch and populate provinces
-//     fetch('https://provinces.open-api.vn/api/p/')
-//         .then(response => response.json())
-//         .then(data => {
-//             const provinceSelect = document.getElementById('provinceCity');
-//             data.forEach(provinces => {
-//                 provinceSelect.options.add(new Option(provinces.name, provinces.code));
-//             });
-//         });
-
-//     // Handle province change
-//     document.getElementById('district').addEventListener('change', function () {
-//         const provinceCode = this.value;
-//         fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
-//             .then(response => response.json())
-//             .then(data => {
-//                 const districtSelect = document.getElementById('districtSelect');
-//                 districtSelect.innerHTML = '<option selected>Chọn Quận/Huyện</option>';
-//                 data.districts.forEach(districts => {
-//                     districtSelect.options.add(new Option(districts.name, districts.code));
-//                 });
-//             });
-//     });
-
-//     // Handle district change
-//     document.getElementById('defaultAddress').addEventListener('change', function () {
-//         const districtCode = this.value;
-//         fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
-//             .then(response => response.json())
-//             .then(data => {
-//                 const wardSelect = document.getElementById('wardSelect');
-//                 wardSelect.innerHTML = '<option selected>Chọn Phường/Xã</option>';
-//                 data.wards.forEach(wards => {
-//                     wardSelect.options.add(new Option(wards.name, wards.code));
-//                 });
-//             });
-//     });
-// });
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1034,7 +792,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                console.error('Login check failed:', error);
+                // console.error('Login check failed:', error);
                 // Handle login check failure, e.g., redirect to login page
             });
         });
@@ -1099,6 +857,18 @@ async function handleAddressFormSubmit(event) {
         form.reset(); // Xóa dữ liệu sau khi thêm thành công
         loadUserAddresses(); // Cập nhật danh sách địa chỉ
         fetchDefaultAddress();
+        // Đóng modal sau khi thêm địa chỉ thành công
+        const addressModal = document.getElementById("addressModal");
+        const modalInstance = bootstrap.Modal.getInstance(addressModal);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+        // Xóa lớp backdrop nếu còn tồn tại
+        setTimeout(() => {
+            document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+            document.body.classList.remove('modal-open'); // Xóa class gây hiệu ứng mờ
+            document.body.style.paddingRight = ''; // Reset padding nếu có
+        }, 500);
 
     } catch (error) {
         console.error("Lỗi khi gửi địa chỉ:", error);
@@ -1146,7 +916,7 @@ async function loadUserAddresses() {
         });
         setupUpdateAddressEvents();
     } catch (error) {
-        console.error('Lỗi khi lấy danh sách địa chỉ:', error);
+        // console.error('Lỗi khi lấy danh sách địa chỉ:', error);
     }
 }
 
@@ -1191,7 +961,7 @@ async function deleteAddress(addressId) {
         }
 
         alert("Xóa địa chỉ thành công!");
-
+        location.reload();
         // Cập nhật danh sách địa chỉ ngay lập tức trong modal
         await changeAddress();
 

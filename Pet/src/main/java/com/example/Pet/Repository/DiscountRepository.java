@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.example.Pet.Modal.Discount;
 
@@ -17,4 +18,14 @@ public interface DiscountRepository extends JpaRepository<Discount, Long> {
     Discount findByCode(String code);
 
     // Optional<Discount> findByCode(String code);
+    // Lấy các mã giảm giá chưa đến ngày bắt đầu
+    @Query("SELECT d FROM Discount d WHERE d.startDate > CURRENT_DATE")
+    List<Discount> findUpcomingDiscounts();
+
+    // Lấy các mã giảm giá đã hết hạn
+    @Query("SELECT d FROM Discount d WHERE d.endDate < CURRENT_DATE")
+    List<Discount> findExpiredDiscounts();
+
+    //  kiểm tra mã giảm giá đã có chưa
+    boolean existsByCode(String code);
 }

@@ -81,6 +81,7 @@ alert("Thêm thú cưng thành công!");
 
 // Cập nhật danh sách thú cưng trên giao diện
 addPetToUI(newPet);
+loadPets(userId);
 
 // Đóng modal đúng cách
 let petModal = bootstrap.Modal.getInstance(document.getElementById("petModal"));
@@ -110,30 +111,6 @@ function addPetToUI(pet) {
 }
 
 
-// function addPetToUI(pet) {
-//     const petList = document.getElementById("petList");
-
-//     const petCard = document.createElement("div");
-//     petCard.classList.add("card", "p-3", "mt-3", "d-flex", "flex-row", "align-items-center", "position-relative");
-
-//     petCard.innerHTML = `
-//         <div class="col-3 text-center">
-//             <img src="${pet.url || './img/default-avata.png'}" class="rounded-circle" width="100" height="100" alt="">
-//         </div>
-//         <div class="col-7">
-//             <h5>${pet.name}</h5>
-//             <p><strong>Ngày Sinh:</strong> ${pet.birthdate}</p>
-//             <p><strong>Giống Loài:</strong> ${pet.breed}</p>
-//             <p><strong>Giới Tính:</strong> ${pet.gender === "male" ? "Đực" : "Cái"}</p>
-//         </div>
-//         <div class="col-2 text-end">
-//             <button class="btn btn-custom btn-sm" onclick="openUpdatePetModal(${pet.id})">Cập Nhật</button>
-//             <button class="btn btn-custom btn-sm" onclick="deletePet(this)">Xóa</button>
-//         </div>
-//     `;
-
-//     petList.appendChild(petCard);
-// }
 
 document.addEventListener("DOMContentLoaded", async function () {
 console.log("Trang đã tải, bắt đầu lấy danh sách thú cưng...");
@@ -184,7 +161,9 @@ function displayPets(pets) {
             pets.forEach((pet) => {
             const petCard = document.createElement("div");
             petCard.classList.add("card", "p-3", "mt-3", "d-flex", "flex-row", "align-items-center", "position-relative" );
-
+            
+            petCard.style.cursor = "pointer"; /// thêm ngày 7/3
+            
             petCard.innerHTML = `
                 <div class="col-3 text-center">
                     <img src="${pet.url || './img/default-avata.png'}" class="rounded-circle" width="100" height="100" alt="${pet.name}">
@@ -200,6 +179,15 @@ function displayPets(pets) {
                     <button class="btn btn-custom btn-sm" onclick="deletePet(${pet.id})">Xóa</button>
                 </div>
             `;
+
+             // Gán sự kiện click cho toàn bộ petCard
+        petCard.addEventListener("click", (event) => {
+            // Kiểm tra nếu người dùng không nhấn vào nút "Cập Nhật" hoặc "Xóa"
+            if (!event.target.classList.contains("update-btn") && !event.target.classList.contains("delete-btn")) { /// thêm 7/3
+                openPetDetailModal(pet.id);  // Gọi modal chi tiết thú cưng
+            }
+        });
+
 
             petList.appendChild(petCard);
             });
@@ -283,3 +271,68 @@ function displayPets(pets) {
             petList.appendChild(petDiv);  // Đảm bảo phần tử đã được thêm vào DOM
         }
 
+
+        //////////////////////// thêm chi tiết cho thú cưng
+
+
+        async function openPetDetailModal(petId) {
+            try {
+                const userId = await fetchUserId(); 
+                
+                // Gọi API lấy thông tin thú cưng + lịch sử khám
+                const response = await fetch(`http://localhost:8080/api/appointments/pet/${petId}`);
+                
+                if (!response.ok) {
+                    throw new Error("Không thể lấy thông tin thú cưng.");
+                }
+        
+                const data = await response.json();  // Dữ liệu API trả về
+        
+                if (!data || data.length === 0) {
+                    alert("Không có thông tin lịch sử đặt lịch cho thú cưng này.");
+                    return;
+                }
+        
+                const pet = data[0].pets[0];  // Lấy thông tin thú cưng
+                
+                // Đổ dữ liệu vào modal
+                document.getElementById("detailPetName").innerText = pet.name;
+                document.getElementById("detailBirthdate").innerText = pet.birthdate;
+                document.getElementById("detailBreed").innerText = pet.breed;
+                document.getElementById("detailGender").innerText = pet.gender === "male" ? "Đực" : "Cái";
+                document.getElementById("detailPetImage").src = pet.url || "./img/default-avata.png";
+        
+                // Xóa dữ liệu cũ trước khi thêm mới
+                const historyTableBody = document.getElementById("historyTableBody");
+                historyTableBody.innerHTML = "";
+        
+                // Hiển thị dữ liệu lịch sử khám (nhiều dịch vụ trong 1 lịch hẹn)
+                data.forEach(appointment => {
+                    if (appointment.services && Array.isArray(appointment.services)) {
+                        appointment.services.forEach(service => {
+                            const historyRow = document.createElement("tr");
+                            historyRow.innerHTML = `
+                                <td>${service.name}</td>  <!-- Tên dịch vụ -->
+                                <td>${appointment.startTime || "Không có dữ liệu"}</td>  <!-- Giờ bắt đầu -->
+                                <td>${appointment.endTime || "Không có dữ liệu"}</td>  <!-- Giờ kết thúc -->
+                                <td>${appointment.appDate || "Không có dữ liệu"}</td>  <!-- Ngày hẹn -->
+                                <td>${appointment.status || "Không có dữ liệu"}</td>  <!-- Trạng thái -->
+                            `;
+                            historyTableBody.appendChild(historyRow);
+                        });
+
+
+                        
+                    }
+                });
+        
+                // Hiển thị modal
+                const detailModal = new bootstrap.Modal(document.getElementById("petDetailModal"));
+                detailModal.show();
+            } catch (error) {
+                console.error("Lỗi khi lấy thông tin chi tiết thú cưng:", error);
+                alert("Không thể hiển thị thông tin thú cưng.");
+            }
+        }
+        
+        

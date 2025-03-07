@@ -1,10 +1,48 @@
-document.addEventListener("DOMContentLoaded", function () {
+// kiểm tra trạng thái đăng nhập
+async function checkLoginStatus() {
+    try {
+        const response = await fetch('/employee/check-login'); // Đợi phản hồi
+        if (response.ok) {
+            const employee = await response.json(); // Đợi chuyển đổi JSON
+            console.log("Đã đăng nhập:", employee.username);
+
+            // Lưu thông tin vào localStorage
+            localStorage.setItem("isLoggedIn", "true");
+            localStorage.setItem("username", employee.username);
+            return true;
+        } else {
+            console.log("Chưa đăng nhập.");
+            localStorage.removeItem("isLoggedIn");
+            return false;
+        }
+    } catch (error) {
+        console.error("Lỗi khi kiểm tra đăng nhập:", error);
+        localStorage.removeItem("isLoggedIn");
+        return false;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", async function () {
+    const isLoggedIn = await checkLoginStatus(); // Đợi kết quả
+
+    if (!isLoggedIn) {
+        alert("Vui lòng đăng nhập để xem danh sách sản phẩm.");
+        window.location.href = "/fontend/employee-login.html";
+        return;
+    }
+
+    fetchProducts();
+});
+
+function fetchProducts() {
     fetch("http://localhost:8080/api/products")
         .then(response => response.json())
         .then(data => {
             const tableBody = document.getElementById("tableBody");
 
             const products = Array.isArray(data) ? data : [data];
+
+            tableBody.innerHTML = ""; // Xóa nội dung cũ trước khi thêm mới
 
             products.forEach(product => {
                 const row = document.createElement("tr");
@@ -17,9 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td>${product.origin}</td>
                     <td>${product.brand}</td>
                     <td>${product.sold}</td>
-                    <td><button onclick="viewDetails(${product.id})" class="btn btn-info">Xem</button>
-                    </td>
-                    
+                    <td><button onclick="viewDetails(${product.id})" class="btn btn-info">Xem</button></td>
                 `;
 
                 tableBody.appendChild(row);
@@ -28,11 +64,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // Khởi tạo DataTables
             $('#datatablesSimple').DataTable({
                 "stripeClasses": [],
-                "paging": true,        // Phân trang
-                "searching": true,     // Ô tìm kiếm
-                "ordering": true,      // Cho phép sắp xếp
-                "info": true,          // Hiển thị số lượng bản ghi
-                "lengthMenu": [5, 10, 30, 100], // Chọn số bản ghi mỗi trang
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "lengthMenu": [5, 10, 30, 100],
                 "language": {
                     "lengthMenu": "Hiển thị _MENU_ bản ghi mỗi trang",
                     "zeroRecords": "Không tìm thấy dữ liệu",
@@ -49,8 +85,64 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         })
-        .catch(error => console.error("Error fetching data:", error));
-});
+        .catch(error => console.error("Lỗi khi lấy dữ liệu sản phẩm:", error));
+}
+
+// document.addEventListener("DOMContentLoaded", function () {
+  
+
+//     fetch("http://localhost:8080/api/products")
+//         .then(response => response.json())
+//         .then(data => {
+//             const tableBody = document.getElementById("tableBody");
+
+//             const products = Array.isArray(data) ? data : [data];
+
+//             products.forEach(product => {
+//                 const row = document.createElement("tr");
+
+//                 row.innerHTML = `
+//                     <td>${product.id}</td>
+//                     <td><img src="${product.url}" alt="${product.name}" width="50"></td>
+//                     <td>${product.name}</td>
+//                     <td>${product.quantity}</td>
+//                     <td>${product.origin}</td>
+//                     <td>${product.brand}</td>
+//                     <td>${product.sold}</td>
+//                     <td><button onclick="viewDetails(${product.id})" class="btn btn-info">Xem</button>
+//                     </td>
+                    
+//                 `;
+
+//                 tableBody.appendChild(row);
+//             });
+
+//             // Khởi tạo DataTables
+//             $('#datatablesSimple').DataTable({
+//                 "stripeClasses": [],
+//                 "paging": true,        // Phân trang
+//                 "searching": true,     // Ô tìm kiếm
+//                 "ordering": true,      // Cho phép sắp xếp
+//                 "info": true,          // Hiển thị số lượng bản ghi
+//                 "lengthMenu": [5, 10, 30, 100], // Chọn số bản ghi mỗi trang
+//                 "language": {
+//                     "lengthMenu": "Hiển thị _MENU_ bản ghi mỗi trang",
+//                     "zeroRecords": "Không tìm thấy dữ liệu",
+//                     "info": "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
+//                     "infoEmpty": "Không có bản ghi nào",
+//                     "infoFiltered": "(Lọc từ _MAX_ bản ghi)",
+//                     "search": "Tìm kiếm:",
+//                     "paginate": {
+//                         "first": "Đầu",
+//                         "last": "Cuối",
+//                         "next": ">",
+//                         "previous": "<"
+//                     }
+//                 }
+//             });
+//         })
+//         .catch(error => console.error("Error fetching data:", error));
+// });
 
 
 /// mở html thêm sản phẩm 
@@ -62,6 +154,8 @@ document.getElementById("addProductBtn").addEventListener("click", function() {
 
 // View details of a product and open the modal
 function viewDetails(productId) {
+   
+
     // Fetch product details by product ID
     fetch(`http://localhost:8080/api/products/${productId}`)
         .then(response => response.json())
@@ -75,8 +169,20 @@ function viewDetails(productId) {
             document.getElementById("editProductOrigin").value = product.origin;
             document.getElementById("editProductSold").value = product.sold;
             document.getElementById("editProductIngredient").value = product.ingredient;
+            document.getElementById("editProductComponent").value = product.component;
             document.getElementById("editProductDescription").value = product.description;
             document.getElementById("editProductGenre").value = product.genre;
+            console.log("id của danh mục", product.genre);
+
+            // fetch(`http://localhost:8080/api/categories/${product.genre}`) // Giả sử genre lưu ID của danh mục
+            // .then(response => response.json())
+            // .then(category => {
+            //     document.getElementById("editProductGenre").value = category.name; // Lưu tên danh mục
+            // })
+            // .catch(error => {
+            //     console.error("Lỗi lấy danh mục:", error);
+            //     document.getElementById("editProductGenre").value = "Không xác định";
+            // });
 
            // Fetch images from the API
            fetch(`http://localhost:8080/api/images/img/${productId}`)
@@ -109,6 +215,7 @@ function viewDetails(productId) {
 }
 // Function to update the product
 function updateProduct(productId) {
+   
     const updatedProduct = {
         name: document.getElementById("editProductName").value,
         price: document.getElementById("editProductPrice").value,
@@ -117,6 +224,7 @@ function updateProduct(productId) {
         origin: document.getElementById("editProductOrigin").value,
         sold: document.getElementById("editProductSold").value,
         ingredient: document.getElementById("editProductIngredient").value,
+        component: document.getElementById("editProductComponent").value,
         description: document.getElementById("editProductDescription").value,
         genre: document.getElementById("editProductGenre").value,
         // Check if image files are updated

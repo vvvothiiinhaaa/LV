@@ -60,4 +60,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("UPDATE Product p SET p.quantity = p.quantity + :quantity, p.sold = p.sold - :quantity WHERE p.id = :productId")
     void restoreProductStock(Long productId, int quantity);
 
+    List<Product> findTop10ByOrderBySoldDesc();
 }

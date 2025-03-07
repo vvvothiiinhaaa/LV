@@ -1,5 +1,6 @@
 package com.example.Pet.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,27 +67,30 @@ public class ProductService {
 
     @Transactional
     public void updatePriceAndSync(Long productId, Double newPrice) {
+        // Kiểm tra xem sản phẩm có tồn tại không
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (optionalProduct.isEmpty()) {
+            throw new RuntimeException("Product not found with ID: " + productId);
+        }
+        Product product = optionalProduct.get();
+
         // Tìm giá mới nhất trong bảng ProductPrice
         ProductPrice latestPrice = productPriceRepository.findLatestPriceByProductId(productId);
-        if (latestPrice != null) {
-            // Cập nhật giá mới trong bảng ProductPrice
-            latestPrice.setPrice(newPrice);
-            productPriceRepository.save(latestPrice);
-            System.out.println("Updated ProductPrice to new price: " + newPrice);
 
-            // Cập nhật giá trong bảng Product
-            Optional<Product> optionalProduct = productRepository.findById(productId);
-            if (optionalProduct.isPresent()) {
-                Product product = optionalProduct.get();
-                product.setPrice(newPrice);
-                productRepository.save(product);
-                System.out.println("Updated Product with new price: " + newPrice);
-            } else {
-                throw new RuntimeException("Product not found with ID: " + productId);
-            }
-        } else {
-            throw new RuntimeException("No price entry found in ProductPrice for product ID: " + productId);
+        if (latestPrice == null) {
+            // Nếu chưa có giá, tạo mới
+            latestPrice = new ProductPrice();
+            latestPrice.setProduct(product);
+            latestPrice.setEffectiveDate(LocalDateTime.now());
         }
+
+        // Cập nhật giá mới
+        latestPrice.setPrice(newPrice);
+        productPriceRepository.save(latestPrice);
+
+        // Đồng bộ giá vào bảng Product
+        product.setPrice(newPrice);
+        productRepository.save(product);
     }
 
     ////////////////////////////////////// thêm sản phẩm mới
@@ -208,4 +212,7 @@ public class ProductService {
         return productRepository.searchByKeyword(keyword);
     }
 
+    public List<Product> getBestSellers() {
+        return productRepository.findTop10ByOrderBySoldDesc();
+    }
 }

@@ -51,9 +51,9 @@ function renderOrders(orders) {
 
     // Hiển thị danh sách đơn hàng
     orders.forEach((order, index) => {
-        const isCompleted = order.orderStatus === "Hoàn Thành" || order.orderStatus ==="Chờ Xác Nhận" || order.orderStatus=== "Đã Hủy" ; // Kiểm tra trạng thái đơn hàng
+        const isCompleted = order.orderStatus === "Hoàn Thành" || order.orderStatus ==="Chờ Xác Nhận" || order.orderStatus=== "Đã Hủy" || order.orderStatus === "Đã Xác Nhận"; // Kiểm tra trạng thái đơn hàng
         const isCompletedOrShipping = order.orderStatus === "Đang Giao" || order.orderStatus === "Hoàn Thành"; // Kiểm tra trạng thái
-        const isdelete = order.orderStatus=== "Đã Hủy" || order.orderStatus === "Hoàn Thành";
+        const isdelete = order.orderStatus=== "Đã Hủy" || order.orderStatus === "Hoàn Thành" || order.orderStatus === "Đang Giao" || order.orderStatus === "Đã Xác Nhận" ;
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${index + 1}</td>
@@ -206,7 +206,7 @@ async function renderOrderDetails(order) {
 
      // Kiểm tra trạng thái đơn hàng
     //  const isCompleted = order.orderStatus === "Hoàn Thành";
-    const isPendingOrShipping = order.orderStatus === "Chờ Xác Nhận" || order.orderStatus === "Đang Giao"; // Kiểm tra trạng thái
+    const isPendingOrShipping = order.orderStatus === "Chờ Xác Nhận" || order.orderStatus === "Đang Giao" || order.orderStatus === "Đã Xác Nhận"; // Kiểm tra trạng thái
 
    // Hiển thị danh sách sản phẩm
 
@@ -229,11 +229,27 @@ order.items.forEach(async (item, index) => {
               style="white-space: nowrap; display: inline-flex;"${isPendingOrShipping ? 'disabled' : ''} >Đánh Giá</button>
             </td>
         `;
+        
         orderDetailsTable.appendChild(row);
     } catch (error) {
         console.error(`Không thể lấy thông tin sản phẩm với ID: ${item.productId}`, error);
     }
 });
+
+
+            const orderSummary = document.getElementById('order-summary');
+            orderSummary.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: right; font-weight: bold;">Giảm giá:</td>
+                    <td colspan="2">${order.discount.toLocaleString()} VNĐ</td>
+                </tr>
+                <tr>
+                    <td colspan="5" style="text-align: right; font-weight: bold;">Tổng thanh toán:</td>
+                    <td colspan="2">${order.totalPayment.toLocaleString()} VNĐ</td>
+                </tr>
+            `;
+
+
          // Sau khi hiển thị sản phẩm, kiểm tra trạng thái đánh giá & vô hiệu hóa nếu cần
         await checkAndDisableReviewButtons();
     

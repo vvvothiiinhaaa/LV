@@ -99,42 +99,7 @@ function displayProducts(products) {
     });
 }
 
-// Hàm tạo một mục sản phẩm
-// function createProductItem(product) {
-    // function createProductItem(product) {
-    //     const productDiv = document.createElement("div");
-    //     productDiv.classList.add("col");
-    
-    //     // Kiểm tra trạng thái còn hàng
-    //     const stockStatus = product.quantity === 0 
-    //         ? '<span style="color:blue; font-weight:bold;">(HẾT HÀNG)</span>' 
-    //         : "";
-    
-    //     // Chỉnh sửa URL của ảnh
-    //     const imageUrl = product.url ? product.url.replace(/.*\/html\//, "/img/") : 'default-image.png';
-    
-    //     // Tạo HTML cho sản phẩm
-    //     productDiv.innerHTML = `
-    //         <div class="card product-card h-100">
-    //             <a href="product-detail.html?id=${product.id}" class="product-link">
-    //                 <img src="${imageUrl}" class="card-img-top product-image" alt="${product.name}">
-    //             </a>
-    //             <div class="card-body">
-    //                 <h6 class="card-title product-title">${product.name}</h6>
-    //                 <p class="card-text product-price">${formatPrice(product.price)} VND</p>
-    //                 <div class="product-action">
-    //                     <button class="buy-now">Mua ngay</button>
-    //                     <i class="fa-solid fa-cart-shopping add-to-cart" id="add-to-cart-btn"></i>
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     `;
-    
-       
 
-    //     return productDiv;
-    // }
-    
 
 // Hàm định dạng giá sản phẩm
 function formatPrice(price) {

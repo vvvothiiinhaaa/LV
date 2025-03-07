@@ -101,9 +101,62 @@
 </div>
 
 
+<!-- Modal Chi Tiết Thú Cưng hiển thị lịch sử đặt lịch -->
+<div class="modal fade" id="petDetailModal" tabindex="-1" aria-labelledby="petDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="petDetailModalLabel">Chi Tiết Thú Cưng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row align-items-center">
+                    <!-- Ảnh thú cưng bên trái (chiếm 3/12 cột) -->
+                    <div class="col-md-4 text-center">
+                        <img id="detailPetImage" src="./img/default-avata.png" alt="Pet Image" class="rounded-circle img-fluid" width="150" height="150">
+                    </div>
+                
+                    <!-- Thông tin thú cưng bên phải (chiếm 8/12 cột) -->
+                    <div class="col-md-7">
+                        <h4 id="detailPetName"></h4>
+                        <p><strong>Ngày Sinh:</strong> <span id="detailBirthdate"></span></p>
+                        <p><strong>Giống Loài:</strong> <span id="detailBreed"></span></p>
+                        <p><strong>Giới Tính:</strong> <span id="detailGender"></span></p>
+                    </div>
+                </div>
+                
+                
+
+                <hr>
+
+                <h5 class="mt-3">Lịch sử đặt lịch</h5>
+                <table class="table table-striped table-hover mt-2">
+                    <thead class="table">
+                        <tr>
+                            <th>Dịch Vụ</th>
+                            <th>Thời Gian bắt đầu</th>
+                            <th>Thời Gian kết thúc</th>
+                            <th>Ngày</th>
+                            <th>Trạng Thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr><td colspan="3" class="text-center">Đang tải...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
     <script src="./js/pet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("savePetBtn").addEventListener("click", savePetInfo);

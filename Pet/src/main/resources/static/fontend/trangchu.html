@@ -13,6 +13,89 @@
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/service-detail.css">
     <style>
+        #product-best-list {
+         display: grid;
+         grid-template-columns: repeat(5, 1fr); /* Chia thành 5 cột bằng nhau */
+         gap: 15px; /* Khoảng cách giữa các sản phẩm */
+         padding: 20px 0;
+     }
+     
+     /* Thiết lập cho mỗi sản phẩm */
+     #product-best-list .col {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+     }
+     
+     .product-card {
+         width: 90%; /* Đảm bảo sản phẩm chiếm toàn bộ cột */
+         border: 1px solid #ddd;
+         border-radius: 8px;
+         padding: 10px;
+         
+         text-align: center;
+         background-color: #fff;
+         transition: transform 0.3s ease-in-out;
+     }
+     
+     .product-card:hover {
+         transform: translateY(-5px);
+     }
+     
+     /* Ảnh sản phẩm */
+     .product-image {
+         width: 100%;
+         height: 180px;
+         object-fit: cover;
+         border-radius: 8px;
+     }
+     
+     /* Tiêu đề sản phẩm */
+     .product-title {
+         font-size: 16px;
+         font-weight: bold;
+         margin-top: 8px;
+     }
+     
+     /* Giá sản phẩm */
+     .product-price {
+         color: #e74c3c;
+         font-size: 14px;
+         font-weight: bold;
+     }
+     
+     /* Nút thêm vào giỏ hàng */
+     /* .buy-now {
+         background-color: #ff6600;
+         color: white;
+         padding: 8px 12px;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+         margin-top: 10px;
+         transition: background-color 0.3s;
+     }
+     
+     .buy-now:hover {
+         background-color: #e65c00;
+     } */
+     
+     /*  Đảm bảo 5 sản phẩm trên mọi màn hình, nếu không đủ thì cuộn ngang */
+     @media (max-width: 1024px) {
+         #product-best-list {
+             overflow-x: auto; /* Cuộn ngang nếu không đủ không gian */
+             white-space: nowrap;
+             display: flex;
+         }
+     
+         #product-best-list .col {
+             flex: 0 0 calc(20% - 15px); /* Vẫn giữ 5 sản phẩm mỗi hàng */
+         }
+     }
+     
+     
+         </style>
+    <style>
         .navbar-nav {
             justify-content: center;
             font-size: 1rem;
@@ -23,13 +106,20 @@
             text-transform: uppercase;
         }
         .navbar {
-            background-color: #fef0e6;
-        }
-        .hero {
+            background-color: #ffffff;
+            /* transition: background-color 0.3s ease-in-out; */
+            height:80px;
+            background: rgba(255, 255, 255, 0.2); /* Nền trắng trong suốt */
+        backdrop-filter: blur(10px); /* Làm mờ nền phía sau */
+        -webkit-backdrop-filter: blur(10px); /* Hỗ trợ trình duyệt Safari */
+            }
+     
+
+        /* .hero {
             background: url('./img/bannerr.png') no-repeat center center;
             background-size: cover;
             padding: 150px 0;
-        }
+        } */
         .hero h1 {
             font-size: 3.5rem;
             font-weight: bold;
@@ -69,12 +159,14 @@
         .list-unstyled li{
             color: black;
         }
-        .btn {
+        .btn-hero {
             background-color: #333333;
             color:white;   
-            border-radius: 5px;         
+            border-radius: 5px;        
+            padding:8px;
+            text-decoration: none; 
         }
-        .btn:hover {
+        .btn-hero:hover {
             background-color: #c3a179;
             color:white;  
                
@@ -259,6 +351,13 @@
     }
 }
 
+.feature-section {
+    background-color: #f8f5f0 !important;
+    width: 100%;
+    padding: 50px 0;
+}
+
+
     </style>
 </head>
 <body>
@@ -279,8 +378,8 @@
                             <h1 class="text-uppercase fw-bold">Chăm Sóc Thú Cưng Tận Tâm<br />Cùng Dịch Vụ Chất Lượng Cao</h1>
                             <p class="my-3">Mang đến cho thú cưng của bạn những dịch vụ chất lượng như cắt tỉa, chăm sóc sức khỏe, và các sản phẩm cao cấp nhất.
                                  Chúng tôi cam kết mang lại niềm vui và sự chăm sóc tận tâm cho bạn và thú cưng của bạn.</p>
-                            <a class="btn me-2" role="button" href="./Appointment.html">Đặt Lịch</a>
-                            <a class="btn" role="button" href="./product.html">Mua Sắm</a>
+                            <a class="btn-hero me-2" role="button" href="./Appointment.html">Đặt Lịch</a>
+                            <a class="btn-hero" role="button" href="./product.html">Mua Sắm</a>
                         </div>
                     </div>
                 </div>
@@ -315,8 +414,8 @@
                            <h1 class="text-uppercase fw-bold">Chăm Sóc Thú Cưng Tận Tâm<br />Cùng Dịch Vụ Chất Lượng Cao</h1>
                             <p class="my-3">Mang đến cho thú cưng của bạn những dịch vụ chất lượng như cắt tỉa, chăm sóc sức khỏe, và các sản phẩm cao cấp nhất.
                                  Chúng tôi cam kết mang lại niềm vui và sự chăm sóc tận tâm cho bạn và thú cưng của bạn.</p>
-                            <a class="btn me-2" role="button" href="./Appointment.html">Đặt Lịch</a>
-                            <a class="btn" role="button" href="./product.html">Mua Sắm</a>
+                            <a class="btn-hero me-2" role="button" href="./Appointment.html">Đặt Lịch</a>
+                            <a class="btn-hero" role="button" href="./product.html">Mua Sắm</a>
                         </div>
                     </div>
                 </div>
@@ -351,7 +450,7 @@
       <p>Pettie không chỉ là một trung tâm chăm sóc thú cưng – chúng tôi là một gia đình yêu thích động vật. 
         Với nhiều năm kinh nghiệm, đội ngũ của chúng tôi cam kết cung cấp những dịch vụ và chăm sóc chất lượng cao nhất cho những người bạn bốn chân, lông vũ hoặc có vảy của bạn. Hạnh phúc và sức khỏe của thú cưng luôn là ưu tiên hàng đầu của chúng tôi,
          và chúng tôi chăm sóc chúng với tình yêu và sự quan tâm như thể chúng là của chính mình.</p>
-      <button class="cta-button">Purchase Now</button>
+      <button class="cta-button">Tìm Hiểu Thêm</button>
     </div>
     <div class="hero-image">
       <img src="./img/bnn(700 x 700 px).png" alt="Pet Care" class="img-fluid rounded">
@@ -431,52 +530,72 @@
     </section>
 
 
+    <section class="product-section">
+        <div class="container">
+            <!-- Best Seller Section -->
+            <div class="best-seller">
+                <h2 class="mt-5 text-center">Sản phẩm bán chạy</h2>
+                <div id="product-best-list">
+                    <!-- Danh sách sản phẩm bán chạy sẽ được thêm vào đây -->
+                </div>
+            </div>
+            
+            <!-- Existing New Products Section -->
+            <!-- <div class="new-products">
+                <h2>Các sản phẩm mới</h2>
+                <div id="product-new-list">
+                </div>
+            </div> -->
+        </div>
+    </section>
+    
 
-    <div class="container py-5">
-        <div class="row d-flex-equal justify-content-center">
-            <!-- Cột ngang 1 -->
-            <div class="col-lg-4 col-md-6 col-sm-6 mb-4 feature-box-container">
-                <div class="feature-box">
-                    <img src="./img/3.jpg" alt="Trust">
-                    <div class="content">
-                        <a href="#" class="btn">Tìm hiểu thêm</a>
+
+    <section class="feature-section bg-custom">
+        <div class="container py-5">
+            <div class="row d-flex-equal justify-content-center">
+                <!-- Cột ngang 1 -->
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4 feature-box-container">
+                    <div class="feature-box">
+                        <img src="./img/3.jpg" alt="Trust">
+                        <div class="content">
+                            <a href="#" class="btn">Tìm hiểu thêm</a>
+                        </div>
                     </div>
                 </div>
-            </div>
     
-            <!-- Cột ngang 2 -->
-            <div class="col-lg-4 col-md-6 col-sm-6 mb-4 feature-box-container">
-                <div class="feature-box">
-                    <img src="./img/2.png" alt="Excellence">
-                    <div class="content">
-                        <a href="#" class="btn">Tìm hiểu thêm</a>
+                <!-- Cột ngang 2 -->
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4 feature-box-container">
+                    <div class="feature-box">
+                        <img src="./img/2.png" alt="Excellence">
+                        <div class="content">
+                            <a href="#" class="btn">Tìm hiểu thêm</a>
+                        </div>
                     </div>
                 </div>
-            </div>
     
-            <!-- Cột ngang 3 -->
-            <div class="col-lg-4 col-md-6 col-sm-6 mb-4 feature-box-container">
-                <div class="feature-box">
-                    <img src="./img/1016.jpg" alt="Trust">
-                    <div class="content">
-                        <a href="#" class="btn">Tìm hiểu thêm</a>
+                <!-- Cột ngang 3 -->
+                <div class="col-lg-4 col-md-6 col-sm-6 mb-4 feature-box-container">
+                    <div class="feature-box">
+                        <img src="./img/1016.jpg" alt="Trust">
+                        <div class="content">
+                            <a href="#" class="btn">Tìm hiểu thêm</a>
+                        </div>
                     </div>
                 </div>
-            </div>
     
-            <!-- Cột nằm -->
-            <div class="col-lg-12 col-md-12 mb-4 feature-box-container">
-                <div class="feature-box">
-                    <img src="./img/416.jpg" alt="Community">
-                    <div class="content">
-                        <a href="#" class="btn" style="margin-top: 25%;">Tìm hiểu thêm</a>
+                <!-- Cột nằm -->
+                <div class="col-lg-12 col-md-12 mb-4 feature-box-container">
+                    <div class="feature-box">
+                        <img src="./img/416.jpg" alt="Community">
+                        <div class="content">
+                            <a href="#" class="btn" style="margin-top: 25%;">Tìm hiểu thêm</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    
+    </section>
     
 <!-- cửa hàng -->
 
@@ -623,6 +742,7 @@
     <script src="./js/navbar.js"></script>
     <script src="./js/service-detail.js"></script>
     <script src="./js/header.js" defer></script>
+    <script src="./js/best-sellers.js"></script>
     <!-- <script src="./js/script.js"></script> -->
     <script>
         
@@ -689,6 +809,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
+
  </script>   
+
+    
 </body>
 </html>

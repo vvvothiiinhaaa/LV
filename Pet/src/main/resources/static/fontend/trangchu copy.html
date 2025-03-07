@@ -13,6 +13,89 @@
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/service-detail.css">
     <style>
+   #product-best-list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Chia thành 5 cột bằng nhau */
+    gap: 15px; /* Khoảng cách giữa các sản phẩm */
+    padding: 20px 0;
+}
+
+/* Thiết lập cho mỗi sản phẩm */
+#product-best-list .col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.product-card {
+    width: 90%; /* Đảm bảo sản phẩm chiếm toàn bộ cột */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    
+    text-align: center;
+    background-color: #fff;
+    transition: transform 0.3s ease-in-out;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Ảnh sản phẩm */
+.product-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Tiêu đề sản phẩm */
+.product-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+/* Giá sản phẩm */
+.product-price {
+    color: #e74c3c;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Nút thêm vào giỏ hàng */
+/* .buy-now {
+    background-color: #ff6600;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.buy-now:hover {
+    background-color: #e65c00;
+} */
+
+/*  Đảm bảo 5 sản phẩm trên mọi màn hình, nếu không đủ thì cuộn ngang */
+@media (max-width: 1024px) {
+    #product-best-list {
+        overflow-x: auto; /* Cuộn ngang nếu không đủ không gian */
+        white-space: nowrap;
+        display: flex;
+    }
+
+    #product-best-list .col {
+        flex: 0 0 calc(20% - 15px); /* Vẫn giữ 5 sản phẩm mỗi hàng */
+    }
+}
+
+
+    </style>
+    <style>
         .navbar-nav {
             justify-content: center;
             font-size: 1rem;
@@ -430,7 +513,23 @@
         </div>
     </section>
 
-
+    <div class="container">
+        <!-- Best Seller Section -->
+        <div class="best-seller">
+            <h2 class="mt-5 text-center">Sản phẩm bán chạy</h2>
+            <div id="product-best-list">
+                <!-- Danh sách sản phẩm bán chạy sẽ được thêm vào đây -->
+            </div>
+        </div>
+        
+        <!-- Existing New Products Section -->
+        <!-- <div class="new-products">
+            <h2>Các sản phẩm mới</h2>
+            <div id="product-new-list">
+            </div>
+        </div> -->
+    </div>
+    
 
     <div class="container py-5">
         <div class="row d-flex-equal justify-content-center">
@@ -690,5 +789,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
  </script>   
+ <script src="./js/best-sellers.js"></script>
 </body>
 </html>

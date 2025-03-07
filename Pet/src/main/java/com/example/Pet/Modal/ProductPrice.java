@@ -19,15 +19,22 @@ public class ProductPrice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product productId;
-
+    // @ManyToOne
+    // @JoinColumn(name = "product_id", nullable = false)
+    // private Product productId;
     @Column(nullable = false)
     private Double price;
 
     @Column(name = "effective_date", nullable = false)
     private LocalDateTime effectiveDate;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product; // Đây là liên kết với bảng Product
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 
     // Getters và Setters
     public Long getId() {
@@ -54,18 +61,16 @@ public class ProductPrice {
         this.effectiveDate = effectiveDate;
     }
 
-    /**
-     * @return Product return the productId
-     */
-    public Product getProductId() {
-        return productId;
-    }
-
-    /**
-     * @param productId the productId to set
-     */
-    public void setProductId(Product productId) {
-        this.productId = productId;
-    }
-
+    // /**
+    //  * @return Product return the productId
+    //  */
+    // public Product getProductId() {
+    //     return productId;
+    // }
+    // /**
+    //  * @param productId the productId to set
+    //  */
+    // public void setProductId(Product productId) {
+    //     this.productId = productId;
+    // }
 }

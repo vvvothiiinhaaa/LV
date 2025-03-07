@@ -149,6 +149,7 @@ public class OrderService {
         orderDetails.put("orderId", order.getId());
         orderDetails.put("userId", order.getUserId());
         orderDetails.put("orderDate", order.getOrderDate());
+        orderDetails.put("discount", order.getDiscount());
         orderDetails.put("totalPayment", order.getTotalPayment());
         orderDetails.put("paymentMethod", order.getPaymentMethod());
         orderDetails.put("orderStatus", order.getOrderStatus());

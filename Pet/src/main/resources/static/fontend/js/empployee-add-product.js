@@ -1,6 +1,37 @@
+// lấy danh mục sản phẩm
+document.addEventListener("DOMContentLoaded", async function () {
+    const categorySelect = document.getElementById("productGenre");
+
+    try {
+        const response = await fetch("http://localhost:8080/api/categories"); // Đổi URL API nếu cần
+        if (!response.ok) throw new Error("Lỗi khi lấy danh mục");
+
+        const categories = await response.json();
+
+        // Thêm danh mục vào select
+        categories.forEach(category => {
+            const option = document.createElement("option");
+            option.value = category.id;
+            option.textContent = category.name;
+            categorySelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Lỗi:", error);
+    }
+});
+
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("productForm").addEventListener("submit", async function (event) {
         event.preventDefault();
+
+
+        const isLoggedIn = await checkLoginStatus();
+        if (!isLoggedIn) {
+            alert("Vui lòng đăng nhập trước khi thêm sản phẩm.");
+            window.location.href = "/frontend/employee-login.html";
+            return;
+        }
+    
 
         let formData = new FormData();
         function addToForm(id, key) {
@@ -11,13 +42,22 @@ document.addEventListener("DOMContentLoaded", function () {
         addToForm("productName", "name");
         addToForm("productPrice", "price");
         addToForm("productSold", "sold");
-        addToForm("productGenre", "genre");
+        // addToForm("productGenre", "genre");
         addToForm("productOrigin", "origin");
         addToForm("productBrand", "brand");
         addToForm("productComponent", "component");
         addToForm("productDescription", "description");
         addToForm("productQuantity", "quantity");
         addToForm("productIngredient", "ingredient");
+
+         // Lấy giá trị danh mục là tên thay vì ID
+         let categoryElement = document.getElementById("productGenre");
+         if (categoryElement && categoryElement.value) {
+             formData.append("genre", categoryElement.value); // Lưu tên danh mục
+         } else {
+             alert("Vui lòng chọn danh mục sản phẩm!");
+             return;
+         }
 
         let mainImage = document.getElementById("productImage");
         if (mainImage && mainImage.files.length > 0) {
@@ -62,3 +102,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+async function checkLoginStatus() {
+    try {
+        const response = await fetch('/employee/check-login');
+        if (response.ok) {
+            const employee = await response.json();
+            console.log("Đã đăng nhập:", employee.username);
+            return true; // Đã đăng nhập
+        } else {
+            console.log("Chưa đăng nhập.");
+            return false; // Chưa đăng nhập
+        }
+    } catch (error) {
+        console.error("Lỗi khi kiểm tra đăng nhập:", error);
+        return false;
+    }
+}

@@ -395,74 +395,122 @@ document.getElementById("checkout").addEventListener("click", function () {
 
 
 
+// document.getElementById('apply-coupon').addEventListener('click', function() {
+//     // Lấy mã giảm giá người dùng nhập vào
+//     const couponCode = document.getElementById('coupon-code').value.trim();
+    
+//     // Kiểm tra nếu người dùng không nhập mã
+//     if (!couponCode) {
+//         alert("Vui lòng nhập mã giảm giá.");
+//         return;
+//     }
+
+//     // Gọi API để kiểm tra mã giảm giá
+// // Gọi API để kiểm tra mã giảm giá
+// fetch(`/api/discounts/validate/${couponCode}`)
+//     .then(response => response.json())
+//     .then(data => {
+//         if (data) {
+//             // Log ra để kiểm tra phản hồi API
+//             console.log("Phản hồi từ API:", data);
+
+//             // Lấy mức tối thiểu để áp dụng mã giảm giá từ phản hồi API
+//             const minOrderAmount = data.minOrderAmount; // Lấy minOrderAmount từ phản hồi API
+//             const usageLimit = data.usageLimit;
+           
+//             // Log để kiểm tra minOrderAmount và ngày bắt đầu/kết thúc
+//             console.log("Mức tối thiểu để áp dụng mã giảm giá:", minOrderAmount);
+            
+//             // Kiểm tra nếu usageLimit nhỏ hơn hoặc bằng 0
+//             if (usageLimit <= 0) {
+//                 alert(`Mã Giảm Giá đã hết lượt sử dụng.`);
+//                 return;
+//             }
+
+
+
+//             // Kiểm tra nếu subtotal lớn hơn hoặc bằng minOrderAmount
+//             if (subtotal < minOrderAmount) {
+//                 alert(`Tổng giá trị đơn hàng không đủ để áp dụng mã giảm giá.`);
+//                 return;
+//             }
+            
+
+
+//             const formatCurrency = (value) => {
+//                 return new Intl.NumberFormat('vi-VN').format(value) + " VNĐ";
+//             };
+
+//             // Tính toán số tiền giảm giá
+//             const discountPercentage = data.discountPercentage;
+//             const discountAmount = (subtotal * discountPercentage) / 100;
+
+//             // Cập nhật phần tử #sale với số tiền giảm giá
+//             document.querySelector('#sale').innerText = formatCurrency(discountAmount);
+
+//             // Cập nhật tổng tiền (optional, nếu bạn muốn hiển thị tổng tiền sau khi giảm giá)
+//             const totalAmount = subtotal - discountAmount;
+//             document.querySelector('#total').innerText = formatCurrency(totalAmount);
+
+//         } else {
+//             alert("Mã giảm giá không hợp lệ.");
+//         }
+//     })
+//     .catch(error => {
+//         console.error("Lỗi khi áp dụng mã giảm giá:", error);
+//         alert("Đã có lỗi xảy ra, vui lòng thử lại sau.");
+//     });
+
+// });
+
 document.getElementById('apply-coupon').addEventListener('click', function() {
-    // Lấy mã giảm giá người dùng nhập vào
     const couponCode = document.getElementById('coupon-code').value.trim();
     
-    // Kiểm tra nếu người dùng không nhập mã
     if (!couponCode) {
         alert("Vui lòng nhập mã giảm giá.");
         return;
     }
 
-    // Gọi API để kiểm tra mã giảm giá
-// Gọi API để kiểm tra mã giảm giá
-fetch(`/api/discounts/validate/${couponCode}`)
-    .then(response => response.json())
-    .then(data => {
-        if (data) {
-            // Log ra để kiểm tra phản hồi API
-            console.log("Phản hồi từ API:", data);
+    fetch(`/api/discounts/validate/${couponCode}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data) {
+                alert("Mã giảm giá không hợp lệ.");
+                return;
+            }
 
-            // Lấy mức tối thiểu để áp dụng mã giảm giá từ phản hồi API
-            const minOrderAmount = data.minOrderAmount; // Lấy minOrderAmount từ phản hồi API
-            const usageLimit = data.usageLimit;
-           
-            // Log để kiểm tra minOrderAmount và ngày bắt đầu/kết thúc
-            console.log("Mức tối thiểu để áp dụng mã giảm giá:", minOrderAmount);
-            
-            // Kiểm tra nếu usageLimit nhỏ hơn hoặc bằng 0
+            console.log("API Response:", data);
+
+            const minOrderAmount = parseFloat(data.minOrderAmount) || 0;
+            const usageLimit = parseInt(data.usageLimit) || 0;
+            const discountPercentage = parseFloat(data.discountPercentage) || 0;
+
             if (usageLimit <= 0) {
                 alert(`Mã Giảm Giá đã hết lượt sử dụng.`);
                 return;
             }
 
+            const subtotal = parseFloat(document.querySelector("#subtotal").innerText.replace(/\D/g, '')) || 0;
+            console.log("Subtotal:", subtotal);
 
-
-            // Kiểm tra nếu subtotal lớn hơn hoặc bằng minOrderAmount
             if (subtotal < minOrderAmount) {
                 alert(`Tổng giá trị đơn hàng không đủ để áp dụng mã giảm giá.`);
                 return;
             }
-            
 
-
-            const formatCurrency = (value) => {
-                return new Intl.NumberFormat('vi-VN').format(value) + " VNĐ";
-            };
-
-            // Tính toán số tiền giảm giá
-            const discountPercentage = data.discountPercentage;
             const discountAmount = (subtotal * discountPercentage) / 100;
+            console.log("Discount Amount:", discountAmount);
 
-            // Cập nhật phần tử #sale với số tiền giảm giá
-            document.querySelector('#sale').innerText = formatCurrency(discountAmount);
+            document.querySelector('#sale').innerText = new Intl.NumberFormat('vi-VN').format(discountAmount) + " VNĐ";
 
-            // Cập nhật tổng tiền (optional, nếu bạn muốn hiển thị tổng tiền sau khi giảm giá)
             const totalAmount = subtotal - discountAmount;
-            document.querySelector('#total').innerText = formatCurrency(totalAmount);
-
-        } else {
-            alert("Mã giảm giá không hợp lệ.");
-        }
-    })
-    .catch(error => {
-        console.error("Lỗi khi áp dụng mã giảm giá:", error);
-        alert("Đã có lỗi xảy ra, vui lòng thử lại sau.");
-    });
-
+            document.querySelector('#total').innerText = new Intl.NumberFormat('vi-VN').format(totalAmount) + " VNĐ";
+        })
+        .catch(error => {
+            console.error("Lỗi khi áp dụng mã giảm giá:", error);
+            alert("Đã có lỗi xảy ra, vui lòng thử lại sau.");
+        });
 });
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,22 +26,21 @@ public class DiscountController {
     private DiscountService discountService;
 
     // Thêm mã giảm giá
+    // @PostMapping
+    // public ResponseEntity<Discount> addDiscount(@RequestBody Discount discount) {
+    //     Discount createdDiscount = discountService.addDiscount(discount);
+    //     return ResponseEntity.ok(createdDiscount);
+    // }
     @PostMapping
-    public ResponseEntity<Discount> addDiscount(@RequestBody Discount discount) {
-        Discount createdDiscount = discountService.addDiscount(discount);
-        return ResponseEntity.ok(createdDiscount);
+    public ResponseEntity<?> addDiscount(@RequestBody Discount discount) {
+        try {
+            Discount savedDiscount = discountService.addDiscount(discount);
+            return ResponseEntity.ok(savedDiscount);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
-    // // Cập nhật mã giảm giá
-    // @PutMapping("/{id}")
-    // public ResponseEntity<Discount> updateDiscount(@PathVariable Long id, @RequestBody Discount discountDetails) {
-    //     Discount updatedDiscount = discountService.updateDiscount(id, discountDetails);
-    //     if (updatedDiscount != null) {
-    //         return ResponseEntity.ok(updatedDiscount);
-    //     }
-    //     return ResponseEntity.notFound().build(); // Nếu không tìm thấy
-    // }
-    // Cập nhật mã giảm giá theo mã (code)
     @PutMapping("/update/{code}")
     public ResponseEntity<Discount> updateDiscountByCode(
             @PathVariable("code") String code, // Lấy code từ URL
@@ -102,6 +102,18 @@ public class DiscountController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // API lấy các mã giảm giá chưa đến ngày bắt đầu
+    @GetMapping("/upcoming")
+    public List<Discount> getUpcomingDiscounts() {
+        return discountService.getUpcomingDiscounts();
+    }
+
+    // API lấy các mã giảm giá đã hết hạn
+    @GetMapping("/expired")
+    public List<Discount> getExpiredDiscounts() {
+        return discountService.getExpiredDiscounts();
     }
 
 }

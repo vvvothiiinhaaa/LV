@@ -1,0 +1,436 @@
+     /* Viền cho hàng và cột */
+     #datatablesSimple th, #datatablesSimple td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    /* Thiết lập bảng */
+    #datatablesSimple {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff;
+        border: 1px solid #ddd;
+    }
+    .dataTables_length, .dataTables_filter {
+        margin-bottom: 5px;
+    }
+    /* Định dạng tiêu đề bảng */
+    #datatablesSimple thead {
+        background-color: #f8f9fa;
+        color: black;
+    }
+    #datatablesSimple thead th {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 2px solid #ddd;
+    }
+    /* Định dạng các dòng trong bảng */
+    #datatablesSimple tbody tr {
+        border-bottom: 1px solid #ddd;
+    }
+    /* Định dạng ô trong bảng */
+    #datatablesSimple td {
+        padding: 10px;
+        text-align: left;
+    }
+    /* Định dạng nút "Xem" */
+    .btn-info {
+        background-color: #333333;
+        width: 100%;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out;
+    }
+    .btn-info:hover {
+        background-color: #9f7143;
+    }
+    .btn-info:disabled {
+        background-color: #444444;
+    }
+    #datatablesSimple th:nth-child(3), #datatablesSimple td:nth-child(3) {
+        width: 150px;
+    }
+    #datatablesSimple th:nth-child(4), #datatablesSimple td:nth-child(4) {
+        width: 150px;
+    }
+    #datatablesSimple th:nth-child(5), #datatablesSimple td:nth-child(5) {
+        width: 250px;
+    }
+    #datatablesSimple th:nth-child(6), #datatablesSimple td:nth-child(6) {
+        width: 200px;
+    }
+    #datatablesSimple th:nth-child(7), #datatablesSimple td:nth-child(7) {
+        width: 200px;
+    }
+    #datatablesSimple th:nth-child(8), #datatablesSimple td:nth-child(8) {
+        width: 150px;
+    }
+    #datatablesSimple th:last-child, #datatablesSimple td:last-child {
+        width: 100px;
+    }
+    /* Hiệu ứng hover cho hàng */
+    #datatablesSimple tbody tr:hover {
+        background-color: #f1f1f1 !important;
+        transition: background-color 0.3s ease-in-out;
+    }
+    #datatablesSimple tbody tr:hover td {
+        background-color: #f1f1f1 !important; 
+        transition: background-color 0.3s ease-in-out;
+    }
+    .btn-submit {
+        background-color: #333333;
+        color: #fff;
+    }
+    .btn-submit:hover {
+        background-color: #9f7143;
+        color: black;
+    }
+    /* Định dạng modal */
+    .btn-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .btn-delete {
+        background: none;
+        border: none;
+        color: #333333;
+        font-size: 18px;
+        cursor: pointer;
+        transition: color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        display: flex;
+        align-items: center;
+    }
+    .btn-delete i {
+        font-size: 16px;
+    }
+    .btn-delete:hover {
+        color: #333333;
+        transform: scale(1.2);
+    }
+    .btn-delete:focus {
+        outline: none;
+    }
+    .btn-update {
+        background-color: #333333;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        font-size: 14px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .btn-update i {
+        font-size: 16px;
+    }
+    .btn-update:hover {
+        background-color: #9f7143;
+        transform: scale(1.1);
+    }
+    .btn-update:focus {
+        outline: none;
+    }
+
+    /* tìm kiếm lịch hẹn */
+    /* Định dạng container tìm kiếm */
+.search-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    /* margin-bottom: 20px; */
+}
+
+/* Định dạng label */
+.search-container label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Định dạng input ngày */
+.search-container input[type="date"],
+.search-container select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    background-color: #fff;
+    outline: none;
+}
+
+/* Định dạng dropdown chọn khung giờ */
+.search-container select {
+    cursor: pointer;
+}
+
+/* Định dạng nút tìm kiếm */
+.search-container button {
+    padding: 8px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    background-color: #333333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.search-container button:hover {
+    background-color: #333333;
+}
+
+/* Responsive cho màn hình nhỏ */
+@media (max-width: 600px) {
+    .search-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .search-container label {
+        width: 100%;
+    }
+    
+    .search-container input,
+    .search-container select,
+    .search-container button {
+        width: 100%;
+    }
+}
+/* lọc trạng thái */
+.status-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.status-filter label {
+    font-weight: bold;
+    color: #333;
+}
+
+#statusSelect {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: white;
+    /* cursor: pointer; */
+    transition: all 0.3s ease;
+}
+
+/*  cập nhật trạng thái */
+/* Định dạng khu vực cập nhật trạng thái */
+.update-status-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+.update-status-container label {
+    font-weight: bold;
+    color: #333;
+}
+
+#updateStatusSelect {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* modal chi tiết */
+.modal-body {
+    font-family: Arial, sans-serif;
+}
+
+.section-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-container .box {
+    width: 48%; /* Chia đều không gian */
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    gap:10px;
+}
+
+.box img {
+    display: block;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+h5 {
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+hr {
+    border: 1px solid #ddd;
+    margin: 20px 0;
+}
+
+.service-box, .appointment-box {
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #f1f1f1;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.service-box img, .appointment-box img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.text-bold {
+    font-weight: bold;
+    color: #333;
+}
+/* Tăng kích thước modal */
+/* Tăng kích thước modal */
+.serviceDetailModal {
+    max-width: 80%; /* Tăng kích thước modal lên 80% màn hình */
+    width: 80%;
+}
+
+.modal-xl {
+    max-width: 90%;
+}
+
+@media (min-width: 1200px) {
+    .modal-xl {
+        max-width: 80%;
+    }
+}
+
+/* Header của modal */
+.modal-header {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+
+/* Body của modal */
+.modal-body {
+    padding: 20px;
+    font-size: 16px;
+}
+
+/* Bố cục hàng ngang: Khách hàng & Thú cưng */
+.customer-pet-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Card thông tin khách hàng */
+#customer-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    flex: 1;  /* Chia đều không gian */
+    min-width: 300px;
+}
+
+.pet-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* 2 pet mỗi hàng */
+    gap: 15px;
+}
+
+
+/* Danh sách thú cưng (ngang hàng, cùng kích thước với khách hàng) */
+.pet-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    flex: 1;  /* Chia đều không gian */
+    /* background: #fefefe;
+    padding: 15px; */
+    border-radius: 10px;
+    min-width: 250px;
+}
+
+/* Card thú cưng */
+.pet-card {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    flex: 1;  /* Chia đều không gian */
+    width:50%;
+}
+
+/* Dịch vụ và lịch hẹn */
+.service-appointment-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Danh sách dịch vụ (cùng kích thước với khách hàng) */
+.service-container {
+    flex: 1;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 15px;
+    border-radius: 10px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+}
+
+/* Thông tin lịch hẹn */
+#appointment-info {
+    flex: 1;
+    background: #e9f5ff;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #007bff;
+}
+
+/* Định dạng chữ */
+h5 {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Nút đóng */
+.btn-close {
+    background-color: white;
+    border-radius: 50%;
+}

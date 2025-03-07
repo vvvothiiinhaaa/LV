@@ -71,6 +71,8 @@ function getPets(userId) {
                 });
             }
 
+            petSelect.classList.add('custom-select');
+
             // Khởi tạo Select2 để cho phép chọn nhiều mục
             $('#pet').select2({
                 placeholder: "Chọn thú cưng",
@@ -101,7 +103,7 @@ function getServices() {
             });
                // Khởi tạo Select2 để cho phép chọn nhiều mục
                $('#service').select2({
-                placeholder: "Chọn thú cưng",
+                placeholder: "Chọn Dịch Vụ",
                 allowClear: true
             });
         })
@@ -120,6 +122,7 @@ window.onload = function() {
         }
     });
 };
+
 
 
 
@@ -175,9 +178,15 @@ async function handleSubmit(event) {
             alert("Đặt lịch thành công!");
             document.getElementById('appointmentForm').reset();
 
-            // Thêm mã để reset các lựa chọn trong select "pet" và "service"
-            document.getElementById('pet').selectedIndex = -1;  // Không chọn gì trong select "pet"
-            document.getElementById('service').selectedIndex = -1;
+            // Reset toàn bộ form
+            const form = document.getElementById('appointmentForm');
+            form.reset();
+
+            // Reset select bằng cách đặt selectedIndex về -1 (không chọn mục nào)
+            document.getElementById('appointmentForm').reset();
+            document.getElementById('pet').selectedIndex = 0;
+            document.getElementById('service').selectedIndex = -1;            
+            document.getElementById('time').selectedIndex = 0; // Chọn lại giá trị đầu tiên
         } else {
             alert("Đặt lịch thất bại. Vui lòng thử lại." + data.message);
         }

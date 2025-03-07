@@ -1,41 +1,3 @@
-// package com.example.Pet.Controller;
-// import com.example.Pet.Modal.Serviceforpet;
-// import com.example.Pet.Modal.ServicePrice;
-// import com.example.Pet.Service.ServiceforpetService;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
-// import java.math.BigDecimal;
-// import java.util.List;
-// @RestController
-// @RequestMapping("/services")
-// public class ServiceforpetController {
-//     private final ServiceforpetService serviceforpetService;
-//     public ServiceforpetController(ServiceforpetService serviceforpetService) {
-//         this.serviceforpetService = serviceforpetService;
-//     }
-//     //  Thêm dịch vụ mới (Kèm giá theo PetSize)
-//     @PostMapping("/add")
-//     public ResponseEntity<Serviceforpet> addServiceWithPrices(
-//             @RequestParam String name,
-//             @RequestParam(required = false) String description,
-//             @RequestParam Integer duration,
-//             @RequestParam BigDecimal defaultPrice) {
-//         return ResponseEntity.ok(serviceforpetService.addServiceWithPrices(name, description, duration, defaultPrice));
-//     }
-//     // Cập nhật giá dịch vụ theo PetSize
-//     @PutMapping("/update-price/{serviceId}/{petSizeId}")
-//     public ResponseEntity<ServicePrice> updateServicePrice(
-//             @PathVariable Integer serviceId,
-//             @PathVariable Integer petSizeId,
-//             @RequestParam BigDecimal newPrice) {
-//         return ResponseEntity.ok(serviceforpetService.updateServicePrice(serviceId, petSizeId, newPrice));
-//     }
-//     //  Lấy tất cả giá của một dịch vụ theo PetSize
-//     @GetMapping("/prices/{serviceId}")
-//     public ResponseEntity<List<ServicePrice>> getServicePricesByService(@PathVariable Integer serviceId) {
-//         return ResponseEntity.ok(serviceforpetService.getServicePricesByService(serviceId));
-//     }
-// }
 package com.example.Pet.Controller;
 
 import java.util.List;
@@ -96,5 +58,11 @@ public class ServiceforpetController {
     @GetMapping("/all")
     public ResponseEntity<List<Serviceforpet>> getAllServices() {
         return ResponseEntity.ok(serviceforpetService.getAllServices());
+    }
+
+    /// lấy chi tiết dịch vụ
+     @GetMapping("/{id}")
+    public Serviceforpet getServiceById(@PathVariable Integer id) {
+        return serviceforpetService.getServiceById(id);
     }
 }

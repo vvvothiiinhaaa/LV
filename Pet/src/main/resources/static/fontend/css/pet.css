@@ -46,4 +46,90 @@
 .box-shadow-custom {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
-  
+  /* /bảng chi tiết */
+  /* Căn chỉnh bảng */
+/* Căn chỉnh bảng */
+.table {
+    width: 100%;
+    border-collapse: collapse; /* Gộp viền để không bị đúp */
+    /* border-radius: 8px; */
+    overflow: hidden;
+    /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
+    border: 2px solid #dee2e6; /* Viền xung quanh bảng */
+}
+
+/* Header bảng */
+.table thead {
+    background-color: #343a40; /* Màu nền đậm */
+    color: white;
+    text-align: left;
+    font-weight: bold;
+}
+
+/* Header cột */
+.table thead th {
+    padding: 12px;
+    text-transform: uppercase;
+    border: 2px solid #dee2e6; /* Viền giữa các cột */
+}
+
+/* Dòng dữ liệu */
+.table tbody tr {
+    background-color: #fff;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Kẻ ngang giữa các dòng */
+.table tbody tr:nth-child(even) {
+    background-color: #f8f9fa; /* Màu xám nhạt */
+}
+
+/* Hover */
+.table tbody tr:hover {
+    background-color: #e9ecef; /* Màu xám sáng khi hover */
+}
+
+/* Ô dữ liệu */
+.table tbody td {
+    padding: 12px;
+    border: 2px solid #dee2e6; /* Viền giữa các ô */
+    text-align: center;
+}
+
+/* Canh giữa nội dung các cột */
+.table th, .table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Định dạng số tiền */
+.table td:nth-child(5) {
+    font-weight: bold;
+    color: red; /* Màu xanh lá */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .table thead {
+        display: none;
+    }
+    .table tbody tr {
+        display: block;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        border: 1px solid #dee2e6;
+        padding: 10px;
+    }
+    .table tbody td {
+        display: block;
+        text-align: right;
+        font-size: 14px;
+        border-bottom: none;
+        border: none;
+    }
+    .table tbody td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+    }
+}

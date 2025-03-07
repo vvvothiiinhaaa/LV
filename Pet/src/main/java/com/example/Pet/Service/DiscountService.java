@@ -17,7 +17,14 @@ public class DiscountService {
     private DiscountRepository discountRepository;
 
     // Thêm mã giảm giá mới
+    // public Discount addDiscount(Discount discount) {
+    //     return discountRepository.save(discount);
+    // }
     public Discount addDiscount(Discount discount) {
+        // Kiểm tra nếu mã giảm giá đã tồn tại
+        if (discountRepository.existsByCode(discount.getCode())) {
+            throw new RuntimeException("Mã giảm giá đã tồn tại!");
+        }
         return discountRepository.save(discount);
     }
 
@@ -101,6 +108,14 @@ public class DiscountService {
     // Kiểm tra mã giảm giá theo mã
     public Discount getDiscountByCode(String code) {
         return discountRepository.findByCode(code);
+    }
+
+    public List<Discount> getUpcomingDiscounts() {
+        return discountRepository.findUpcomingDiscounts();
+    }
+
+    public List<Discount> getExpiredDiscounts() {
+        return discountRepository.findExpiredDiscounts();
     }
 
 }

@@ -93,6 +93,7 @@
         <!-- Filter Buttons -->
         <div class="d-flex justify-content-center mb-3">
             <button class="btn btn-custom mx-1 filter-btn active" data-status="Chờ Xác Nhận">Chờ Xác Nhận</button>
+            <button class="btn btn-custom mx-1 filter-btn" data-status="Đã Xác Nhận">Đã Xác Nhận</button>
             <button class="btn btn-custom mx-1 filter-btn" data-status="Đang Giao">Đang Giao</button>
             <button class="btn btn-custom mx-1 filter-btn" data-status="Hoàn Thành">Hoàn Thành</button>
             <button class="btn btn-custom mx-1 filter-btn" data-status="Đã Hủy">Đã Hủy</button>
@@ -157,6 +158,9 @@
                         <tbody id="order-details">
                             <!-- Chi tiết sản phẩm sẽ được hiển thị tại đây -->
                         </tbody>
+                        <tfoot id="order-summary">
+                            <!-- Thông tin giảm giá và tổng thanh toán sẽ hiển thị ở đây -->
+                        </tfoot>
                     </table>
                 </div>
                 <div class="modal-footer">
