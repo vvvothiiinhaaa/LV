@@ -39,24 +39,24 @@ body {
 /* Sidebar - Danh sách các mục trong thanh sidebar */
 .list-group {
     /* position: fixed; Giữ thanh sidebar cố định khi cuộn trang */
-    top: 60px; /* Khoảng cách từ trên xuống */
+    top: 60px !important; /* Khoảng cách từ trên xuống */
     
-    left: 0; /* Đặt sidebar ở phía bên trái */
-    width: 300px; /* Chiều rộng cố định cho sidebar */
-    height: calc(100vh - 245px); /* Chiều cao đầy đủ của màn hình trừ phần margin trên */
-    border: 2px solid #ddd; /* Đặt viền cho sidebar */
-    border-radius: 10px; /* Bo góc cho sidebar */
-    background-color: #fff; /* Nền màu trắng cho sidebar */
-    padding: 10px; 
+    left: 0 !important; /* Đặt sidebar ở phía bên trái */
+    width: 300px !important; /* Chiều rộng cố định cho sidebar */
+    height: calc(100vh - 245px) !important; /* Chiều cao đầy đủ của màn hình trừ phần margin trên */
+    border: 2px solid #ddd !important; /* Đặt viền cho sidebar */
+    border-radius: 10px !important; /* Bo góc cho sidebar */
+    background-color: #fff !important; /* Nền màu trắng cho sidebar */
+    padding: 10px !important; 
    
-    overflow-y: auto; /* Thêm thanh cuộn dọc nếu danh sách quá dài */
+    overflow-y: auto !important; /* Thêm thanh cuộn dọc nếu danh sách quá dài */
 }
 
 /* Các mục trong danh sách sidebar */
 .list-group-item.active {
-    background-color: #9f7143; /* Màu nền khi mục được chọn */
-    color: white; /* Màu chữ khi mục được chọn */
-    border-color: #9f7143; /* Màu viền khi mục được chọn */
+    background-color: #9f7143 !important;
+    color: white !important;
+    border-color: #9f7143 !important; 
 }
 
 .modal-content {

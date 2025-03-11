@@ -98,12 +98,17 @@
                         background-color: rgba(0, 0, 0, 0.5);
                         justify-content: center;
                         align-items: center;
+                        overflow-y: auto; 
+                        padding: 20px;
                     }
 
                     /* Nội dung modal */
                     .modal-content {
                         background: white;
-                        width: 600px;
+                        width: 60%; /* Điều chỉnh chiều rộng modal */
+                        max-width: 700px;
+                        max-height: 90vh; /* Chiều cao tối đa */
+                        overflow-y: auto; /* Cuộn nội dung bên trong */
                         padding: 20px;
                         border-radius: 10px;
                         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -174,6 +179,65 @@
                     .btn-secondary:hover {
                         background: #555555;
                     }
+
+                    /* bỏ gạch chân cho thẻ a */
+                    a.card {
+    text-decoration: none; /* Bỏ gạch chân */
+    color: inherit; /* Giữ màu chữ mặc định */
+}
+
+/* Căn chỉnh hàng ngang cho các bước */
+.step-item, .price-item {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa các phần tử */
+    margin-bottom: 10px;
+}
+
+/* Định dạng nhãn (tên kích thước thú cưng) */
+.price-item label {
+    flex: 0 0 150px; /* Chiều rộng cố định cho nhãn */
+    font-weight: bold;
+}
+
+/* Định dạng input */
+.step-item input, .price-item input {
+    flex: 1; /* Input mở rộng hết phần còn lại */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Nút thêm bước */
+#stepsContainer button {
+    background: #333;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#stepsContainer button:hover {
+    background: #555;
+}
+
+/* Nút xóa bước */
+.step-item button {
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.step-item button:hover {
+    background: darkred;
+}
+
 
         </style>
     </head>
@@ -259,18 +323,28 @@
                         <span class="close" onclick="closeModal()">&times;</span>
                         <h2>Thêm Dịch Vụ Mới</h2>
                         <form id="serviceForm">
+                            <!-- Thông tin chung -->
                             <label for="serviceName">Tên Dịch Vụ:</label>
                             <input type="text" id="serviceName" required>
-                        
+                
                             <label for="serviceDesc">Mô Tả:</label>
                             <textarea id="serviceDesc" rows="2" required></textarea>
-                        
+                
                             <label for="serviceDuration">Thời Gian (phút):</label>
                             <input type="number" id="serviceDuration" required>
-                        
+                
                             <label for="serviceImage">Ảnh Dịch Vụ:</label>
                             <input type="file" id="serviceImage" accept="image/*">
-
+                
+                            <!-- Thêm các bước thực hiện -->
+                            <h3 class="mt-3">Các Bước Thực Hiện</h3>
+                            <div id="stepsContainer"></div>
+                            <button type="button" onclick="addStep()">+ Thêm Bước</button>
+                
+                            <!-- Thêm giá dịch vụ theo Pet Size -->
+                            <h3 class="mt-3">Giá Dịch Vụ Theo Kích Thước</h3>
+                            <div id="priceContainer"></div>
+                
                             <div class="button-group">
                                 <button type="submit" class="btn-service">Thêm</button>
                                 <button type="button" class="btn-service" onclick="closeModal()">Hủy</button>
@@ -278,30 +352,43 @@
                         </form>
                     </div>
                 </div>
-
+                <!-- form cập nhật dịch vụ -->
+                
                 <div id="serviceDetailModal" class="modal">
-                    <div class="modal-content" style="display: flex; align-items: center; gap: 20px;">
+                    <div class="modal-content">
                         <span class="close" onclick="closeServiceDetailModal()">&times;</span>
-                        <!-- Hình ảnh và cập nhật ảnh -->
-                        <div style="flex: 1; text-align: center;">
-                            <img id="serviceDetailImage" src="" alt="Service Image" 
-                                 style="width: 30%; height: 30%; border-radius: 10px;">
-                            <input type="file" id="serviceImageUpload" style="margin-top: 10px;">
+                        
+                        <!-- Hình ảnh & Cập nhật ảnh -->
+                        <div class="image-upload-container">
+                            <img id="serviceDetailImage" src="" alt="Service Image" style="width:100px; height:100px">
+                            <input type="file" id="serviceImageUpload">
                         </div>
                 
                         <!-- Thông tin dịch vụ -->
-                        <div style="flex: 2;">
-                            <input type="hidden" id="serviceId"> <!-- Thẻ input ẩn lưu ID dịch vụ -->
+                        <div class="service-info">
+                            <input type="hidden" id="serviceId"> 
                             <label for="serviceDetailName">Tên dịch vụ:</label>
-                            <input type="text" id="serviceDetailName" style="width: 100%; margin-bottom: 10px;">
-                            
+                            <input type="text" id="serviceDetailName">
+                
                             <label for="serviceDetailDesc">Mô tả:</label>
-                            <textarea id="serviceDetailDesc" rows="4" style="width: 100%; margin-bottom: 10px;"></textarea>
-                            
-                            <label for="serviceDetailDuration">Thời gian dự kiến (phút):<input type="number" id="serviceDetailDuration" style="width: 100%; margin-bottom: 10px;"></label>
-                            
-                            <button type="submit" class="btn-service" onclick="updateService()">Lưu Thay Đổi</button>
+                            <textarea id="serviceDetailDesc" rows="3"></textarea>
+                
+                            <label for="serviceDetailDuration">Thời gian dự kiến (phút):</label>
+                            <input type="number" id="serviceDetailDuration">
                         </div>
+                
+                        <!-- Danh sách các bước thực hiện -->
+                        <h3>Các Bước Thực Hiện</h3>
+                            <div id="steps"></div>
+                            
+                            <button type="button" onclick="addStep2()">+ Thêm Bước</button>
+
+                
+                        <!-- Bảng giá theo kích thước thú cưng -->
+                        <h3>Bảng Giá</h3>
+                        <div id="pricesContainer"></div>
+                
+                        <button type="submit" class="btn-service" onclick="updateService()">Lưu Thay Đổi</button>
                     </div>
                 </div>
                 
@@ -324,218 +411,7 @@
         <script src="./js/script-employee.js"></script>
         <script src="./js/admin-login.js"></script>
         <script src="./js/employee-logout.js"></script>
-        <script>
-            // kiểm tra trạng thái đăng nhập
-async function checkLoginStatus() {
-    try {
-        const response = await fetch('/employee/check-login'); // Đợi phản hồi
-        if (response.ok) {
-            const employee = await response.json(); // Đợi chuyển đổi JSON
-            console.log("Đã đăng nhập:", employee.username);
-
-            // Lưu thông tin vào localStorage
-            localStorage.setItem("isLoggedIn", "true");
-            localStorage.setItem("username", employee.username);
-            return true;
-        } else {
-            console.log("Chưa đăng nhập.");
-            localStorage.removeItem("isLoggedIn");
-            return false;
-        }
-    } catch (error) {
-        console.error("Lỗi khi kiểm tra đăng nhập:", error);
-        localStorage.removeItem("isLoggedIn");
-        return false;
-    }
-}
-
-document.addEventListener("DOMContentLoaded", async function () {
-    const isLoggedIn = await checkLoginStatus(); // Đợi kết quả
-
-    if (!isLoggedIn) {
-        alert("Vui lòng đăng nhập để truy cập trang này.");
-        window.location.href = "/fontend/employee-login.html";
-        return;
-    }
-
-});
-            ///////////////////////////////
-            function loadServices() {
-    fetch("http://localhost:8080/services/all")
-        .then(response => response.json())
-        .then(data => {
-            const serviceList = document.getElementById("service-list");
-            serviceList.innerHTML = ""; // Xóa nội dung cũ trước khi tải mới
-
-            data.forEach(service => {
-                const serviceCard = `
-                    <div class="col-md-4 mb-4">
-                        <div class="card">
-                            <img src="${service.url}" class="card-img-top" alt="${service.name}">
-                            <div class="card-body">
-                                <h5 class="card-title">${service.name}</h5>
-                                <p class="card-text">${service.description}</p>
-                                <p><strong>Thời gian:</strong> ${service.duration} phút</p>
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn-service" onclick="viewServiceDetail(${service.id})">Sửa</button>
-                                    <button class="btn-service" onclick="deleteService(${service.id})">Xóa</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                serviceList.innerHTML += serviceCard;
-            });
-        })
-        .catch(error => console.error("Lỗi khi tải dịch vụ:", error));
-        }
-//////////////////////////////////////// cập nhật dịch vụ
-
-        function updateService() {
-                // Lấy ID từ input ẩn
-                const serviceId = document.getElementById("serviceId").value;
-
-                // Lấy dữ liệu từ form
-                const name = document.getElementById("serviceDetailName").value;
-                const description = document.getElementById("serviceDetailDesc").value;
-                const duration = document.getElementById("serviceDetailDuration").value;
-                const imageInput = document.getElementById("serviceImageUpload").files[0];
-
-                if (!serviceId) {
-                    alert("Không tìm thấy ID dịch vụ!");
-                    return;
-                }
-
-                const formData = new FormData();
-                formData.append("name", name);
-                formData.append("description", description);
-                formData.append("duration", duration);
-                if (imageInput) {
-                    formData.append("image", imageInput);
-                }
-
-                fetch(`http://localhost:8080/services/update/${serviceId}`, {
-                    method: "PUT",
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert("Cập nhật dịch vụ thành công!");
-                    closeServiceDetailModal();
-                    location.reload();
-
-                })
-                .catch(error => {
-                    console.error("Lỗi khi cập nhật dịch vụ:", error);
-                    alert("Có lỗi xảy ra, vui lòng thử lại!");
-                });
-            }
-
-
-        function viewServiceDetail(serviceId) {
-                    fetch(`http://localhost:8080/services/${serviceId}`)
-                        .then(response => response.json())
-                        .then(service => {
-                            
-                            document.getElementById("serviceId").value = service.id;
-                            document.getElementById("serviceDetailName").value = service.name;
-                            document.getElementById("serviceDetailImage").src = service.url;
-                            document.getElementById("serviceDetailDesc").textContent = service.description;
-                            document.getElementById("serviceDetailDuration").value = service.duration;
-
-
-
-                            // Hiển thị modal
-                            document.getElementById("serviceDetailModal").style.display = "flex";
-                        })
-                        .catch(error => console.error("Lỗi khi tải chi tiết dịch vụ:", error));
-                }
-
-            function closeServiceDetailModal() {
-                document.getElementById("serviceDetailModal").style.display = "none";
-            }
-
-                // Đóng modal khi click bên ngoài
-                window.onclick = function(event) {
-                    let modal = document.getElementById("serviceDetailModal");
-                    if (event.target === modal) {
-                        closeServiceDetailModal();
-                    }
-                };
-
-
-
-        function deleteService(serviceId) {
-            if (confirm("Bạn có chắc muốn xóa dịch vụ này không?")) {
-                fetch(`http://localhost:8080/services/delete/${serviceId}`, {
-                    method: "DELETE"
-                })
-                .then(response => {
-                    if (response.ok) {
-                        alert("Xóa dịch vụ thành công!");
-                        loadServices(); // Tải lại danh sách sau khi xóa
-                    } else {
-                        alert("Lỗi khi xóa dịch vụ!");
-                    }
-                })
-                .catch(error => console.error("Lỗi khi xóa dịch vụ:", error));
-            }
-        }
-
-        // Gọi API khi trang được tải
-        document.addEventListener("DOMContentLoaded", loadServices);
-
-                    function openModal() {
-                document.getElementById("serviceModal").style.display = "flex";
-            }
-
-            function closeModal() {
-                document.getElementById("serviceModal").style.display = "none";
-            }
-
-            // Đóng modal khi click bên ngoài
-            window.onclick = function(event) {
-                let modal = document.getElementById("serviceModal");
-                if (event.target === modal) {
-                    closeModal();
-                }
-            };
-            // thêm dịch vụ mới
-            document.getElementById("serviceForm").addEventListener("submit", function(event) {
-                event.preventDefault(); // Ngăn chặn tải lại trang
-
-                let serviceName = document.getElementById("serviceName").value;
-                let serviceDesc = document.getElementById("serviceDesc").value;
-                let serviceDuration = document.getElementById("serviceDuration").value;
-                let serviceImage = document.getElementById("serviceImage").files[0];
-
-                // Tạo FormData để gửi dữ liệu
-                let formData = new FormData();
-                formData.append("name", serviceName);
-                formData.append("description", serviceDesc);
-                formData.append("duration", serviceDuration);
-                formData.append("file", serviceImage);
-
-                // Gửi API thêm dịch vụ
-                fetch("http://localhost:8080/services/add", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert("Dịch vụ đã được thêm thành công!");
-                    closeModal();
-                    location.reload(); // Refresh trang để cập nhật danh sách dịch vụ
-                })
-                .catch(error => {
-                    console.error("Lỗi:", error);
-                    alert("Có lỗi xảy ra khi thêm dịch vụ!");
-                });
-            });
-
-
-
-        </script>
+        <script src="./js/staff-service.js"></script>
 
 
     </body>

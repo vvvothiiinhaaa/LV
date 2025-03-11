@@ -1,5 +1,6 @@
 package com.example.Pet.Modal;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,11 +15,32 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 255)
     private String fullname;
+
+    @Column(nullable = false, length = 100, unique = true)
     private String username;
+
+    @Column(nullable = false, length = 255)
     private String password;
+
+    @Column(nullable = false, length = 50)
     private String role;  // Default role is STAFF
+
+    @Column(nullable = false)
     private boolean status;  // Default status is true (Active)
+
+    @Column(length = 255, nullable = true)
+    private String email;  // Có thể null
+
+    @Column(length = 10, nullable = true)
+    private String phonenumber;  // Có thể null
+
+    @Column(length = 255, nullable = true)
+    private String birthdate;  // Có thể null
+
+    @Column(length = 255, nullable = true)
+    private String url;  // Không thể null
 
     // Getters and Setters
     public Long getId() {
@@ -67,5 +89,37 @@ public class Employee {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhonenumber() {
+        return phonenumber;
+    }
+
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
+    }
+
+    public String getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(String birthdate) {
+        this.birthdate = birthdate;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

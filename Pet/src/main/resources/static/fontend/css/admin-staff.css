@@ -55,11 +55,31 @@
             border-collapse: collapse;  /* Đảm bảo các viền không bị chồng chéo */
         }
 
-        /* Tạo viền cho bảng, các cột và hàng */
-        .table th, .table td {
-            border: 1px solid #ddd;  /* Viền cho các ô */
-            padding: 10px;  /* Khoảng cách giữa nội dung và viền */
-            text-align: center;  /* Căn giữa nội dung */
+        /* Tạo viền cho bảng, các cột và hàng
+        #datatablesSimple th, #tadatatablesSimpleble td , #datatablesSimple tr  {
+            border: 1px solid #ddd; 
+            padding: 10px;
+            text-align: center;
+        }
+
+      */
+      #datatablesSimple tr {
+        border: 1px solid #ddd; /* Viền giữa các ô */
+        padding: 10px;
+        text-align: center;
+    }
+        
+        #datatablesSimple th {
+            border: 2px solid #ddd; 
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        #datatablesSimple td {
+            border: 1px solid #ddd; /* Viền giữa các ô */
+            padding: 10px;
+            text-align: center;
         }
 
         /* Tạo viền cho tiêu đề cột */
@@ -85,3 +105,22 @@
         .table td button:hover {
             background: #9f7143;
         }
+        #addStaffBtn {
+            background-color: #333333;
+            color:#fff;
+            margin-left: 10px;
+        }
+
+        /* button close */
+     .table tbody{
+        border: 1px solid #ddd;
+     }
+
+     #datatablesSimple_wrapper {
+        border: none !important; /* Loại bỏ viền của DataTables */
+    }
+    
+    #datatablesSimple {
+        border: none !important; /* Loại bỏ viền của bảng */
+    }
+    

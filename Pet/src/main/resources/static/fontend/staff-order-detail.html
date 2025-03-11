@@ -292,6 +292,16 @@ if (orderId) {
                 </tr>
             `;
 
+            // Gọi API lấy thông tin khách hàng
+            fetch(`http://localhost:8080/api/auth/info/${order.userId}`)  
+                .then(response => response.json())
+                .then(userData => {
+                    // Điền thông tin khách hàng vào HTML
+                    document.getElementById("customerName").textContent = userData.username;
+                    document.getElementById("customerEmail").textContent = userData.email;
+                    document.getElementById("customerPhone").textContent = userData.phonenumber;
+                })
+                .catch(error => console.error("Lỗi lấy thông tin khách hàng:", error));
         
             
             // Lấy thông tin userId và addressId từ đơn hàng

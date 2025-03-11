@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat với ChatGPT</title>
+    <style>
+        /* Tổng thể */
+        /* body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        } */
+
+        /* Khung chat */
+        .chat-container {
+            width: 800px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Tiêu đề */
+        /* .chat-header {
+            background: #333333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 18px;
+        } */
+
+        /* Khu vực hiển thị tin nhắn */
+        .chat-box {
+            padding: 15px;
+            height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Tin nhắn */
+        .message {
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            max-width: 70%;
+        }
+
+        /* Tin nhắn của người dùng */
+        .user-message {
+            background: #444444;
+            color: white;
+            align-self: flex-end;
+        }
+
+        /* Tin nhắn của ChatGPT */
+        .bot-message {
+            background: #e4e6eb;
+            color: #333;
+            align-self: flex-start;
+        }
+
+        /* Khu vực nhập tin nhắn */
+      /* Khu vực nhập tin nhắn */
+.chat-input {
+    display: flex;
+    padding: 10px;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    align-items: center;
+}
+
+/* Ô nhập tin nhắn */
+input {
+    flex: 1;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 25px;
+    outline: none;
+    background: #f1f1f1;
+    transition: 0.3s;
+}
+
+input:focus {
+    background: #f1f1f1;
+}
+
+/* Nút gửi */
+button {
+    background: linear-gradient(135deg, #333333, #444444);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 25px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: bold;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    background: linear-gradient(135deg, #333333, #444444);
+    transform: scale(1.05);
+}
+/* Căn chỉnh lại header để chứa nút đóng */
+.chat-header {
+    background: #333333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    height:auto;
+    font-size: 18px;
+    position: relative; /* Giúp nút đóng căn chỉnh chính xác */
+}
+
+/*  Định vị lại nút đóng */
+#closeChat {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            Chat với AI
+            <button id="closeChat">✖</button>
+        </div>
+        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-input">
+            <input type="text" id="userMessage" placeholder="Nhập tin nhắn..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()">Gửi</button>
+        </div>
+    </div>
+
+    <script>
+        function handleKeyPress(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+}
+  document.addEventListener("DOMContentLoaded", function () {
+    let chatBox = document.getElementById("chatBox");
+    let messageInput = document.getElementById("userMessage");
+    let closeChatBtn = document.getElementById("closeChat");
+
+    // Gửi tin nhắn đến API
+    function sendMessage() {
+        let message = messageInput.value.trim();
+        if (message === "") return; // Không gửi tin nhắn trống
+
+        // Hiển thị tin nhắn của người dùng
+        appendMessage("user-message", message);
+
+        // Xóa input sau khi gửi
+        messageInput.value = "";
+
+        // Gửi request đến server
+        fetch(`http://localhost:8080/api/chat?message=${encodeURIComponent(message)}`, {
+            method: "POST"
+        })
+        .then(response => response.text())
+        .then(data => {
+            // Hiển thị phản hồi từ ChatGPT
+            appendMessage("bot-message", data);
+        })
+        .catch(error => console.error("Lỗi:", error));
+    }
+
+    // Thêm tin nhắn vào giao diện
+    function appendMessage(className, message) {
+        let messageElement = document.createElement("div");
+        messageElement.classList.add("message", className);
+        messageElement.textContent = message;
+        chatBox.appendChild(messageElement);
+        chatBox.scrollTop = chatBox.scrollHeight; // Cuộn xuống cuối
+    }
+
+    // Xử lý khi nhấn Enter
+    messageInput.addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    });
+
+    // Đóng khung chat
+    closeChatBtn.addEventListener("click", function () {
+        document.querySelector(".chat-container").style.display = "none";
+    });
+
+    // Hàm reset lịch sử trò chuyện
+    function resetChatHistory() {
+        fetch("http://localhost:8080/api/chat/reset", {
+            method: "POST"
+        })
+        .then(response => response.text())
+        .then(data => console.log(data)) // "Lịch sử trò chuyện đã được đặt lại."
+        .catch(error => console.error("Lỗi:", error));
+    }
+});
+
+
+    </script>
+
+</body>
+</html>

@@ -33,6 +33,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // Tìm sản phẩm theo tên
     List<Product> findByNameContainingIgnoreCase(String name);
 
+    //// có thể sử dụng để truy vấn chat gpt
+
     // Tìm sản phẩm theo thương hiệu
     List<Product> findByBrandContainingIgnoreCase(String brand);
 
@@ -61,4 +63,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     void restoreProductStock(Long productId, int quantity);
 
     List<Product> findTop10ByOrderBySoldDesc();
+
+//     ///// truy vấn cho chat gpt
+    // List<Product> findByNameContainingIgnoreCase(String name);
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<Product> searchByName(@Param("name") String name);
 }

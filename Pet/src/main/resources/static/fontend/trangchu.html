@@ -474,7 +474,7 @@
     <!-- Services Section -->
     <section class="bg-custom">
         <div class="container">
-            <h2 class="text-center mb-5">Giải Pháp Chăm Sóc Thú Cưng</h2>
+            <h2 class="text-center mb-5">Giải Pháp Chăm Sóc Thú Cưng Nổi Bật</h2>
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="solution-card" onmouseover="changeImage(this, './img/vet.png')" onmouseout="resetImage(this, './img/vet -a7.png')">
@@ -672,6 +672,7 @@
     </div>
 </section>
 
+
         
 <footer class="bg-white text-black py-5">
     <div class="container">
@@ -734,6 +735,7 @@
   
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="./js/chat.js"></script>
 
     <script>
 
@@ -788,6 +790,14 @@
         });
     </script> -->
 <!-- Nút "Go to Top" -->
+ <!-- Nút mở Chat -->
+<button id="chatWithAI"></button>
+
+<!-- Modal chứa nội dung ChatGPT -->
+<div id="chatModal" style="display: none;">
+
+</div>
+
 <button id="goToTopBtn" title="Go to top">↑</button>
  <script>
 
@@ -811,6 +821,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
  </script>   
+ <script>
+ document.addEventListener("DOMContentLoaded", function () {
+    const chatBtn = document.getElementById("chatWithAI");
+    const chatModal = document.getElementById("chatModal");
+
+    chatBtn.addEventListener("click", function () {
+        chatModal.style.display = "flex"; // Hiện modal
+        fetch("chatgpt.html") // Tải nội dung từ chatgpt.html
+            .then(response => response.text())
+            .then(data => {
+                chatModal.innerHTML = data;
+                addChatGPTListeners(); // Kích hoạt lại sự kiện khi tải xong nội dung chatgpt.html
+            })
+            .catch(error => console.error("Lỗi khi tải chatgpt.html:", error));
+    });
+
+    function addChatGPTListeners() {
+        const closeChat = document.getElementById("closeChat");
+        if (closeChat) {
+            closeChat.addEventListener("click", function () {
+                chatModal.style.display = "none";
+            });
+        }
+    }
+});
+
+
+ </script>
 
     
 </body>

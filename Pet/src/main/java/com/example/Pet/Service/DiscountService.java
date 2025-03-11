@@ -1,6 +1,6 @@
 package com.example.Pet.Service;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,8 +101,8 @@ public class DiscountService {
 
     // Lấy tất cả các mã giảm giá còn hiệu lực
     public List<Discount> getAllActiveDiscounts() {
-        Date currentDate = new Date();  // Lấy thời gian hiện tại
-        return discountRepository.findAllByStartDateBeforeAndEndDateAfter(currentDate, currentDate);
+        LocalDateTime now = LocalDateTime.now(); // Lấy thời gian hiện tại
+        return discountRepository.findAllByStartDateBeforeAndEndDateAfter(now, now);
     }
 
     // Kiểm tra mã giảm giá theo mã

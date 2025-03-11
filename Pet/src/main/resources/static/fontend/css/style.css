@@ -407,3 +407,46 @@ width: 500px;
 }
 
 /* kết thúc button đặt lịch */
+/* chat ai */
+
+#chatWithAI {
+  position: fixed;  
+  bottom: 100px; 
+  right: 20px; 
+  width: 70px;
+  height: 70px;
+  background-color: #ffff; 
+  color: white;
+  border: none;
+  border-radius: 50%;  
+  font-size: 16px;
+  cursor: pointer;
+  display: block;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
+  z-index: 9999;
+
+  background-image: url('../img/chatbot.png');
+    background-size: 70%; /* Ảnh vừa với nút */
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+/* 
+#chatWithAI:hover {
+  background: #333333;
+} */
+
+#chatModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}

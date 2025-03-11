@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pet Training Journey</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        #header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px; /* Định chiều cao cụ thể */
+    background-color: #fff; /* Nền header */
+    z-index: 1000; /* Đảm bảo header luôn ở trên */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Thêm bóng cho header */
+}
+
+/* Thêm khoảng trống trên cùng cho nội dung chính */
+body {
+    padding-top: 80px; /* Đảm bảo đủ chỗ trống dưới header */
+}
+.container-xl {
+    background-color:#fff9f4 ;
+    margin:0px !important;
+    max-width:100%;
+}
+
+        body {
+            background-color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        .content-section {
+            padding: 50px 0;
+        }
+        .steps-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .steps {
+            max-width: 50%;
+        }
+        .steps ol {
+            list-style: none;
+            padding: 0;
+            counter-reset: step-counter;
+            position: relative;
+        }
+        .steps ol li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            position: relative;
+            padding-left: 50px;
+        }
+        .steps ol li::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            background-color: #8d7466;
+            color: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            position: absolute;
+            left: 0;
+            top: 3px;
+        }
+        .steps ol li::after {
+            content: "";
+            position: absolute;
+            left: 17px;
+            top: 35px;
+            width: 2px;
+            height: calc(100%);
+            border-left: 2px dashed #8d7466;
+        }
+        .steps ol li:last-child::after {
+            display: none;
+        }
+        .steps ol li div {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .steps ol li strong {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .image-section img {
+            max-width: 600px;
+      max-height: 600px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-left: 60px;
+    margin-top: 2%;
+    margin-bottom: 0px !important;
+        }
+    </style>
+    <style>
+         .hero-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+     max-width:100%;
+      background-color: #fff;
+      margin:0px !important;
+    }
+    .hero-text {
+      max-width: 900px;
+      margin-left: 70px;
+    }
+
+    .hero-text p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .hero-image {
+      max-width: 600px;
+      max-height: 600px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-right: 60px;
+    margin-top: 2%;
+    margin-bottom: 0px !important;
+    }
+    .banner-container img {
+    width: 100%;
+    max-height: 500px; /* Điều chỉnh chiều cao */
+    object-fit: cover;
+}
+    </style>
+    <style>
+        /* Căn chỉnh bảng giá */
+        #priceList {
+            margin-top: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        /* Căn giữa tiêu đề bảng */
+        #priceList h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* Định dạng bảng */
+        .table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 0 auto; 
+        }
+
+        .table th, .table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: #8d7466;
+            color: white;
+        }
+
+    </style>
+    <style>
+        #stepsList {
+            margin-right: 80px;
+        }
+        /* CSS cho nút Đặt lịch */
+#bookAppointmentBtn {
+  position: fixed;  
+  bottom: 100px; 
+  right: 20px; 
+  width: 70px;
+  height: 70px;
+  background-color: #c3a179; 
+  color: white;
+  border: none;
+  border-radius: 50%;  
+  font-size: 16px;
+  cursor: pointer;
+  display: block;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease-in-out;
+}
+
+#bookAppointmentBtn:hover {
+  background-color: #333333; 
+}
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+
+    <!-- Thẻ chứa ảnh -->
+        <div class="banner-container">
+            <img src="./img/hero9.png" alt="Veterinary Care Banner">
+        </div>
+
+    <section class="hero-section container"> 
+        
+        <div class="hero-text">
+          <p>Chúng tôi không chỉ là một trung tâm chăm sóc thú cưng – mà còn là một nơi an toàn,
+             tận tâm vì sức khỏe và hạnh phúc của những người bạn bốn chân thân yêu của bạn. 
+             Với hơn hai thập kỷ kinh nghiệm, chúng tôi đã xây dựng danh tiếng dựa trên nền tảng của sự tin cậy,
+              lòng nhân ái và sự xuất sắc trong chăm sóc thú cưng. Đội ngũ chuyên gia tận tâm của chúng tôi,
+             từ bác sĩ thú y đến người chăm sóc thú cưng, luôn sẵn sàng mang đến dịch vụ tốt nhất.</p>
+        </div>
+       <div class="hero-image">
+          <img src="./img/service1.png" alt="Pet Care" class="img-fluid rounded">
+        </div>
+      </section>
+    
+    <div class="container-xl">
+        <div class="row align-items-center content-section">
+            <div class="col-md-5 image-section">
+                <img src="./img/ser8.png" alt="Pet Training Image" class="img-fluid">
+            </div>
+            <div class="col-md-6 steps">
+                <ol id="stepsList">
+                    <!-- <li><div><strong>Appointment Scheduling</strong> Call or book online to schedule a veterinary appointment for your pet.</div></li>
+                    <li><div><strong>Comprehensive Examination</strong> Our veterinarians conduct thorough examinations to assess your pet's health and address any concerns.</div></li>
+                    <li><div><strong>Diagnostic Testing</strong> Utilizing advanced diagnostic tools, we perform tests to accurately diagnose any health issues.</div></li>
+                    <li><div><strong>Treatment Plan Development</strong> Based on the examination and test results, we create a personalized treatment plan tailored to your pet's needs.</div></li>
+                    <li><div><strong>Medical Procedures</strong> From routine procedures like vaccinations to complex surgeries, we provide expert medical care to address your pet’s health concerns.</div></li>
+                    <li><div><strong>Follow-Up Care</strong> We offer follow-up appointments and ongoing support to monitor your pet’s health.</div></li> -->
+                </ol>
+            </div>
+        </div>
+    </div>
+
+  
+        <!-- Bảng giá dịch vụ -->
+        <div class="row align-items-center content-section">
+            <div class="col-md-12">
+                <h2 class="text-center">Bảng Giá Dịch Vụ</h2>
+                <table class="table table-bordered table-striped text-center" id="priceList">
+                    <thead class="table-dark">
+                        <tr>
+                            <!-- <th>Dịch Vụ</th> -->
+                            <th>Loại Thú Cưng</th>
+                            <th>Cân Nặng Tối Thiểu (kg)</th>
+                            <th>Cân Nặng Tối Đa (kg)</th>
+                            <th>Giá (VNĐ)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dữ liệu giá sẽ được cập nhật bằng JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="footer"></div>
+        <button id="bookAppointmentBtn" title="Đặt lịch" onclick="window.location.href='appointment.html';">Đặt Lịch</button>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./js/script-employee.js"></script>
+    <script src="./js/header.js"></script>
+    <script src="./js/footer.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    // Lấy ID dịch vụ từ URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const serviceId = urlParams.get("id");
+
+    if (!serviceId) {
+        console.error(" Không tìm thấy ID dịch vụ trong URL");
+        return;
+    }
+
+    // Gọi API lấy chi tiết dịch vụ
+    fetch(`http://localhost:8080/services/${serviceId}`)
+        .then(response => response.json())
+        .then(service => {
+            console.log(" Dữ liệu API trả về:", service);
+
+            // Cập nhật các bước thực hiện
+            const stepsList = document.getElementById("stepsList");
+            stepsList.innerHTML = ""; // Xóa dữ liệu cũ
+            if (service.steps && service.steps.length > 0) {
+                //  Sắp xếp các bước theo stepOrder trước khi hiển thị
+                service.steps.sort((a, b) => a.stepOrder - b.stepOrder);
+
+                service.steps.forEach(step => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<div><strong>${step.stepTitle}</strong> ${step.stepDescription}</div>`;
+                    stepsList.appendChild(li);
+                });
+            } else {
+                stepsList.innerHTML = "<p> Chưa có bước thực hiện nào.</p>";
+            }
+
+            // Cập nhật bảng giá dịch vụ
+            // Cập nhật bảng giá dịch vụ
+                const priceList = document.querySelector("#priceList tbody");
+                priceList.innerHTML = ""; // Xóa dữ liệu cũ
+
+                if (service.prices && service.prices.length > 0) {
+                    // Sắp xếp giá theo id của petSize
+                    service.prices.sort((a, b) => a.petSize.id - b.petSize.id);
+
+                    service.prices.forEach(price => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${price.petSize.sizeName}</td>
+                            <td>${price.petSize.weightMin}</td>
+                            <td>${price.petSize.weightMax}</td>
+                            <td>${price.price.toLocaleString()} VNĐ</td>
+                        `;
+                        priceList.appendChild(row);
+                    });
+                } else {
+                    priceList.innerHTML = "<tr><td colspan='2'>⚠️ Chưa có bảng giá.</td></tr>";
+                }
+
+        })
+        .catch(error => console.error(" Lỗi khi lấy dữ liệu dịch vụ:", error));
+});
+
+    </script>
+</body>
+</html>
+<!-- <td>${service.name}</td> -->

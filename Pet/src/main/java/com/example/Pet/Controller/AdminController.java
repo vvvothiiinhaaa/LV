@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Pet.Modal.Admin;
 import com.example.Pet.Modal.Employee;
@@ -140,23 +141,21 @@ public class AdminController {
     //             employee.getPassword());
     //     return new ResponseEntity<>("Employee account created successfully with ID: " + newEmployee.getId(), HttpStatus.CREATED);
     // }
-    @PostMapping("/admin/create-employee")
-    public ResponseEntity<?> createEmployee(@RequestBody Employee employee) {
-        try {
-            // Xử lý tạo mới nhân viên
-            Employee newEmployee = employeeService.createEmployee(employee.getFullname(),
-                    employee.getUsername(),
-                    employee.getPassword());
-            // Trả về phản hồi thành công dưới dạng JSON
-            return ResponseEntity.status(HttpStatus.CREATED).body(
-                    "{\"message\": \"Employee account created successfully with ID: " + newEmployee.getId() + "\" }"
-            );
-        } catch (Exception e) {
-            // Xử lý lỗi và trả về thông điệp lỗi dưới dạng JSON
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    "{\"error\": \"There was an error creating the employee: " + e.getMessage() + "\" }"
-            );
-        }
+       @PostMapping("/admin/create-employee")
+    public ResponseEntity<Employee> createEmployee(
+            @RequestParam String fullname,
+            @RequestParam String username,
+            @RequestParam String email,
+            @RequestParam String birthdate,
+            @RequestParam String phonenumber,
+            @RequestParam String password,
+            @RequestParam(required = false) MultipartFile file) {
+
+        // Gọi service để tạo nhân viên mới
+        Employee employee = employeeService.createEmployee(fullname, username, email, birthdate, phonenumber, password, file);
+
+        // Trả về phản hồi với đối tượng nhân viên mới tạo
+        return ResponseEntity.ok(employee);
     }
 
     // API để lấy tất cả danh sách nhân viên

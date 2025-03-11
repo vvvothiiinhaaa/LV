@@ -78,6 +78,9 @@
         }
 
 
+        #datatablesSimple th:nth-child(2), #datatablesSimple td:nth-child(2) {
+            width: 100px; /* Thu nhỏ cột Name */
+        }
         #datatablesSimple th:nth-child(3), #datatablesSimple td:nth-child(3) {
             width: 200px; /* Thu nhỏ cột Name */
         }
@@ -104,8 +107,33 @@
             }
 
         </style>
+        <style>
+            .invoice-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+}
+
+.invoice-container h2 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: black;
+}
+
+
+tfoot td {
+    font-weight: bold;
+    background: #f3f3f3;
+}
+
         </style>
-    </head>
+</head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <a class="navbar-brand ps-2 text-center" href="index.html">PETTIE</a>

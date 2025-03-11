@@ -44,32 +44,6 @@ async function viewOrderDetails(orderId) {
     // Nếu đã đăng nhập, chuyển hướng đến trang chi tiết đơn hàng
     window.location.href = `staff-order-detail.html?orderId=${orderId}`;
 }
-// document.getElementById("orderStatus").addEventListener("change", async function () {
-//     const isLoggedIn = checkLoginStatus();
-//     if (!isLoggedIn) {
-//         alert("Vui lòng đăng nhập để lọc danh sách đơn hàng.");
-//         window.location.href = "/frontend/employee-login.html";
-//         return;
-//     }
-
-//     const selectedStatus = document.getElementById("orderStatus").value;
-//     const selectedDate = document.getElementById("searchDate").value;
-//     fetchOrders(selectedStatus, selectedDate);
-// });
-
-
-// document.addEventListener("DOMContentLoaded", async function () {
-//     const isLoggedIn = await checkLoginStatus(); // Kiểm tra trạng thái đăng nhập trước khi thực hiện các thao tác
-//     if (!isLoggedIn) {
-//         alert("Vui lòng đăng nhập để xem danh sách đơn hàng.");
-//         window.location.href = "/frontend/employee-login.html"; // Điều hướng đến trang đăng nhập nếu chưa đăng nhập
-//         return;
-//     }
-
-//     // Nếu đã đăng nhập, tiếp tục tải danh sách đơn hàng
-//     fetchOrders('ALL');
-// });
-
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -134,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                    <td><input type="checkbox" class="order-checkbox" data-order-id="${order.id}"></td>
                                     <td>${order.id}</td>
                                     <td>${userData.username}</td>
-                                    <td>${new Date(order.orderDate).toLocaleDateString()}</td>
+                                    <td>${new Date(order.orderDate).toLocaleString() || 'N/A'}</td>
                                     <td>${formatVND(order.totalPayment)}</td>
                                     <td>${order.paymentMethod}</td>
                                     <td>${order.orderStatus}</td>
@@ -203,13 +177,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// function viewOrderDetails(orderId) {
-//     // Lưu order.id vào localStorage hoặc sessionStorage
-//     localStorage.setItem('orderId', orderId);
-
-//     // Chuyển đến trang chi tiết đơn hàng
-//     window.location.href = 'employee-order-detail.html';
-// }
 
 function viewOrderDetails(orderId) {
     // Chuyển hướng sang trang chi tiết đơn hàng và truyền order.id qua URL
@@ -223,14 +190,7 @@ function formatVND(amount) {
     return formattedNumber + " VND";
 }
 ////////////////////////////////
-    //  // Chức năng cho checkbox "Tất cả"
-    //  document.getElementById('checkAll').addEventListener('change', function() {
-    //     // Lấy tất cả các checkbox trong bảng, bao gồm cả các trang không hiển thị
-    //     const checkboxes = $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox');
-        
-    //     // Đánh dấu tất cả checkbox
-    //     checkboxes.prop('checked', this.checked);
-    // });
+ 
 
 
 // Chức năng cho checkbox "Tất cả"
@@ -402,3 +362,145 @@ document.getElementById('updateStatusBtn').addEventListener('click', function ()
             alert("Có lỗi xảy ra khi cập nhật trạng thái đơn hàng!");
         });
 });
+
+
+///////////////////////////////// in hóa đơn
+
+document.addEventListener("DOMContentLoaded", function () {
+    const printInvoiceBtn = document.getElementById("addProductBtn");
+
+    if (printInvoiceBtn) {
+        printInvoiceBtn.addEventListener("click", function () {
+            printInvoices();
+        });
+    }
+});
+
+async function printInvoices() {
+    // Lấy danh sách đơn hàng được chọn từ tất cả các trang DataTables
+    const selectedOrderIds = [];
+    $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox:checked').each(function () {
+        selectedOrderIds.push($(this).data('order-id'));
+    });
+
+    if (selectedOrderIds.length === 0) {
+        alert("Vui lòng chọn ít nhất một đơn hàng để in hóa đơn!");
+        return;
+    }
+
+    let printContent = `
+        <html>
+        <head>
+            <title>Hóa Đơn</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                h2 { text-align: center; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+                th { background-color: #f2f2f2; }
+                .total { font-weight: bold; text-align: right; margin-top: 20px; }
+                .invoice-container { page-break-after: always; padding: 20px; }
+                .customer-info { margin-bottom: 20px; }
+            </style>
+        </head>
+        <body>
+    `;
+
+    for (let orderId of selectedOrderIds) {
+        try {
+            const orderResponse = await fetch(`http://localhost:8080/api/orders/${orderId}`);
+            const order = await orderResponse.json();
+
+            const userResponse = await fetch(`http://localhost:8080/api/auth/info/${order.userId}`);
+            const userData = await userResponse.json();
+
+            const addressResponse = await fetch(`http://localhost:8080/api/addresses/${order.userId}/${order.address.addressId}`);
+            const address = await addressResponse.json();
+
+            printContent += `
+                <div class="invoice-container">
+                    <h2>HÓA ĐƠN ĐƠN HÀNG</h2>
+                    
+                    <!-- Thông tin khách hàng -->
+                    <div class="customer-info">
+                        <strong>Khách Hàng:</strong> ${address.recipientName} <br>
+                        <strong>Số Điện Thoại:</strong> ${address.phoneNumber} <br>
+                        <strong>Địa Chỉ:</strong> ${address.addressDetail}, ${address.wardSubdistrict}, ${address.district}, ${address.provinceCity}
+                    </div>
+
+                    <!-- Thông tin đơn hàng -->
+                    <table>
+                        <tr><th>Mã Đơn</th><td>${orderId}</td></tr>
+                        <tr><th>Ngày Đặt</th> <td>${new Date(order.orderDate).toLocaleString() || 'N/A'}</td></tr>
+                        <tr><th>Phương Thức Thanh Toán</th><td>${order.paymentMethod}</td></tr>
+                    </table>
+
+                    <!-- Danh sách sản phẩm -->
+                    <h3>Chi Tiết Sản Phẩm</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã SP</th>
+                                <th>Tên Sản Phẩm</th>
+                                <th>Số Lượng</th>
+                                <th>Đơn Giá</th>
+                                <th>Thành Tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            order.items.forEach(item => {
+                printContent += `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.productName}</td>
+                        <td>${item.quantity}</td>
+                        <td>${formatVND(item.price)}</td>
+                        <td>${formatVND(item.total)}</td>
+                    </tr>
+                `;
+            });
+
+            printContent += `
+                        </tbody>
+                    </table>
+
+                    <!-- Tổng tiền và giảm giá -->
+                    <table>
+                        <tr>
+                            <td colspan="5" style="text-align: right; font-weight: bold;">Giảm giá:</td>
+                            <td>${formatVND(order.discount)}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" style="text-align: right; font-weight: bold;">Tổng thanh toán:</td>
+                            <td>${formatVND(order.totalPayment)}</td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+        } catch (error) {
+            console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
+        }
+    }
+
+
+    // <td><img src="${item.url}" alt="${item.productName}" style="width:50px"></td>
+
+
+    printContent += `
+        </body>
+        </html>
+    `;
+
+    let newWindow = window.open("", "_blank");
+    newWindow.document.write(printContent);
+    newWindow.document.close();
+    newWindow.print();
+}
+
+// Hàm định dạng tiền VND
+function formatVND(amount) {
+    const number = parseFloat(amount).toFixed(0);
+    return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VND";
+}

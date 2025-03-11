@@ -1,10 +1,11 @@
 package com.example.Pet.Service;
 
-import com.example.Pet.Modal.PetSize;
-import com.example.Pet.Repository.PetSizeRepository;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.example.Pet.Modal.PetSize;
+import com.example.Pet.Repository.PetSizeRepository;
 
 @Service
 public class PetSizeService {
@@ -15,10 +16,10 @@ public class PetSizeService {
         this.petSizeRepository = petSizeRepository;
     }
 
-    public PetSize addPetSize(String sizeName) {
-        return petSizeRepository.save(new PetSize(null, sizeName));
-    }
-
+    // public PetSize addPetSize(String sizeName) {
+    //     return petSizeRepository.save(new PetSize(null, sizeName));
+    // }
+    
     public List<PetSize> getAllPetSizes() {
         return petSizeRepository.findAll();
     }

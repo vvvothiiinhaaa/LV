@@ -290,7 +290,7 @@
 
 h5 {
     font-weight: bold;
-    color: #007bff;
+    color: black;
     margin-bottom: 10px;
 }
 
@@ -336,11 +336,11 @@ hr {
 }
 
 /* Header của modal */
-.modal-header {
+/* .modal-header {
     background-color: #007bff;
     color: white;
     font-weight: bold;
-}
+} */
 
 /* Body của modal */
 .modal-body {
@@ -420,7 +420,7 @@ hr {
     background: #e9f5ff;
     padding: 15px;
     border-radius: 10px;
-    border: 1px solid #007bff;
+    /* border: 1px solid #007bff; */
 }
 
 /* Định dạng chữ */

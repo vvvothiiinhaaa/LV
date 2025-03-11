@@ -1,10 +1,15 @@
 package com.example.Pet.Modal;
 
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,6 +31,12 @@ public class Serviceforpet {
 
     @Column(nullable = false)
     private String url;
+
+    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<ServiceStep> steps;
+
+    @OneToMany(mappedBy = "serviceforpet", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<ServicePrice> prices;
 
     // Constructors
     public Serviceforpet() {
@@ -83,6 +94,34 @@ public class Serviceforpet {
      */
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    /**
+     * @return List<ServiceStep> return the steps
+     */
+    public Set<ServiceStep> getSteps() {
+        return steps;
+    }
+
+    /**
+     * @param steps the steps to set
+     */
+    public void setSteps(Set<ServiceStep> steps) {
+        this.steps = steps;
+    }
+
+    /**
+     * @return List<ServicePrice> return the prices
+     */
+    public Set<ServicePrice> getPrices() {
+        return prices;
+    }
+
+    /**
+     * @param prices the prices to set
+     */
+    public void setPrices(Set<ServicePrice> prices) {
+        this.prices = prices;
     }
 
 }

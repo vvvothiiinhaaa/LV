@@ -11,18 +11,21 @@ function fetchServices() {
 
             data.forEach(service => {
                 const serviceCard = `
-                    <div class="container mt-5">
-                        <div class="custom-card position-relative">
-                            <div class="custom-image" >
-                                <img src="${service.url}" alt="${service.name}">
+                  <div class="container mt-5">
+                        <a href="service-detailt.html?id=${service.id}" class="text-decoration-none text-dark">
+                            <div class="custom-card position-relative">
+                                <div class="custom-image">
+                                    <img src="${service.url}" alt="${service.name}">
+                                </div>
+                                <div>
+                                    <h3 class="fw-bold">${service.name}</h3>
+                                    <p>${service.description}</p>
+                                </div>
+                                <div class="custom-circle"></div>
                             </div>
-                            <div>
-                                <h3 class="fw-bold">${service.name}</h3>
-                                <p>${service.description}</p>
-                            </div>
-                            <div class="custom-circle"></div>
-                        </div>
+                        </a>
                     </div>
+
                 `;
                 container.innerHTML += serviceCard;
             });

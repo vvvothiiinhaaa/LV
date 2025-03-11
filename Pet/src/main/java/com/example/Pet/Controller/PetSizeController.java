@@ -1,11 +1,18 @@
 package com.example.Pet.Controller;
 
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.Pet.Modal.PetSize;
 import com.example.Pet.Service.PetSizeService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/petsizes")
@@ -18,15 +25,19 @@ public class PetSizeController {
     }
 
     //  Thêm kích thước thú cưng mới
-    @PostMapping("/add")
-    public ResponseEntity<PetSize> addPetSize(@RequestParam String sizeName) {
-        return ResponseEntity.ok(petSizeService.addPetSize(sizeName));
-    }
-
+    // @PostMapping("/add")
+    // public ResponseEntity<PetSize> addPetSize(@RequestParam String sizeName) {
+    //     return ResponseEntity.ok(petSizeService.addPetSize(sizeName));
+    // }
     // Lấy danh sách tất cả kích thước thú cưng
+    // @GetMapping("/all")
+    // public ResponseEntity<List<PetSize>> getAllPetSizes() {
+    //     return ResponseEntity.ok(petSizeService.getAllPetSizes());
+    // }
     @GetMapping("/all")
     public ResponseEntity<List<PetSize>> getAllPetSizes() {
-        return ResponseEntity.ok(petSizeService.getAllPetSizes());
+        List<PetSize> petSizes = petSizeService.getAllPetSizes();
+        return ResponseEntity.ok(petSizes);
     }
 
     //  Cập nhật tên kích thước thú cưng
