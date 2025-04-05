@@ -32,15 +32,6 @@ public class Product {
     private Integer quantity;
     private String ingredient;
 
-    // @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<imgProduct> images = new ArrayList<>();
-    // public List<imgProduct> getImages() {
-    //     return images;
-    // }
-    // Getters và Setters
-    /**
-     * @return Long return the id
-     */
     public Long getId() {
         return id;
     }
@@ -66,18 +57,6 @@ public class Product {
         this.name = name;
     }
 
-    // /**
-    //  * @return Float return the price
-    //  */
-    // public Float getPrice() {
-    //     return price;
-    // }
-    // /**
-    //  * @param price the price to set
-    //  */
-    // public void setPrice(Float price) {
-    //     this.price = price;
-    // }
     public Double getPrice() {
         return price;
     }

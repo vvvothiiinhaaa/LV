@@ -14,39 +14,6 @@ async function getUserId() {
     }
 }
 
-// Hàm để lấy danh sách thú cưng của userId và hiển thị lên form
-// function getPets(userId) {
-//     fetch(`/pets/user/${userId}`)
-//         .then(response => response.json())
-//         .then(data => {
-//             const petSelect = document.getElementById('pet');
-//             petSelect.innerHTML = '';  // Xóa tất cả các option hiện có
-
-//             // Kiểm tra nếu dữ liệu trả về là null hoặc rỗng
-//             if (!data || data.length === 0) {
-//                 // Thêm option mặc định cho phép người dùng nhập tên thú cưng
-//                 const option = document.createElement('option');
-//                 option.value = '';  // Đặt giá trị là rỗng
-//                 option.textContent = 'Chưa có thú cưng, vui lòng thêm thú cưng trong hồ sơ của tôi';
-//                 petSelect.appendChild(option);
-
-//                 // Hiển thị thông báo yêu cầu người dùng thêm thông tin thú cưng
-//                 alert('Lịch sử đặt lịch sẽ không được lưu trữ. Người dùng vui lòng thêm thông tin thú cưng tại hồ sơ của tôi.');
-//             } else {
-//                 // Nếu có dữ liệu, hiển thị danh sách thú cưng
-//                 data.forEach(pet => {
-//                     const option = document.createElement('option');
-//                     option.value = pet.id;
-//                     option.textContent = pet.name;
-//                     petSelect.appendChild(option);
-//                 });
-//             }
-//         })
-//         .catch(error => {
-//             console.error('Lỗi khi gọi API lấy thú cưng:', error);
-//         });
-// }
-
 function getPets(userId) {
     fetch(`/pets/user/${userId}`)
         .then(response => response.json())
@@ -61,6 +28,7 @@ function getPets(userId) {
                 option.textContent = 'Chưa có thú cưng, vui lòng thêm thú cưng trong hồ sơ của tôi';
                 petSelect.appendChild(option);
                 alert('Lịch sử đặt lịch sẽ không được lưu trữ. Người dùng vui lòng thêm thông tin thú cưng tại hồ sơ của tôi.');
+                window.location.href="./profile.html";
             } else {
                 // Nếu có dữ liệu, hiển thị danh sách thú cưng
                 data.forEach(pet => {
@@ -135,7 +103,81 @@ window.onload = function() {
         }
     });
 };
-// Hàm xử lý khi người dùng submit form
+//// kiểm tra lịch còn trống
+
+document.addEventListener("DOMContentLoaded", function () {
+    const dateInput = document.getElementById("appDate");
+    const timeSelect = document.getElementById("time");
+
+    // Khi người dùng chọn ngày
+    dateInput.addEventListener("change", function () {
+        const selectedDate = dateInput.value;
+
+        if (!selectedDate) return; // Không làm gì nếu chưa chọn ngày
+
+        // Gọi API kiểm tra khung giờ trống
+        fetch(`http://localhost:8080/api/appointments/available-slots?date=${selectedDate}`)
+            .then(response => response.json())
+            .then(availableSlots => {
+                updateAvailableTimes(availableSlots);
+            })
+            .catch(error => console.error("Lỗi khi tải khung giờ:", error));
+    });
+
+    // Cập nhật danh sách khung giờ
+    function updateAvailableTimes(availableSlots) {
+        const allTimeSlots = [
+            "09:00-10:30", "11:00-12:00", "12:30-14:00",
+            "14:00-15:30", "16:00-17:30", "18:00-19:30", "20:00-21:20"
+        ];
+    
+        const formattedAvailableSlots = availableSlots.map(slot => slot.substring(0, 5)); // ["09:00", "11:00", ...]
+    
+        // Lấy ngày được chọn
+        const selectedDate = document.getElementById("appDate").value;
+        const today = new Date();
+        const isToday = selectedDate === today.toISOString().split('T')[0];
+    
+        // Lấy giờ hiện tại (nếu là hôm nay)
+        const nowHours = today.getHours();
+        const nowMinutes = today.getMinutes();
+        const currentMinutes = nowHours * 60 + nowMinutes;
+    
+        // Reset trạng thái tất cả option
+        timeSelect.querySelectorAll("option").forEach(option => {
+            option.disabled = false;
+        });
+    
+        allTimeSlots.forEach(slot => {
+            const slotStartTime = slot.split("-")[0]; // ví dụ "14:00"
+    
+            // Nếu không có trong danh sách giờ trống từ API
+            if (!formattedAvailableSlots.includes(slotStartTime)) {
+                const option = timeSelect.querySelector(`option[value="${slot}"]`);
+                if (option) option.disabled = true;
+                return;
+            }
+    
+            // Nếu là hôm nay, kiểm tra giờ hiện tại
+            if (isToday) {
+                const [h, m] = slotStartTime.split(":").map(Number);
+                const slotMinutes = h * 60 + m;
+    
+                // Nếu khung giờ bắt đầu trước thời điểm hiện tại => disable
+                if (slotMinutes <= currentMinutes) {
+                    const option = timeSelect.querySelector(`option[value="${slot}"]`);
+                    if (option) option.disabled = true;
+                }
+            }
+        });
+    }
+    
+    
+});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // Hàm xử lý khi người dùng submit form
 async function handleSubmit(event) {
     event.preventDefault(); // Ngừng hành động mặc định của form

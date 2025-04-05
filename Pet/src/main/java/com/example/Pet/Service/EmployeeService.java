@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.Pet.Modal.Employee;
 import com.example.Pet.Repository.EmployeeRepository;
+import com.example.Pet.Repository.UserRepository;
 
 @Service
 public class EmployeeService {
@@ -17,9 +18,21 @@ public class EmployeeService {
     private EmployeeRepository employeeRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private FileStorageService fileStorageService;
 
     public Employee createEmployee(String fullname, String username, String email, String birthdate, String phonenumber, String password, MultipartFile file) {
+        if (userRepository.findByUsername(username) != null) {
+            throw new RuntimeException("vui lòng chọn username khác!");
+        }
+
+        //  Kiểm tra username có bị trùng trong bảng Employee không (cho chắc chắn)
+        if (employeeRepository.findByUsername(username) != null) {
+            throw new RuntimeException("vui lòng chọn username khác!");
+        }
+
         Employee employee = new Employee();
         employee.setFullname(fullname);
         employee.setUsername(username);

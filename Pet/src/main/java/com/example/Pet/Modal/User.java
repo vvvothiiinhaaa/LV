@@ -36,6 +36,30 @@ public class User {
     private String confirmPassword; // This field is not persisted
     // 
 
+    @Transient  // Đánh dấu trường không cần lưu vào DB
+    private String riskStatus;  // Trạng thái nguy cơ
+
+    public String getriskStatus() {
+        return riskStatus;
+    }
+
+    public void setriskStatus(String riskStatus) {
+        this.riskStatus = riskStatus;
+    }
+
+    @Transient
+    private String warningMessage; //Thông báo cảnh báo
+
+    //============================
+    //*** */ cho warningMessage
+    public String getWarningMessage() {
+        return warningMessage;
+    }
+
+    public void setWarningMessage(String warningMessage) {
+        this.warningMessage = warningMessage;
+    }
+
     public String getConfirmPassword() {
         return confirmPassword;
     }

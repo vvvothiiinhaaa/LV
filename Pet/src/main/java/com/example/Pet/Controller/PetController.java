@@ -3,6 +3,7 @@ package com.example.Pet.Controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,4 +78,42 @@ public class PetController {
     public Pet getPetDetails(@PathVariable Integer userId, @PathVariable Integer petId) {
         return petService.getPetByIdAndUserId(petId, userId);
     }
+
+    ///////////////////////////////////// chỉnh sửa ngày 18 tháng 3
+    @PostMapping("/pet/add")
+    public ResponseEntity<?> addPet(
+            @RequestParam String name,
+            @RequestParam Integer userId,
+            @RequestParam LocalDate birthdate,
+            @RequestParam String breed,
+            @RequestParam String gender,
+            @RequestParam Float weight,
+            @RequestParam(required = false) MultipartFile file
+    ) {
+        try {
+            Pet pet = petService.addPet1(name, userId, birthdate, breed, gender, weight, file);
+            return ResponseEntity.ok(pet);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/pet/update")
+    public ResponseEntity<?> updatePet(
+            @RequestParam Integer petId,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String birthdate,
+            @RequestParam(required = false) String breed,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) Float weight,
+            @RequestParam(required = false) MultipartFile file) {
+
+        try {
+            Pet updatedPet = petService.updatePartialPet1(petId, name, birthdate, breed, gender, weight, file);
+            return ResponseEntity.ok(updatedPet);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi: " + e.getMessage());
+        }
+    }
+
 }

@@ -1,15 +1,26 @@
 package com.example.Pet.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.Pet.DTO.UserWarningDTO;
+import com.example.Pet.Modal.Appointment;
 import com.example.Pet.Modal.Cart;
+import com.example.Pet.Modal.Order;
 import com.example.Pet.Modal.User;
+import com.example.Pet.Modal.UserWarningLog;
+import com.example.Pet.Repository.AppointmentRepository;
 import com.example.Pet.Repository.CartRepository;
+import com.example.Pet.Repository.EmployeeRepository;
+import com.example.Pet.Repository.OrderRepository;
 import com.example.Pet.Repository.UserRepository;
+import com.example.Pet.Repository.UserWarningLogRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -20,15 +31,30 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private EmployeeRepository employeeRepository;
+
+    @Autowired
     private CartRepository cartRepository;  // Thêm CartRepository
 
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private UserWarningLogRepository userWarningLogRepository;
+
     public User registerUser(String username, String password) {
         // Kiểm tra nếu người dùng đã tồn tại
         if (userRepository.findByUsername(username) != null) {
             throw new RuntimeException("Username already exists");
+        }
+        if (employeeRepository.findByUsername(username) != null) {
+            throw new RuntimeException("Username đã được sử dụng bởi một nhân viên!");
         }
 
         // Tạo và lưu người dùng mới với mật khẩu chưa mã hóa
@@ -164,4 +190,98 @@ public class UserService {
         User user = getUserById(userId);
         return (user != null) ? user.getUrl() : null; // Trả về URL ảnh của người dùng nếu tồn tại
     }
+
+    public List<User> getAllUsersOnlyRiskStatus() {
+        List<User> users = userRepository.findAll();
+        List<Appointment> allAppointments = appointmentRepository.findAll();
+        List<Order> allOrders = orderRepository.findAll();
+
+        Map<Long, Long> cancelledOrdersMap = allOrders.stream()
+                .filter(o -> "Đã Hủy".equalsIgnoreCase(o.getOrderStatus()))
+                .collect(Collectors.groupingBy(o -> o.getUserId().longValue(), Collectors.counting()));
+
+        Map<Long, Long> cancelledAppointmentsMap = allAppointments.stream()
+                .filter(a -> "Đã hủy lịch".equalsIgnoreCase(a.getStatus()))
+                .collect(Collectors.groupingBy(Appointment::getUserId, Collectors.counting()));
+
+        return users.stream().map(user -> {
+            long orderCancels = cancelledOrdersMap.getOrDefault(user.getId(), 0L);
+            long appointmentCancels = cancelledAppointmentsMap.getOrDefault(user.getId(), 0L);
+
+            boolean isRiskHigh = (orderCancels >= 5 || appointmentCancels >= 5);
+            boolean isWarning = (orderCancels >= 1 || appointmentCancels >= 1);
+
+            // Gán trạng thái nguy cơ 3 mức
+            if (isRiskHigh) {
+                user.setriskStatus("Cao");
+            } else if (isWarning) {
+                user.setriskStatus("Cảnh báo");
+            } else {
+                user.setriskStatus("Bình Thường");
+            }
+
+            // Gán thông báo cảnh báo nếu cần
+            if (isWarning && !isRiskHigh) {
+                user.setWarningMessage("Tài khoản của bạn có nguy cơ bị khóa do hủy quá nhiều!");
+            }
+
+            // Ghi log nếu chưa từng log với lý do này
+            String reason = "Hủy ≥ 3 đơn hàng hoặc lịch hẹn";
+            if (!userWarningLogRepository.existsByUserIdAndReason(user.getId(), reason)) {
+                userWarningLogRepository.save(new UserWarningLog(user.getId(), reason));
+            }
+
+            // Nếu nguy cơ cao thì vô hiệu hóa tài khoản (nếu chưa bị khóa)
+            if (isRiskHigh && Boolean.TRUE.equals(user.getStatus())) {
+                user.setStatus(false);
+                userRepository.save(user); // cập nhật DB
+            }
+
+            return user;
+        }).collect(Collectors.toList());
+    }
+
+    //// lọc các tài khoản bị cảnh cáo
+  public List<UserWarningDTO> getAllUsersWithWarningOnly() {
+        List<User> users = userRepository.findAll();
+        List<Appointment> allAppointments = appointmentRepository.findAll();
+        List<Order> allOrders = orderRepository.findAll();
+
+        Map<Long, Long> cancelledOrdersMap = allOrders.stream()
+                .filter(o -> "Đã Hủy".equalsIgnoreCase(o.getOrderStatus()))
+                .collect(Collectors.groupingBy(o -> o.getUserId().longValue(), Collectors.counting()));
+
+        Map<Long, Long> cancelledAppointmentsMap = allAppointments.stream()
+                .filter(a -> "Đã hủy lịch".equalsIgnoreCase(a.getStatus()))
+                .collect(Collectors.groupingBy(Appointment::getUserId, Collectors.counting()));
+
+        return users.stream()
+                .map(user -> {
+                    long orderCancels = cancelledOrdersMap.getOrDefault(user.getId(), 0L);
+                    long appointmentCancels = cancelledAppointmentsMap.getOrDefault(user.getId(), 0L);
+
+                    boolean isRiskHigh = (orderCancels >= 5 || appointmentCancels >= 5);
+                    boolean isWarning = (orderCancels >= 1 || appointmentCancels >= 1);
+
+                    if (isWarning && !isRiskHigh) {
+                        return new UserWarningDTO(
+                                user.getId(),
+                                user.getUsername(),
+                                user.getPasswords(), //  Bạn nên ẩn trường này nếu không cần thiết
+                                user.getEmail(),
+                                user.getBirthday(),
+                                user.getPhonenumber(),
+                                user.getGender(),
+                                orderCancels,
+                                appointmentCancels,
+                                "Tài khoản của bạn có nguy cơ bị khóa do hủy quá nhiều!"
+                        );
+                    } else {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
 }

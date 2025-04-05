@@ -82,4 +82,9 @@ public class ServiceforpetController {
         return ResponseEntity.ok(updatedService);
     }
 
+    @GetMapping("/count")
+    public long getServiceCount() {
+        return serviceforpetService.countAllServices();
+    }
+
 }

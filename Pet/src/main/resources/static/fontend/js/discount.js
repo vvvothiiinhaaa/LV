@@ -20,12 +20,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     // Cấu trúc của mỗi mã giảm giá
                     couponElement.innerHTML = `
+                    <div class="coupon-icon">
+                        <img src="./img/price-tag.png" alt="Discount" style="width:80px;height:80px;">
+                    </div>
+                    <div class="coupon-details">
                         <h5>Mã Giảm Giá: ${coupon.code}</h5>
                         <p class="coupon-code">${coupon.discountPercentage}% Giảm Giá</p>
                         <p class="conditions">Áp dụng cho đơn hàng từ: ${formatCurrency(coupon.minOrderAmount)} VNĐ</p>
                         <p class="dates">Hiệu lực từ ${new Date(coupon.startDate).toLocaleString()} đến ${new Date(coupon.endDate).toLocaleString()}</p>
                         <button class="copy-btn" data-code="${coupon.code}">Sao chép mã</button>
-                    `;
+                    </div>
+                `;
+                
 
                     couponsList.appendChild(couponElement);
 
@@ -57,3 +63,27 @@ function formatCurrency(amount) {
         // currency: 'VND',
     }).format(amount);
 }
+
+
+/// hiệu ứng sao chép
+// Xử lý sự kiện sao chép mã giảm giá
+// copyButton.addEventListener("click", function () {
+//     const couponCode = couponElement.querySelector(".copy-btn");
+//     navigator.clipboard.writeText(couponCode)
+//         .then(() => {
+//             // Thay đổi nội dung nút khi đã sao chép
+//             this.textContent = "Đã sao chép ";
+//             this.style.backgroundColor = "#28a745"; // Chuyển màu xanh lá
+//             this.style.cursor = "default"; // Ngăn bấm lại liên tục
+            
+//             // Khóa nút trong 3 giây rồi chuyển về trạng thái ban đầu
+//             setTimeout(() => {
+//                 this.textContent = "Sao chép mã";
+//                 this.style.backgroundColor = "#007bff"; // Trả về màu ban đầu
+//                 this.style.cursor = "pointer";
+//             }, 3000);
+//         })
+//         .catch((error) => {
+//             console.error("Lỗi khi sao chép mã giảm giá:", error);
+//         });
+// });

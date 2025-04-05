@@ -21,21 +21,50 @@ function checkLoginStatus() {
                 // Lấy thông tin người dùng từ API /api/auth/info
                 const userId = data.userId;  // Lấy userId từ API /check-login
 
-                // Fetch thông tin người dùng
-                fetch(`/api/auth/info/${userId}`, { credentials: 'include' })
+          /////      // Fetch thông tin người dùng
+                // fetch(`/api/auth/info/${userId}`, { credentials: 'include' })
+                //     .then(response => response.json())
+                //     .then(userInfo => {
+                //         if (usernameDisplay) {
+                //             usernameDisplay.textContent = userInfo.username;  // Hiển thị tên người dùng
+                //         }
+                //         // Lấy URL ảnh người dùng và cập nhật thẻ <img> có class "avatar"
+                //         if (avatarImage && userInfo.url) {
+                //             avatarImage.src = userInfo.url;  // Cập nhật ảnh đại diện
+                //         } else {
+                //             avatarImage.src = './img/default-avata.png';  // Nếu không có ảnh, dùng ảnh mặc định
+                //         }
+                //     })
+                //     .catch(error => console.error('Error fetching user info:', error));
+                    // Fetch thông tin người dùng
+                    fetch(`/api/auth/info/${userId}`, { credentials: 'include' })
                     .then(response => response.json())
                     .then(userInfo => {
-                        if (usernameDisplay) {
-                            usernameDisplay.textContent = userInfo.username;  // Hiển thị tên người dùng
+                        if (!userInfo) return;
+                
+                        //  Kiểm tra status của tài khoản trong dữ liệu user
+                        if (userInfo.status === false) {
+                            alert(" Tài khoản của bạn đã bị khóa. Hệ thống sẽ đăng xuất.");
+                            sessionStorage.clear();
+                            localStorage.clear();
+                            window.location.href = "/fontend/login-user.html";
+                            return;
                         }
-                        // Lấy URL ảnh người dùng và cập nhật thẻ <img> có class "avatar"
+                
+                        //  Nếu tài khoản vẫn hoạt động → hiển thị thông tin
+                        if (usernameDisplay) {
+                            usernameDisplay.textContent = userInfo.username;
+                        }
                         if (avatarImage && userInfo.url) {
-                            avatarImage.src = userInfo.url;  // Cập nhật ảnh đại diện
+                            avatarImage.src = userInfo.url;
                         } else {
-                            avatarImage.src = './img/default-avata.png';  // Nếu không có ảnh, dùng ảnh mặc định
+                            avatarImage.src = './img/default-avata.png';
                         }
                     })
-                    .catch(error => console.error('Error fetching user info:', error));
+                    .catch(error => {
+                        console.error(" Lỗi khi lấy thông tin người dùng:", error);
+                    });
+                
 
                     // Gọi API để lấy số lượng sản phẩm trong giỏ hàng
                     fetch(`http://localhost:8080/api/cart/count/${userId}`, { credentials: 'include' })

@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Thêm danh mục vào select
         categories.forEach(category => {
             const option = document.createElement("option");
-            option.value = category.id;
+            option.value = category.name;
             option.textContent = category.name;
             categorySelect.appendChild(option);
         });
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (response.ok) {
                 alert("Sản phẩm đã được thêm thành công!");
-                window.location.href = "employee-product.html";
+                window.location.href = "staff-product.html";
             } else {
                 let errorMessage = await response.text();
                 console.error("Lỗi từ server:", errorMessage);
@@ -118,3 +118,62 @@ async function checkLoginStatus() {
         return false;
     }
 }
+////////////////////////////////////// thêm 1 danh mục mới
+
+document.addEventListener("DOMContentLoaded", function () {
+    const addCategoryBtn = document.getElementById("addCategoryBtn");
+    const saveCategoryBtn = document.getElementById("saveCategoryBtn");
+    const productGenre = document.getElementById("productGenre");
+    const newCategoryInput = document.getElementById("newCategoryName");
+    const addCategoryModal = new bootstrap.Modal(document.getElementById("addCategoryModal"));
+
+    //  Khi nhấn nút "+" mở modal nhập danh mục
+    addCategoryBtn.addEventListener("click", function () {
+        newCategoryInput.value = ""; // Reset input
+        addCategoryModal.show();
+    });
+
+    //  Khi nhấn "Lưu", gọi API thêm danh mục vào cơ sở dữ liệu
+    saveCategoryBtn.addEventListener("click", async function () {
+        const newCategory = newCategoryInput.value.trim();
+        if (newCategory === "") {
+            alert("Vui lòng nhập tên danh mục!");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:8080/api/categories", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name: newCategory }) // Gửi JSON với tên danh mục
+            });
+
+            if (!response.ok) {
+                throw new Error("Lỗi khi thêm danh mục");
+            }
+
+            const createdCategory = await response.json();
+            console.log("Danh mục mới được thêm:", createdCategory);
+
+            //  Thêm danh mục mới vào dropdown
+            const newOption = document.createElement("option");
+            newOption.value = createdCategory.id; // Lấy ID từ API
+            newOption.textContent = createdCategory.name;
+            productGenre.appendChild(newOption);
+
+            //  Chọn luôn danh mục vừa thêm
+            productGenre.value = createdCategory.id;
+
+            //  Ẩn modal sau khi thêm danh mục
+            addCategoryModal.hide();
+
+        } catch (error) {
+            console.error("Lỗi khi thêm danh mục:", error);
+            alert("Không thể thêm danh mục! Hãy thử lại.");
+        }
+    });
+
+
+});

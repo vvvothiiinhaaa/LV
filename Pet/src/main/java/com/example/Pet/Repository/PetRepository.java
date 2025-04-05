@@ -14,4 +14,5 @@ public interface PetRepository extends JpaRepository<Pet, Integer> {
     List<Pet> findByUserId(Integer userId);
 
     Optional<Pet> findByIdAndUserId(Integer petId, Integer userId);  // Tìm pet theo ID và userId
+
 }

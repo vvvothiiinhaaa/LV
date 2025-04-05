@@ -24,6 +24,12 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+// Thêm mới danh mục
+    @PostMapping
+    public Category createCategory(@RequestBody Category category) {
+        return categoryService.createCategory(category);
+    }
+
     // Lấy tất cả danh mục
     @GetMapping
     public List<Category> getAllCategories() {
@@ -35,12 +41,6 @@ public class CategoryController {
     public ResponseEntity<Category> getCategoryById(@PathVariable Integer id) {
         Optional<Category> category = categoryService.getCategoryById(id);
         return category.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    // Thêm mới danh mục
-    @PostMapping
-    public Category createCategory(@RequestBody Category category) {
-        return categoryService.createCategory(category);
     }
 
     // Cập nhật danh mục

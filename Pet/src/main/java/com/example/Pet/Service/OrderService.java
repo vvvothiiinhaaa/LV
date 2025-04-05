@@ -1,24 +1,32 @@
 package com.example.Pet.Service;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.example.Pet.Modal.Address;
 import com.example.Pet.Modal.Order;
 import com.example.Pet.Modal.OrderAddress;
 import com.example.Pet.Modal.OrderItem;
 import com.example.Pet.Modal.Product;
+import com.example.Pet.Modal.User;
+import com.example.Pet.Repository.AddressRepository;
 import com.example.Pet.Repository.OrderAddressRepository;
 import com.example.Pet.Repository.OrderItemRepository;
 import com.example.Pet.Repository.OrderRepository;
 import com.example.Pet.Repository.ProductRepository;
+import com.example.Pet.Repository.UserRepository;
 
 @Service
 public class OrderService {
@@ -31,85 +39,214 @@ public class OrderService {
     private OrderAddressRepository orderAddressRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private AddressRepository addressRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional
-    public Order createOrder(Integer userId, BigDecimal discount, BigDecimal totalPayment, String paymentMethod,
+    // public Order createOrder(Integer userId, BigDecimal discount, BigDecimal totalPayment, String paymentMethod,
+    //         List<OrderItem> orderItems, Integer addressId) {
+    //     // Khởi tạo và lưu thông tin đơn hàng
+    //     Order order = new Order();
+    //     order.setUserId(userId);
+    //     order.setOrderDate(new Date());
+    //     order.setDiscount(discount);
+    //     order.setOrderStatus("Chờ Xác Nhận"); // Trạng thái mặc định là PENDING
+    //     order.setTotalPayment(totalPayment);
+    //     order.setPaymentMethod(paymentMethod);
+    //     // Thiết lập quan hệ giữa Order và OrderItem
+    //     for (OrderItem item : orderItems) {
+    //         item.setOrder(order); // Gắn đơn hàng cho từng OrderItem
+    //         // Tìm sản phẩm trong database
+    //         Product product = productRepository.findById(item.getProductId())
+    //                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại với ID: " + item.getProductId()));
+    //         // Kiểm tra tồn kho
+    //         if (product.getQuantity() < item.getQuantity()) {
+    //             throw new RuntimeException("Số lượng tồn kho không đủ cho sản phẩm: " + product.getName());
+    //         }
+    //         // Cập nhật số lượng đã bán và tồn kho
+    //         product.setSold(product.getSold() + item.getQuantity());
+    //         product.setQuantity(product.getQuantity() - item.getQuantity());
+    //         // Lưu lại thay đổi của sản phẩm
+    //         productRepository.save(product);
+    //     }
+    //     order.setOrderItems(orderItems);
+    //     // Lưu Order trước khi lưu OrderItem (Cascade.ALL sẽ tự động lưu OrderItem)
+    //     Order savedOrder = orderRepository.save(order);
+    //     // Lưu thông tin địa chỉ liên kết với đơn hàng
+    //     OrderAddress orderAddress = new OrderAddress();
+    //     orderAddress.setUserId(userId);
+    //     orderAddress.setOrderId(savedOrder.getId());
+    //     orderAddress.setAddressId(addressId);
+    //     orderAddressRepository.save(orderAddress);
+    //     // Trả về thông tin đơn hàng đã được lưu
+    //     return savedOrder;
+    // }
+
+    public Order createOrder(Integer userId, BigDecimal discount, BigDecimal totalPayment, String paymentMethod, String note,
             List<OrderItem> orderItems, Integer addressId) {
-        // Khởi tạo và lưu thông tin đơn hàng
+        //  Tạo mới đơn hàng
         Order order = new Order();
         order.setUserId(userId);
         order.setOrderDate(new Date());
         order.setDiscount(discount);
-        order.setOrderStatus("Chờ Xác Nhận"); // Trạng thái mặc định là PENDING
         order.setTotalPayment(totalPayment);
+        order.setOrderStatus("Chờ Xác Nhận");
+        order.setNote(note);
         order.setPaymentMethod(paymentMethod);
-        // Thiết lập quan hệ giữa Order và OrderItem
+
+        //  Kiểm tra tồn kho và cập nhật số lượng bán
         for (OrderItem item : orderItems) {
-            item.setOrder(order); // Gắn đơn hàng cho từng OrderItem
+            item.setOrder(order);
+
             // Tìm sản phẩm trong database
             Product product = productRepository.findById(item.getProductId())
                     .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại với ID: " + item.getProductId()));
+
             // Kiểm tra tồn kho
             if (product.getQuantity() < item.getQuantity()) {
                 throw new RuntimeException("Số lượng tồn kho không đủ cho sản phẩm: " + product.getName());
             }
+
             // Cập nhật số lượng đã bán và tồn kho
             product.setSold(product.getSold() + item.getQuantity());
             product.setQuantity(product.getQuantity() - item.getQuantity());
-            // Lưu lại thay đổi của sản phẩm
+
+            // Lưu thay đổi sản phẩm
             productRepository.save(product);
         }
+
         order.setOrderItems(orderItems);
-        // Lưu Order trước khi lưu OrderItem (Cascade.ALL sẽ tự động lưu OrderItem)
+
+        //  Lưu Order trước khi lưu OrderItem (Cascade.ALL sẽ tự động lưu OrderItem)
         Order savedOrder = orderRepository.save(order);
-        // Lưu thông tin địa chỉ liên kết với đơn hàng
+
+        //  Lấy thông tin chi tiết địa chỉ từ bảng `address`
+        Address address = addressRepository.findById(Long.valueOf(addressId))
+                .orElseThrow(() -> new RuntimeException("Địa chỉ không tồn tại với ID: " + addressId));
+
+        //  Lưu toàn bộ thông tin địa chỉ vào `order_address`
         OrderAddress orderAddress = new OrderAddress();
         orderAddress.setUserId(userId);
         orderAddress.setOrderId(savedOrder.getId());
-        orderAddress.setAddressId(addressId);
+        orderAddress.setRecipientName(address.getRecipientName());
+        orderAddress.setPhoneNumber(address.getPhoneNumber());
+        orderAddress.setProvinceCity(address.getProvinceCity());
+        orderAddress.setDistrict(address.getDistrict());
+        orderAddress.setWardSubdistrict(address.getWardSubdistrict());
+        orderAddress.setAddressDetail(address.getAddressDetail());
+
+        //  Lưu địa chỉ liên kết với đơn hàng
         orderAddressRepository.save(orderAddress);
-        // Trả về thông tin đơn hàng đã được lưu
+
+        //  Trả về thông tin đơn hàng đã lưu
         return savedOrder;
     }
 
     ///////////////// lấy chi tiết đơn hàng
-     public Map<String, Object> getOrderDetails(Integer orderId) {
-        // Tìm thông tin đơn hàng
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
-        // Tìm danh sách OrderItem liên quan
-        List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
-        // Lấy thông tin chi tiết sản phẩm cho từng OrderItem
-        List<Map<String, Object>> itemDetails = orderItems.stream().map(orderItem -> {
-            Product product = productRepository.findById(orderItem.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found with ID: " + orderItem.getProductId()));
-            Map<String, Object> itemMap = new HashMap<>();
-            itemMap.put("id", orderItem.getId());
-            itemMap.put("productName", product.getName());
-            itemMap.put("price", product.getPrice());
-            itemMap.put("quantity", orderItem.getQuantity());
-            itemMap.put("url", product.getUrl());
-            itemMap.put("total", orderItem.getTotal());
-            return itemMap;
-        }).collect(Collectors.toList());
-        // Tìm địa chỉ liên quan đến đơn hàng
-        OrderAddress orderAddress = orderAddressRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Order address not found for Order ID: " + orderId));
-        // Tạo map chứa thông tin địa chỉ
-        Map<String, Object> addressMap = new HashMap<>();
-        addressMap.put("userId", orderAddress.getUserId());
-        addressMap.put("addressId", orderAddress.getAddressId());
-        // Tạo map trả về
+    //  public Map<String, Object> getOrderDetails(Integer orderId) {
+    //     // Tìm thông tin đơn hàng
+    //     Order order = orderRepository.findById(orderId)
+    //             .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+    //     // Tìm danh sách OrderItem liên quan
+    //     List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+    //     // Lấy thông tin chi tiết sản phẩm cho từng OrderItem
+    //     List<Map<String, Object>> itemDetails = orderItems.stream().map(orderItem -> {
+    //         Product product = productRepository.findById(orderItem.getProductId())
+    //                 .orElseThrow(() -> new RuntimeException("Product not found with ID: " + orderItem.getProductId()));
+    //         Map<String, Object> itemMap = new HashMap<>();
+    //         itemMap.put("id", orderItem.getId());
+    //         itemMap.put("productName", product.getName());
+    //         itemMap.put("price", product.getPrice());
+    //         itemMap.put("quantity", orderItem.getQuantity());
+    //         itemMap.put("url", product.getUrl());
+    //         itemMap.put("total", orderItem.getTotal());
+    //         return itemMap;
+    //     }).collect(Collectors.toList());
+    //     // Tìm địa chỉ liên quan đến đơn hàng
+    //     OrderAddress orderAddress = orderAddressRepository.findByOrderId(orderId)
+    //             .orElseThrow(() -> new RuntimeException("Order address not found for Order ID: " + orderId));
+    //     // Tạo map chứa thông tin địa chỉ
+    //     Map<String, Object> addressMap = new HashMap<>();
+    //     addressMap.put("userId", orderAddress.getUserId());
+    //     addressMap.put("addressId", orderAddress.getAddressId());
+    //     // Tạo map trả về
+    //     Map<String, Object> orderDetails = new HashMap<>();
+    //     orderDetails.put("orderId", order.getId());
+    //     orderDetails.put("userId", order.getUserId());
+    //     orderDetails.put("orderDate", order.getOrderDate());
+    //     orderDetails.put("discount", order.getDiscount());
+    //     orderDetails.put("totalPayment", order.getTotalPayment());
+    //     orderDetails.put("paymentMethod", order.getPaymentMethod());
+    //     orderDetails.put("orderStatus", order.getOrderStatus());
+    //     orderDetails.put("address", addressMap);
+    //     orderDetails.put("items", itemDetails);
+    //     return orderDetails;
+    // }
+
+    public Map<String, Object> getOrderDetails(Integer orderId) {
         Map<String, Object> orderDetails = new HashMap<>();
-        orderDetails.put("orderId", order.getId());
-        orderDetails.put("userId", order.getUserId());
-        orderDetails.put("orderDate", order.getOrderDate());
-        orderDetails.put("discount", order.getDiscount());
-        orderDetails.put("totalPayment", order.getTotalPayment());
-        orderDetails.put("paymentMethod", order.getPaymentMethod());
-        orderDetails.put("orderStatus", order.getOrderStatus());
-        orderDetails.put("address", addressMap);
-        orderDetails.put("items", itemDetails);
+
+        try {
+            //  Tìm thông tin đơn hàng
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new RuntimeException(" Không tìm thấy đơn hàng với ID: " + orderId));
+
+            //  Lấy danh sách sản phẩm trong đơn hàng
+            List<OrderItem> orderItems = orderItemRepository.findByOrderId(orderId);
+            List<Map<String, Object>> itemDetails = orderItems.stream().map(orderItem -> {
+                Map<String, Object> itemMap = new HashMap<>();
+                try {
+                    //  Tìm thông tin sản phẩm
+                    Product product = productRepository.findById(orderItem.getProductId())
+                            .orElseThrow(() -> new RuntimeException(" Không tìm thấy sản phẩm với ID: " + orderItem.getProductId()));
+
+                    //  Thêm thông tin sản phẩm vào danh sách
+                    itemMap.put("id", orderItem.getId());
+                    itemMap.put("productId", product.getId());
+                    itemMap.put("productName", product.getName());
+                    itemMap.put("price", product.getPrice());
+                    itemMap.put("quantity", orderItem.getQuantity());
+                    itemMap.put("url", product.getUrl());
+                    itemMap.put("total", orderItem.getTotal());
+                } catch (Exception e) {
+                    System.err.println("⚠ Lỗi khi lấy thông tin sản phẩm: " + e.getMessage());
+                }
+                return itemMap;
+            }).collect(Collectors.toList());
+
+            //  Lấy thông tin địa chỉ giao hàng
+            OrderAddress orderAddress = orderAddressRepository.findByOrderId(orderId)
+                    .orElseThrow(() -> new RuntimeException(" Không tìm thấy địa chỉ cho đơn hàng ID: " + orderId));
+
+            //  Tạo map chứa thông tin địa chỉ
+            Map<String, Object> addressMap = new HashMap<>();
+            addressMap.put("recipientName", orderAddress.getRecipientName());
+            addressMap.put("phoneNumber", orderAddress.getPhoneNumber());
+            addressMap.put("provinceCity", orderAddress.getProvinceCity());
+            addressMap.put("district", orderAddress.getDistrict());
+            addressMap.put("wardSubdistrict", orderAddress.getWardSubdistrict());
+            addressMap.put("addressDetail", orderAddress.getAddressDetail());
+
+            //  Kiểm tra phương thức thanh toán để hiển thị trạng thái phù hợp
+            //  Thêm dữ liệu vào `orderDetails`
+            orderDetails.put("orderId", order.getId());
+            orderDetails.put("userId", order.getUserId());
+            orderDetails.put("orderDate", order.getOrderDate());
+            orderDetails.put("discount", order.getDiscount());
+            orderDetails.put("totalPayment", order.getTotalPayment());
+            orderDetails.put("paymentMethod", order.getPaymentMethod());
+            orderDetails.put("note", order.getNote());
+            orderDetails.put("orderStatus", order.getOrderStatus());
+            orderDetails.put("address", addressMap);
+            orderDetails.put("items", itemDetails);
+
+        } catch (Exception e) {
+            System.err.println(" Lỗi khi lấy chi tiết đơn hàng: " + e.getMessage());
+            orderDetails.put("error", "Không thể lấy thông tin đơn hàng.");
+        }
+
         return orderDetails;
     }
 
@@ -162,6 +299,12 @@ public class OrderService {
                     productRepository.restoreProductStock(item.getProductId(), item.getQuantity());
                 }
                 orderRepository.save(order);
+                // Kiểm tra số lần hủy đơn của người dùng
+                long cancelledOrders = orderRepository.countByUserIdAndOrderStatus(order.getUserId(), "Đã Hủy");
+
+                if (cancelledOrders > 5) {
+                    disableUserAccount(order.getUserId());
+                }
             } else {
                 throw new RuntimeException("Hủy đơn hàng được thực hiện khi ở trạng thái chờ xác nhận!");
             }
@@ -192,6 +335,267 @@ public class OrderService {
     // Phương thức lấy đơn hàng theo trạng thái và ngày (hoặc thiếu một trong hai)
     public List<Order> getOrders(String status, String orderDate) {
         return orderRepository.findOrdersByStatusAndDate(status, orderDate);
+    }
+
+    /////
+    /// 
+     // Phương thức thống kê doanh thu theo danh mục và thời gian
+     public BigDecimal getRevenueByGenreAndTime(String genre, Date startDate, Date endDate) {
+        // Đảm bảo rằng startDate và endDate bao gồm cả toàn bộ ngày
+        startDate = getStartOfDay(startDate);  // Đặt startDate là bắt đầu ngày (00:00:00)
+        endDate = getEndOfDay(endDate);        // Đặt endDate là kết thúc ngày (23:59:59)
+
+        // Lấy danh sách các sản phẩm theo genre
+        List<Product> products = productRepository.findByGenre(genre);
+
+        BigDecimal totalRevenue = BigDecimal.ZERO;
+
+        // Lặp qua các sản phẩm để tính doanh thu trong khoảng thời gian
+        for (Product product : products) {
+            // Lấy danh sách các OrderItem cho sản phẩm này trong khoảng thời gian và trạng thái "Hoàn Thành"
+            List<OrderItem> orderItems = orderRepository.findOrderItemsByProductIdAndDateRangeAndStatus(
+                    product.getId(), startDate, endDate, "Hoàn Thành");
+
+            for (OrderItem orderItem : orderItems) {
+                totalRevenue = totalRevenue.add(orderItem.getTotal());
+            }
+        }
+
+        return totalRevenue;
+    }
+
+    public Map<String, BigDecimal> getRevenueByAllGenres(Date startDate, Date endDate) {
+        // Đảm bảo rằng startDate và endDate bao gồm cả toàn bộ ngày
+        startDate = getStartOfDay(startDate);  // Đặt startDate là bắt đầu ngày (00:00:00)
+        endDate = getEndOfDay(endDate);        // Đặt endDate là kết thúc ngày (23:59:59)
+
+        // Lấy danh sách tất cả các danh mục (genre)
+        List<String> genres = productRepository.findAllGenres();
+
+        // Map để lưu doanh thu của từng danh mục
+        Map<String, BigDecimal> revenueByGenre = new HashMap<>();
+
+        // Lặp qua tất cả các danh mục và tính doanh thu
+        for (String genre : genres) {
+            BigDecimal totalRevenue = BigDecimal.ZERO;
+
+            // Lấy danh sách các sản phẩm trong từng danh mục
+            List<Product> products = productRepository.findByGenre(genre);
+
+            // Lặp qua các sản phẩm và tính doanh thu của chúng trong khoảng thời gian
+            for (Product product : products) {
+                // Lấy danh sách các OrderItem cho sản phẩm này trong khoảng thời gian và trạng thái "Hoàn Thành"
+                List<OrderItem> orderItems = orderRepository.findOrderItemsByProductIdAndDateRangeAndStatus(
+                        product.getId(), startDate, endDate, "Hoàn Thành");
+
+                for (OrderItem orderItem : orderItems) {
+                    totalRevenue = totalRevenue.add(orderItem.getTotal());
+                }
+            }
+
+            revenueByGenre.put(genre, totalRevenue);
+        }
+
+        return revenueByGenre;
+    }
+    // Phương thức này trả về ngày bắt đầu của một ngày (00:00:00)
+
+    private Date getStartOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    // Phương thức này trả về ngày kết thúc của một ngày (23:59:59)
+    private Date getEndOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        return calendar.getTime();
+    }
+
+    public Map<String, Map<String, BigDecimal>> getRevenueByGenresDaily(Date startDate, Date endDate) {
+        // Map để lưu doanh thu theo ngày và theo danh mục
+        Map<String, Map<String, BigDecimal>> revenueByDateAndGenre = new HashMap<>();
+
+        // Lặp qua tất cả các ngày trong khoảng thời gian
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.setTime(startDate);
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(endDate);
+
+        while (!startCalendar.after(endCalendar)) {
+            // Đảm bảo rằng currentDate chỉ là ngày, không có giờ phút giây
+            startCalendar.set(Calendar.HOUR_OF_DAY, 0);
+            startCalendar.set(Calendar.MINUTE, 0);
+            startCalendar.set(Calendar.SECOND, 0);
+            startCalendar.set(Calendar.MILLISECOND, 0);
+
+            Date currentDate = startCalendar.getTime();  // Lấy ngày hiện tại
+
+            // Lấy danh sách tất cả các danh mục (genre)
+            List<String> genres = productRepository.findAllGenres();
+
+            // Map để lưu doanh thu cho từng danh mục trong ngày hiện tại
+            Map<String, BigDecimal> dailyRevenue = new HashMap<>();
+
+            // Lặp qua tất cả các danh mục và tính doanh thu cho từng danh mục trong ngày
+            for (String genre : genres) {
+                BigDecimal totalRevenue = BigDecimal.ZERO;
+
+                // Lấy danh sách các sản phẩm trong từng danh mục
+                List<Product> products = productRepository.findByGenre(genre);
+
+                // Lặp qua các sản phẩm và tính doanh thu của chúng trong ngày
+                for (Product product : products) {
+                    // Sử dụng getStartOfDay và getEndOfDay để lấy ngày mà không có thời gian
+                    Date startOfDay = getStartOfDay(currentDate);
+                    Date endOfDay = getEndOfDay(currentDate);
+
+                    // Lấy danh sách các OrderItem cho sản phẩm này trong ngày và trạng thái "Hoàn Thành"
+                    List<OrderItem> orderItems = orderRepository.findOrderItemsByProductIdAndDateRangeAndStatus(
+                            product.getId(), startOfDay, endOfDay, "Hoàn Thành");
+
+                    for (OrderItem orderItem : orderItems) {
+                        totalRevenue = totalRevenue.add(orderItem.getTotal());
+                    }
+                }
+
+                dailyRevenue.put(genre, totalRevenue);
+            }
+
+            // Chuyển đổi currentDate thành chuỗi ngày theo định dạng yyyy-MM-dd
+            String formattedDate = new SimpleDateFormat("yyyy-MM-dd").format(currentDate);
+
+            // Thêm doanh thu của ngày vào tổng doanh thu theo ngày và danh mục
+            revenueByDateAndGenre.put(formattedDate, dailyRevenue);
+
+            // Tiến đến ngày kế tiếp
+            startCalendar.add(Calendar.DATE, 1);
+        }
+
+        return revenueByDateAndGenre;
+    }
+
+    // Tính doanh thu theo tháng
+    public Map<String, Map<String, BigDecimal>> getRevenueByGenresMonthly(Date startDate, Date endDate) {
+        Map<String, Map<String, BigDecimal>> revenueByMonthAndGenre = new HashMap<>();
+
+        Calendar startCalendar = Calendar.getInstance();
+        startCalendar.setTime(startDate);
+        Calendar endCalendar = Calendar.getInstance();
+        endCalendar.setTime(endDate);
+
+        while (!startCalendar.after(endCalendar)) {
+            String month = (startCalendar.get(Calendar.MONTH) + 1) + "-" + startCalendar.get(Calendar.YEAR);
+
+            Map<String, BigDecimal> monthlyRevenue = new HashMap<>();
+
+            List<String> genres = productRepository.findAllGenres();
+
+            for (String genre : genres) {
+                BigDecimal totalRevenue = BigDecimal.ZERO;
+
+                List<Product> products = productRepository.findByGenre(genre);
+
+                for (Product product : products) {
+                    List<OrderItem> orderItems = orderRepository.findOrderItemsByProductIdAndDateRangeAndStatus(
+                            product.getId(), getStartOfMonth(startCalendar.getTime()), getEndOfMonth(startCalendar.getTime()), "Hoàn Thành");
+
+                    for (OrderItem orderItem : orderItems) {
+                        totalRevenue = totalRevenue.add(orderItem.getTotal());
+                    }
+                }
+
+                monthlyRevenue.put(genre, totalRevenue);
+            }
+
+            revenueByMonthAndGenre.put(month, monthlyRevenue);
+
+            startCalendar.add(Calendar.MONTH, 1);
+        }
+
+        return revenueByMonthAndGenre;
+    }
+
+    // Trả về ngày đầu tháng
+    private Date getStartOfMonth(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);  // Đặt ngày là ngày 1 của tháng
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    // Trả về ngày cuối tháng
+    private Date getEndOfMonth(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));  // Đặt ngày là ngày cuối tháng
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        return calendar.getTime();
+    }
+
+    public long countPendingOrders() {
+        return orderRepository.countByOrderStatus("Chờ Xác Nhận"); // Trạng thái cần đếm
+    }
+
+    /// đếm số sản phẩm đã bán
+    public int countSoldProducts() {
+        List<Order> completedOrders = orderRepository.findByOrderStatus("Hoàn Thành");
+
+        int totalSold = 0;
+        for (Order order : completedOrders) {
+            for (OrderItem item : order.getOrderItems()) {
+                totalSold += item.getQuantity();
+            }
+        }
+
+        return totalSold;
+    }
+
+    ///// vô hiệu hóa tài khoản
+    /// 
+    private void disableUserAccount(Integer userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setStatus(false);
+            userRepository.save(user);
+        }
+    }
+
+    public void cancelUserAccount(Integer orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // Đánh dấu đơn bị hủy
+        order.setOrderStatus("CANCELLED");
+        orderRepository.save(order);
+
+        // Đếm số đơn đã bị hủy của người dùng
+        long cancelledOrders = orderRepository.countByUserIdAndOrderStatus(order.getUserId(), "CANCELLED");
+
+        if (cancelledOrders >= 3) {
+            // Vô hiệu hóa tài khoản
+            User user = userRepository.findById(order.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            user.setStatus(false);
+            userRepository.save(user);
+        }
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

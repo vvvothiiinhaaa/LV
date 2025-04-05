@@ -39,6 +39,9 @@ public class Order {
     @Column(name = "paymentmethod")
     private String paymentMethod;
 
+    @Column(name = "note")
+    private String note;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 
@@ -153,6 +156,20 @@ public class Order {
      */
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
+    }
+
+    /**
+     * @return String return the note
+     */
+    public String getNote() {
+        return note;
+    }
+
+    /**
+     * @param note the note to set
+     */
+    public void setNote(String note) {
+        this.note = note;
     }
 
 }

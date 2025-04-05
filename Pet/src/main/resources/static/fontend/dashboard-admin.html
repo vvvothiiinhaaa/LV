@@ -16,10 +16,10 @@
             <a class="navbar-brand ps-2 text-center" href="index.html">PETTIE</a>
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
             <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-                <div class="input-group">
+                <!-- <div class="input-group">
                     <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
                     <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
-                </div>
+                </div> -->
             </form>
             <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
                 <li class="nav-item dropdown">
@@ -47,11 +47,11 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
                                 Quản lý TK nhân viên
                             </a>
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="./admin-user.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
                                 Quản lý TK khách hàng
                             </a>
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="./dashboard-report.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
                                 Báo Cáo Thống Kê
                             </a>
@@ -63,12 +63,67 @@
             </div>
             <div id="layoutSidenav_content">
                 <main>
-                    <div class="container-fluid px-4">
-                        <h1 class="mt-4">Dashboard</h1>
-                        <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Dashboard</li>
-                        </ol>
-                    </div>
+                    <main>
+                        <div class="container-fluid px-4">
+                            <h1 class="mt-4">Trang Quản Lý Admin</h1>
+                            <ol class="breadcrumb mb-4">
+                                <li class="breadcrumb-item active">Tổng quan</li>
+                            </ol>
+                    
+                            <!-- Danh sách nhân viên đang đăng nhập -->
+                            <div class="card mb-4 shadow">
+                                <div class="card-header bg-primary text-white">
+                                    <i class="fas fa-users me-1"></i>
+                                    Nhân viên đang hoạt động
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered table-hover" id="activeStaffTable">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Họ tên</th>
+                                                <th>Username</th>
+                                                <th>Email</th>
+                                                <th>Trạng thái</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="staff-active-body">
+                                            <!-- Dữ liệu sẽ được chèn bằng JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                    
+                            <!-- Thông báo hiện tại -->
+                            <div class="card mb-4 shadow">
+                                <div class="card-header bg-success text-white">
+                                    <i class="fas fa-bell me-1"></i>
+                                    Thông báo nội bộ
+                                </div>
+                                <div class="card-body" id="announcementList">
+                                    <!-- Thông báo sẽ được render ở đây bằng JS -->
+                                </div>
+                            </div>
+                    
+                            <!-- Form tạo thông báo -->
+                            <div class="card shadow">
+                                <div class="card-header bg-warning text-dark">
+                                    <i class="fas fa-paper-plane me-1"></i>
+                                    Tạo thông báo mới
+                                </div>
+                                <div class="card-body">
+                                    <form id="announcementForm">
+                                        <div class="mb-3">
+                                            <label for="announcementText" class="form-label">Nội dung thông báo:</label>
+                                            <textarea id="announcementText" class="form-control" rows="3" required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Gửi thông báo</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </main>
+                    
                 </main>
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">
@@ -81,6 +136,10 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="./js/admin-login.js"></script>
+        <script src="./js/admin-dashboard.js"></script>
+        <script>
+      
+        </script>
 
     </body>
 </html>

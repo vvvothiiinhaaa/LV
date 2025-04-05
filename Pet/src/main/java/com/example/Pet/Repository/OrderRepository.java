@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.example.Pet.Modal.Order;
+import com.example.Pet.Modal.OrderItem;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
@@ -22,6 +23,11 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     // Truy vấn các đơn hàng theo trạng thái
     List<Order> findByOrderStatus(String orderStatus);
+
+    /// đếm số lần hủy đơn hàng của người dùng
+    long countByUserIdAndOrderStatus(Integer userId, String orderStatus);
+
+    long countByOrderStatus(String orderStatus); // Spring sẽ tự generate query SELECT COUNT(*)
 
     // @Query("SELECT o FROM Order o WHERE o.orderDate = :orderDate")
     // List<Order> findOrdersByOrderDate(Date orderDate);
@@ -37,6 +43,17 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
             + "(?2 IS NULL OR CONVERT(VARCHAR, o.order_date, 23) = ?2)",
             nativeQuery = true)
     List<Order> findOrdersByStatusAndDate(String status, String orderDate);
+
+    //// ngày 19 tháng 3
+    /// tính doanh thu
+   // Truy vấn các OrderItem theo sản phẩm và thời gian
+    @Query("SELECT oi FROM OrderItem oi WHERE oi.productId = :productId AND oi.order.orderDate BETWEEN :startDate AND :endDate")
+    List<OrderItem> findOrderItemsByProductIdAndDateRange(Long productId, Date startDate, Date endDate);
+
+    // Truy vấn các OrderItem theo sản phẩm, phạm vi thời gian và trạng thái "Hoàn Thành"
+    @Query("SELECT oi FROM OrderItem oi WHERE oi.productId = :productId AND oi.order.orderDate BETWEEN :startDate AND :endDate AND oi.order.orderStatus = :status")
+    List<OrderItem> findOrderItemsByProductIdAndDateRangeAndStatus(Long productId, Date startDate, Date endDate, String status);
+
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // import java.time.LocalDate;

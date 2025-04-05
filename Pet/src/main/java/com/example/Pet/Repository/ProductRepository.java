@@ -68,4 +68,15 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // List<Product> findByNameContainingIgnoreCase(String name);
     @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<Product> searchByName(@Param("name") String name);
+
+    // Lấy 5 sản phẩm mới nhất theo ID lớn nhất
+    List<Product> findTop5ByOrderByIdDesc();
+
+    // Lấy 5 sản phẩm bán chạy nhất theo số lượng đã bán
+    List<Product> findTop5ByOrderBySoldDesc();
+
+    // Truy vấn danh mục sản phẩm (genre) khác nhau
+    @Query("SELECT DISTINCT p.genre FROM Product p")
+    List<String> findAllGenres();
+
 }

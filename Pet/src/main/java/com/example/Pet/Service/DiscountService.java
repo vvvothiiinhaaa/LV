@@ -20,11 +20,12 @@ public class DiscountService {
     // public Discount addDiscount(Discount discount) {
     //     return discountRepository.save(discount);
     // }
-    public Discount addDiscount(Discount discount) {
-        // Kiểm tra nếu mã giảm giá đã tồn tại
+    public Discount createDiscount(Discount discount) {
+        // Kiểm tra mã giảm giá đã tồn tại hay chưa
         if (discountRepository.existsByCode(discount.getCode())) {
             throw new RuntimeException("Mã giảm giá đã tồn tại!");
         }
+
         return discountRepository.save(discount);
     }
 
@@ -102,7 +103,7 @@ public class DiscountService {
     // Lấy tất cả các mã giảm giá còn hiệu lực
     public List<Discount> getAllActiveDiscounts() {
         LocalDateTime now = LocalDateTime.now(); // Lấy thời gian hiện tại
-        return discountRepository.findAllByStartDateBeforeAndEndDateAfter(now, now);
+        return discountRepository.findAllByStartDateBeforeAndEndDateAfterAndUsageLimitGreaterThan(now, now, 0);
     }
 
     // Kiểm tra mã giảm giá theo mã

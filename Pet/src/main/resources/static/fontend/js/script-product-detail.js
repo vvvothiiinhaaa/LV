@@ -40,7 +40,7 @@
             //    cập nhật thông tin của breadcrumb
                 document.getElementById("product-name2").innerText = data.name;
                 document.getElementById("product-genre").innerText = data.genre;
-
+                
 
                  // Kiểm tra nếu genre là "đồ chơi cho chó mèo" hoặc "dụng cụ vệ sinh"
             if (data.genre === "Đồ chơi cho chó mèo" || data.genre === "Dụng cụ vệ sinh") {
@@ -69,13 +69,13 @@
        return new Intl.NumberFormat('vi-VN').format(price);
    }
 
-   document.addEventListener("DOMContentLoaded", function() {
-    fetchProducts();  // Gọi API khi trang tải xong
+//    document.addEventListener("DOMContentLoaded", function() {
+//     fetchProducts();  // Gọi API khi trang tải xong
 
-    document.getElementById('applyFilters').addEventListener('click', function() {
-        fetchProducts();
-    });
-});
+//     document.getElementById('applyFilters').addEventListener('click', function() {
+//         fetchProducts();
+//     });
+// });
 
 // Hàm gọi API lấy danh sách sản phẩm
 function fetchProducts() {

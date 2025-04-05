@@ -1,12 +1,15 @@
 package com.example.Pet.Controller;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,8 +23,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Pet.Modal.Appointment;
+import com.example.Pet.Repository.AppointmentPriceRepository;
 import com.example.Pet.Repository.AppointmentRepository;
+import com.example.Pet.Repository.ServicePriceRepository;
 import com.example.Pet.Service.AppointmentService;
+import com.example.Pet.Service.RevenueService;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -31,6 +37,15 @@ public class AppointmentController {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private ServicePriceRepository servicePriceRepository;
+
+    @Autowired
+    private AppointmentPriceRepository appointmentPriceRepository;
+
+    @Autowired
+    private RevenueService revenueService;
 
     public AppointmentController(AppointmentService appointmentService) {
         this.appointmentService = appointmentService;
@@ -99,25 +114,23 @@ public class AppointmentController {
         }
     }
 
-    @PutMapping("/update-status")
-    public ResponseEntity<?> updateAppointmentStatus(@RequestBody Map<String, Object> request) {
-        try {
-            List<Integer> ids = (List<Integer>) request.get("ids");
-            String status = (String) request.get("status");
-
-            for (Integer id : ids) {
-                Appointment appointment = appointmentRepository.findById(Long.valueOf(id)).orElse(null);
-                if (appointment != null) {
-                    appointment.setStatus(status);
-                    appointmentRepository.save(appointment);
-                }
-            }
-            return ResponseEntity.ok("Cập nhật trạng thái thành công.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi cập nhật: " + e.getMessage());
-        }
-    }
-
+    // @PutMapping("/update-status")
+    // public ResponseEntity<?> updateAppointmentStatus(@RequestBody Map<String, Object> request) {
+    //     try {
+    //         List<Integer> ids = (List<Integer>) request.get("ids");
+    //         String status = (String) request.get("status");
+    //         for (Integer id : ids) {
+    //             Appointment appointment = appointmentRepository.findById(Long.valueOf(id)).orElse(null);
+    //             if (appointment != null) {
+    //                 appointment.setStatus(status);
+    //                 appointmentRepository.save(appointment);
+    //             }
+    //         }
+    //         return ResponseEntity.ok("Cập nhật trạng thái thành công.");
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi cập nhật: " + e.getMessage());
+    //     }
+    // }
     /////////// lấy chi tiết lịch hẹn
     @GetMapping("/{id}")
     public ResponseEntity<?> getAppointmentDetails(@PathVariable Integer id) {
@@ -154,6 +167,122 @@ public class AppointmentController {
     @GetMapping("/pet/{petId}")
     public List<Appointment> getAppointmentsByPetId(@PathVariable Integer petId) {
         return appointmentService.getAppointmentsByPetId(petId);
+    }
+
+    // API kiểm tra khung giờ trống của một ngày cụ thể
+    @GetMapping("/available-slots")
+    public ResponseEntity<?> getAvailableSlots(@RequestParam String date) {
+        try {
+            LocalDate appointmentDate = LocalDate.parse(date); // Chuyển đổi ngày từ String sang LocalDate
+            List<String> availableSlots = appointmentService.getAvailableTimeSlots(appointmentDate);
+            return ResponseEntity.ok(availableSlots);
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body("Ngày không hợp lệ! Định dạng phải là YYYY-MM-DD");
+        }
+    }
+
+    ///////////////////////// ngày 19 tháng 3
+
+    @PutMapping("/update-status")
+    public ResponseEntity<?> updateAppointmentStatus(@RequestBody Map<String, Object> request) {
+        try {
+            // Lấy thông tin các lịch hẹn và trạng thái mới từ yêu cầu
+            List<Integer> ids = (List<Integer>) request.get("ids");  // Kiểu Integer
+            String status = (String) request.get("status");
+
+            // Kiểm tra nếu danh sách ids rỗng
+            if (ids == null || ids.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Danh sách lịch hẹn không được để trống.");
+            }
+
+            // Lặp qua tất cả các lịch hẹn đã chọn và cập nhật trạng thái
+            for (Integer id : ids) {  // id là Integer
+                Long appointmentId = Long.valueOf(id);
+
+                Appointment appointment = appointmentRepository.findById(appointmentId).orElse(null);  // FindById sử dụng Long
+                if (appointment != null) {
+                    // Cập nhật trạng thái
+                    appointment.setStatus(status);
+                    appointmentRepository.save(appointment);
+
+                    // Nếu trạng thái là "Hoàn Thành", tính toán và lưu giá dịch vụ
+                    if ("Hoàn Thành".equals(status)) {
+                        appointmentService.calculateAndSavePrice(appointmentId);  // Gọi service với Long
+                    }
+                }
+            }
+
+            return ResponseEntity.ok("Cập nhật trạng thái và tính giá dịch vụ thành công.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi cập nhật: " + e.getMessage());
+        }
+    }
+
+    // Lấy doanh thu cho dịch vụ cụ thể trong một khoảng thời gian
+    @GetMapping("/revenueByService")
+    public BigDecimal getRevenueByService(@RequestParam Integer serviceId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        return appointmentService.getRevenueByServiceForPeriod(serviceId, startDate, endDate);
+    }
+
+    // Lấy doanh thu cho tất cả dịch vụ trong một khoảng thời gian
+    @GetMapping("/revenueByAllServices")
+    public Map<String, BigDecimal> getRevenueByAllServices(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        return appointmentService.getRevenueByAllServices(startDate, endDate);
+    }
+
+    // Endpoint tính doanh thu dịch vụ theo ngày
+    @GetMapping("/services/day")
+    public ResponseEntity<Map<String, Map<String, BigDecimal>>> getRevenueForServicesByDay(
+            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+
+        Map<String, Map<String, BigDecimal>> revenue = revenueService.getRevenueForServicesByDay(startDate, endDate);
+        return ResponseEntity.ok(revenue);
+    }
+
+    @GetMapping("/services/month")
+    public ResponseEntity<Map<String, Map<String, BigDecimal>>> getRevenueForServicesByMonth(
+            @RequestParam("startMonth") String startMonth,
+            @RequestParam("endMonth") String endMonth) {
+
+        // Call service to get revenue for services by month
+        Map<String, Map<String, BigDecimal>> revenue = revenueService.getRevenueForServicesByMonth(startMonth, endMonth);
+
+        // Return the response
+        return ResponseEntity.ok(revenue);
+    }
+
+    @GetMapping("/today")
+    public List<Appointment> getAppointmentsToday() {
+        return appointmentService.getAppointmentsToday();
+    }
+
+    // API lấy lịch hẹn hôm nay theo trạng thái (optional)
+    @GetMapping("/today/status")
+    public List<Appointment> getAppointmentsTodayByStatus(@RequestParam String status) {
+        return appointmentService.getTodayAppointmentsByStatus(status);
+    }
+
+    @GetMapping("/today/count")
+    public long getAppointmentsTodayCount() {
+        return appointmentService.countAppointmentsToday();
+    }
+
+    //// ngày 25
+    @PostMapping("/check-cancelled-users")
+    public String disableUsersWithTooManyCancellations() {
+        appointmentService.disableUsersWithTooManyCancellations();
+        return "Checked and updated user statuses successfully!";
+    }
+
+    //// ngày 31
+    @GetMapping("/total")
+    public Map<String, Long> getTotalAppointments() {
+        long total = appointmentService.countAppointments();
+        return Map.of("totalAppointments", total);
     }
 
 }

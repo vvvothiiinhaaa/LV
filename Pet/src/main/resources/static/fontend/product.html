@@ -57,31 +57,79 @@
                 font-size: 0.8rem; /* Smaller breadcrumb for phones */
             }
         }
+        .filter-btn.active {
+            background-color: #343a40; /* Màu nền khi được chọn (đen xám) */
+            color: white; /* Chữ trắng */
+        }
+
 
     </style>
+    <style>
+        #paginationContainer {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+    
+        #paginationContainer button {
+            padding: 8px 16px;
+            font-size: 1rem;
+            border: 1px solid #343a40;
+            background-color: white;
+            color: #343a40;
+            border-radius: 50px;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            min-width: 45px;
+        }
+    
+        #paginationContainer button:hover {
+            background-color: #343a40;
+            color: white;
+        }
+    
+        #paginationContainer button.active {
+            background-color: #343a40;
+            color: white;
+            font-weight: bold;
+            border-color: #343a40;
+            transform: scale(1.05);
+        }
+    </style>
+    <style>
+        /* Đảm bảo mỗi hàng 5 sản phẩm */
+        #productList .col-2 {
+            flex: 0 0 20%;
+            max-width: 20%;
+        }
+
+    </style>
+   
+    
 </head>
 <body>
    <div id="header"></div>
   
 <!-- Hero Section with a single image -->
 <div class="hero-image">
-    <img src="./img/bnn6.png" alt="Hero Image" class="w-100">
+    <img src="./img/hero9.png" alt="Hero Image" class="w-100">
 </div>
 
 
-    <div class="container py-5">
+    <div class="container ">
         <!-- Breadcrumb Navigation -->
-        <div class="d-flex justify-content-center mb-4">
+        <!-- <div class="d-flex justify-content-center mb-4">
             <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="./trangchu.html">Trang Chủ</a></li>
                 <li class="breadcrumb-item"><a href="./product.html">Cửa Hàng</a></li>
                 <li class="breadcrumb-item"><a href="#" id="categoryBreadcrumb">tất cả sản phẩm</a></li>
             </ul>
-        </div>
+        </div> -->
 
         <div class="row">
             <!-- Sidebar for Filters -->
-            <div class="col-md-3">
+            <div class="col-md-3 ">
                 <div class="border p-2">
                     <h5>Filters</h5>
                     <div class="mb-2">
@@ -106,12 +154,35 @@
                     <button class="btn btn-sm btn-lg w-100" id="applyFilters">Áp dụng</button>
                 </div>
             </div>
+
+           
+
             
             <!-- Product Display Section -->
             <div class="col-md-9">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4" id="productList">
-                    <!-- Products will be dynamically loaded here -->
+
+                <div class="text-center mb-4">
+                    <button class="btn btn-outline-dark m-1 filter-btn" data-target="newProducts">Sản Phẩm Mới</button>
+                    <button class="btn btn-outline-dark m-1 filter-btn" data-target="bestSellers">Bán Chạy Nhất</button>
+                    <button class="btn btn-outline-dark m-1 filter-btn" data-target="productList">Tất Cả Sản Phẩm</button>
                 </div>
+          <!-- Sản phẩm mới -->
+                <div class="row  g-4" id="newProducts" style="display: none;">
+                </div>
+
+                <!-- Sản phẩm được yêu thích nhất -->
+                <div class="row g-4" id="bestSellers" style="display: none;">
+                </div>
+
+                <!-- Tất cả sản phẩm -->
+                <div class="row g-4" id="productList">
+                </div>
+                
+                <!-- Pagination for all products -->
+                <div class="d-flex justify-content-center mt-4" id="paginationContainer">
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -197,8 +268,8 @@
 
     </script>
     <script src="./js/script.js"></script>
-    <script src="./js/script-product-detail.js"></script>    
     <script src="./js/header.js"></script>
+
     <!-- <script src="./js/searchheader.js"></script> -->
     <button id="goToTopBtn" title="Go to top">↑</button>
     <script>
@@ -221,5 +292,34 @@
    });
    
    </script>
+   <script>
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     const buttons = document.querySelectorAll(".filter-btn");
+    //     const sections = [
+    //         { content: "newProducts", title: "newProductsTitle" },
+    //         { content: "bestSellers", title: "bestSellersTitle" },
+    //         { content: "productList", title: "productListTitle" },
+    //     ];
+
+    //     buttons.forEach(btn => {
+    //         btn.addEventListener("click", function () {
+    //             const target = btn.getAttribute("data-target");
+
+    //             sections.forEach(section => {
+    //                 const contentEl = document.getElementById(section.content);
+    //                 const titleEl = document.getElementById(section.title);
+    //                 if (section.content === target) {
+    //                     contentEl.style.display = "flex";
+    //                     titleEl.style.display = "block";
+    //                 } else {
+    //                     contentEl.style.display = "none";
+    //                     titleEl.style.display = "none";
+    //                 }
+    //             });
+    //         });
+    //     });
+    // });
+</script>
+
 </body>
 </html>

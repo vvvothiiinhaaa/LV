@@ -1,0 +1,177 @@
+/* Tổng thể */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* Thanh điều hướng */
+.sb-topnav {
+    background-color: #343a40;
+}
+
+.sb-topnav .navbar-brand {
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.sb-topnav .navbar-nav .nav-item .nav-link {
+    color: white;
+}
+
+/* Sidebar */
+#layoutSidenav_nav {
+    background-color: #212529;
+    height: 100vh;
+    padding-top: 20px;
+}
+
+.sb-sidenav-menu-heading {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+.sb-sidenav .nav-link {
+    color: #c4c4c4;
+    font-size: 16px;
+}
+
+.sb-sidenav .nav-link:hover {
+    color: #ffffff;
+    background-color: #495057;
+}
+
+/* Container chính */
+.container {
+    padding: 30px;
+    margin-left: 240px;
+    margin-right: 20px;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header i {
+    font-size: 24px;
+    color: #333;
+}
+
+.header h2 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+}
+
+.header .btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.header .btn:hover {
+    background-color: #0056b3;
+}
+
+.header .btn i {
+    margin-right: 8px;
+}
+
+/* Bảng dữ liệu */
+.table-container {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    font-size: 16px;
+    color: #333;
+}
+
+th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #e9ecef;
+}
+
+td {
+    text-align: center;
+}
+
+.action-btns button {
+    padding: 6px 12px;
+    margin: 3px;
+    background-color: #ffc107;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.action-btns button:hover {
+    background-color: #e0a800;
+}
+
+.action-btns .btn-danger {
+    background-color: #dc3545;
+}
+
+.action-btns .btn-danger:hover {
+    background-color: #c82333;
+}
+
+.action-btns .btn-primary {
+    background-color: #007bff;
+}
+
+.action-btns .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        margin-left: 0;
+    }
+
+    .header h2 {
+        font-size: 24px;
+    }
+
+    table th, table td {
+        font-size: 14px;
+    }
+
+    .header .btn {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+}

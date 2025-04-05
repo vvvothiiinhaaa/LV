@@ -58,19 +58,23 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
                                 Trang Chủ Nhân Viên
                             </a>
-                            <a class="nav-link" href="./employee-product.html">
+                            <a class="nav-link" href="./staff-product.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
                                 Quản lý sản phẩm
                             </a>
-                            <a class="nav-link" href="orders.html">
+                            <a class="nav-link" href="./staff-service.html">
+                                <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                                Quản lý dịch vụ
+                            </a>
+                            <a class="nav-link" href="./staff-order.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
                                 Quản lý đơn hàng
                             </a>
-                            <a class="nav-link" href="appointments.html">
+                            <a class="nav-link" href="./staff-appointment.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
                                 Quản lý đặt lịch
                             </a>
-                            <a class="nav-link" href="discounts.html">
+                            <a class="nav-link" href="./staff-discount.html">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tags"></i></div>
                                 Quản lý mã giảm giá
                             </a>
@@ -104,6 +108,10 @@
                                         <select class="form-control" id="productGenre" required>
                                             <option value="">Chọn danh mục</option>
                                         </select>
+
+                                        <button type="button" class="btn" id="addCategoryBtn">
+                                            <i class="fas fa-plus"></i> Thêm Danh Mục Mới
+                                        </button>
                                     </div>
                                     
                                     <div class="mb-3">
@@ -139,7 +147,7 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="productIngredient" class="form-label">Thành Phần Dinh Dưỡng (Ingredient)</label>
-                                        <textarea class="form-control" id="productIngredient" rows="4" required></textarea>
+                                        <textarea class="form-control" id="productIngredient" rows="4" ></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -149,6 +157,27 @@
                             </div>
                         </form>
                     </div>
+
+
+                    <!-- modal thêm danh mục mới -->
+                <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addCategoryModalLabel">Thêm Danh Mục Mới</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <input type="text" class="form-control" id="newCategoryName" placeholder="Nhập tên danh mục" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button type="button" class="btn btn-primary" id="saveCategoryBtn">Lưu</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 </main>
                 <footer class="py-4 bg-light mt-auto">
                     <div class="container-fluid px-4">
@@ -162,5 +191,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="./js/script-employee.js"></script>
         <script src="./js/empployee-add-product.js"></script>
+
     </body>
 </html>

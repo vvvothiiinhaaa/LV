@@ -1,9 +1,3 @@
-/**
- * Tạo phần tử HTML hiển thị sản phẩm theo giao diện yêu cầu.
- * @param {Object} product - Đối tượng sản phẩm.
- * @returns {HTMLElement} - Thẻ HTML chứa sản phẩm.
- */
-
 
 
 // Lắng nghe sự kiện khi người dùng chọn bộ lọc và bấm nút "Áp dụng"
@@ -13,51 +7,52 @@ document.getElementById("applyFilters").addEventListener("click", function() {
     const priceFilter = document.getElementById("priceFilter").value;
 
     // Cập nhật breadcrumb với category đã chọn
-    updateBreadcrumb(categoryFilter);
+    // updateBreadcrumb(categoryFilter);
 
     // Gọi API hoặc xử lý logic lọc sản phẩm
     fetchFilteredProducts(categoryFilter, priceFilter);
 });
+///////////////////////////////
+// document.getElementById("categoryBreadcrumb").addEventListener("click", function(event) {
+//     event.preventDefault(); // Ngăn không cho chuyển trang khi click vào thẻ <a>
+//     const categoryFilter = document.getElementById("categoryFilter").value;
+//     // Cập nhật breadcrumb để hiển thị category đang chọn
+//     updateBreadcrumb(categoryFilter);
 
-document.getElementById("categoryBreadcrumb").addEventListener("click", function(event) {
-    event.preventDefault(); // Ngăn không cho chuyển trang khi click vào thẻ <a>
-    const categoryFilter = document.getElementById("categoryFilter").value;
-    // Cập nhật breadcrumb để hiển thị category đang chọn
-    updateBreadcrumb(categoryFilter);
-
-    // Lọc sản phẩm theo category đã chọn
-    fetchFilteredProducts(categoryFilter);
-});
+//     // Lọc sản phẩm theo category đã chọn
+//     fetchFilteredProducts(categoryFilter);
+// });
+///////////////////////
 // Hàm gọi API để lọc sản phẩm theo category
-function fetchFilteredProducts(category) {
-    // Giả sử bạn có API lọc sản phẩm theo category
-    fetch(`/api/products/filter?category=${category}&price=all`)
-        .then(response => response.json())
-        .then(data => {
-            displayProducts(data); // Hiển thị sản phẩm đã lọc
-        })
-        .catch(error => {
-            console.error("Error fetching filtered products:", error);
-        });
-}
+// function fetchFilteredProducts(category) {
+//     // Giả sử bạn có API lọc sản phẩm theo category
+//     fetch(`/api/products/filter?category=${category}&price=all`)
+//         .then(response => response.json())
+//         .then(data => {
+//             displayProducts(data); // Hiển thị sản phẩm đã lọc
+//         })
+//         .catch(error => {
+//             console.error("Error fetching filtered products:", error);
+//         });
+// }
 // Hàm cập nhật breadcrumb
-function updateBreadcrumb(category) {
-    const categoryBreadcrumb = document.querySelector(".breadcrumb-item:last-child a");
+// function updateBreadcrumb(category) {
+//     const categoryBreadcrumb = document.querySelector(".breadcrumb-item:last-child a");
     
-    // Cập nhật nội dung của breadcrumb
-    if (category === "thức ăn cho chó") {
-        categoryBreadcrumb.textContent = "thức ăn cho chó";
-    } else if (category === "thức ăn cho mèo") {
-        categoryBreadcrumb.textContent = "thức ăn cho mèo";
-    } else if (category === "Dụng cụ vệ sinh") {
-        categoryBreadcrumb.textContent = "Dụng cụ vệ sinh";
-    }   else if (category === "Đồ chơi cho chó mèo") {
-        categoryBreadcrumb.textContent = "Đồ chơi cho chó mèo";
-    } 
-    else {
-        categoryBreadcrumb.textContent = "Tất cả sản phẩm";
-    }
-}
+//     // Cập nhật nội dung của breadcrumb
+//     if (category === "thức ăn cho chó") {
+//         categoryBreadcrumb.textContent = "thức ăn cho chó";
+//     } else if (category === "thức ăn cho mèo") {
+//         categoryBreadcrumb.textContent = "thức ăn cho mèo";
+//     } else if (category === "Dụng cụ vệ sinh") {
+//         categoryBreadcrumb.textContent = "Dụng cụ vệ sinh";
+//     }   else if (category === "Đồ chơi cho chó mèo") {
+//         categoryBreadcrumb.textContent = "Đồ chơi cho chó mèo";
+//     } 
+//     else {
+//         categoryBreadcrumb.textContent = "Tất cả sản phẩm";
+//     }
+// }
 // Hàm gọi API để lọc sản phẩm theo category
 function fetchFilteredProducts(category) {
     // Giả sử bạn có một API để lọc sản phẩm theo category
@@ -116,28 +111,30 @@ function createProductItem(product) {
 
     // Kiểm tra trạng thái còn hàng
     const stockStatus = product.quantity === 0 
-        ? '<span style="color:blue; font-weight:bold;">SẢN PHẨM HẾT HÀNG</span>' 
+        ? '<span style="color:blue; font-weight:bold;">HẾT HÀNG</span>' 
         : "";
     
     const imageUrl = product.url.replace(/.*\/html\//, "/img/");
 
-    // Nội dung HTML của sản phẩm
+    productDiv.className = "col-2 d-flex"; 
+    productDiv.style.flex = "0 0 20%";
+    productDiv.style.maxWidth = "20%";
     productDiv.innerHTML = `
-        <div class="card product-card h-150">
+        <div class="card product-card w-100 h-100 d-flex flex-column">
             <a href="product-detail.html?id=${product.id}" class="product-link">
-                <img src="${imageUrl || 'default-image.png'}" class="card-img-top product-image" alt="${product.name}">
+                <img src="${imageUrl || 'default-image.png'}" class="card-img-top product-image" alt="${product.name}" style="height: 150px; object-fit: contain;">
             </a>
-            <div class="card-body">
+            <div class="card-body d-flex flex-column justify-content-between">
                 <h6 class="card-title product-title">${product.name}</h6>
                 <p class="card-text product-price">${formatPrice(product.price)} VND</p>
-                <div class="product-actions">
+                <div class="product-actions mt-auto">
                     ${stockStatus}
                     ${product.quantity === 0 ? '' : '<button class="buy-now" data-product-id="' + product.id + '">Thêm vào giỏ hàng</button>'}
                 </div>
             </div>
         </div>
     `;
-
+    
     return productDiv;
 }
 
@@ -220,11 +217,25 @@ function handleCartAction(userId, productId, quantity = 1, buyNow = false) {
     });
 }
 
+function updateCartCount(userId) {
+    fetch(`http://localhost:8080/api/cart/count/${userId}`, { credentials: 'include' })
+        .then(response => response.json())
+        .then(productCount => {
+            // Hiển thị số lượng sản phẩm trong giỏ hàng lên giao diện
+            const cartCountElement = document.getElementById("cartCount");
+            if (cartCountElement) {
+                cartCountElement.textContent = productCount; // Cập nhật số lượng vào phần tử có id="cartCount"
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi lấy số lượng sản phẩm trong giỏ hàng:', error);
+        });
+    }
+
 
 /**
  * Hàm tải và hiển thị danh sách sản phẩm từ API.
- * @param {string} apiUrl - Đường dẫn API.
- * @param {string} containerId - ID của thẻ chứa sản phẩm.
+
  */
 function loadProducts(apiUrl, containerId) {
     fetch(apiUrl)
@@ -253,9 +264,53 @@ function formatPrice(price) {
 }
 
 // Gọi hàm khi trang được tải
+// document.addEventListener("DOMContentLoaded", function () {
+//     loadProducts("http://localhost:8080/api/products", "productList");
+//     loadProducts("http://localhost:8080/api/products/new", "newProducts");
+// });
 document.addEventListener("DOMContentLoaded", function () {
-    loadProducts("http://localhost:8080/api/products", "productList");
+    // Load sản phẩm
+    loadAllProducts("http://localhost:8080/api/products");
+    loadProducts("http://localhost:8080/api/products/new", "newProducts");
+
+    // Hiển thị mặc định "Tất cả sản phẩm"
+    document.getElementById("productList").style.display = "flex";
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+        if (btn.getAttribute("data-target") === "productList") {
+            btn.classList.add("active");
+        } else {
+            btn.classList.remove("active");
+        }
+    });
+
+    // Gán sự kiện cho các nút lọc
+    const filterButtons = document.querySelectorAll(".filter-btn");
+
+    filterButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const target = this.getAttribute("data-target");
+
+            if (target === "bestSellers") {
+                loadProducts("http://localhost:8080/api/products/best-sellers", target);
+            } else if (target === "productList") {
+                loadProducts("http://localhost:8080/api/products", target);
+            }
+
+            ["newProducts", "bestSellers", "productList"].forEach(id => {
+                const section = document.getElementById(id);
+                if (section) section.style.display = "none";
+            });
+
+            const selectedSection = document.getElementById(target);
+            if (selectedSection) selectedSection.style.display = "flex";
+
+            filterButtons.forEach(btn => btn.classList.remove("active"));
+            this.classList.add("active");
+        });
+    });
 });
+
+
 
 // //////////// go to top
 
@@ -278,4 +333,66 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-/// search
+/// 
+let allProducts = []; // Dữ liệu sản phẩm tất cả
+let currentPage = 1;
+const productsPerPage = 10;
+
+// Hàm hiển thị sản phẩm theo trang
+function displayPaginatedProducts(page, products = allProducts) {
+    const productList = document.getElementById("productList");
+    productList.innerHTML = "";
+
+    const start = (page - 1) * productsPerPage;
+    const end = start + productsPerPage;
+    const productsToShow = products.slice(start, end);
+
+    productsToShow.forEach(product => {
+        const productDiv = createProductItem(product);
+        productList.appendChild(productDiv);
+    });
+
+    createPaginationControls(products.length, page);
+}
+function createPaginationControls(totalItems, currentPage) {
+    const pagination = document.getElementById("paginationContainer");
+    pagination.innerHTML = "";
+
+    const totalPages = Math.ceil(totalItems / productsPerPage);
+
+    const createButton = (label, page) => {
+        const btn = document.createElement("button");
+        btn.textContent = label;
+        btn.className = "btn btn-sm btn-outline-dark mx-1";
+        if (page === currentPage) btn.classList.add("active");
+
+        btn.addEventListener("click", () => {
+            displayPaginatedProducts(page);
+        });
+        return btn;
+    };
+
+    // Trang trước
+    if (currentPage > 1) {
+        pagination.appendChild(createButton("«", currentPage - 1));
+    }
+
+    // Số trang
+    for (let i = 1; i <= totalPages; i++) {
+        pagination.appendChild(createButton(i, i));
+    }
+
+    // Trang sau
+    if (currentPage < totalPages) {
+        pagination.appendChild(createButton("»", currentPage + 1));
+    }
+}
+function loadAllProducts(apiUrl) {
+    fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+            allProducts = data;
+            displayPaginatedProducts(1); // Bắt đầu từ trang 1
+        })
+        .catch(err => console.error("Lỗi khi tải sản phẩm:", err));
+}

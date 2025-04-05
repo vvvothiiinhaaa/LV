@@ -19,9 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.Pet.DTO.UserWarningDTO;
 import com.example.Pet.Modal.User;
+import com.example.Pet.Repository.AppointmentRepository;
+import com.example.Pet.Repository.OrderRepository;
+import com.example.Pet.Repository.UserRepository;
+import com.example.Pet.Service.AppointmentService;
 import com.example.Pet.Service.CartService;
 import com.example.Pet.Service.FileStorageService;
+import com.example.Pet.Service.OrderService;
 import com.example.Pet.Service.UserService;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,6 +44,36 @@ public class UserController {
     @Autowired
     private FileStorageService fileStorageService;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Autowired
+    private AppointmentService appointmentService;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
+
+    // @GetMapping("/list")
+    // public ResponseEntity<List<User>> getUsersWithRisk() {
+    //     List<User> users = userRepository.findAll();  // Lấy danh sách tất cả người dùng
+    //     for (User user : users) {
+    //         long userId = (long) user.getId();
+    //         long cancelledOrders = orderRepository.countByUserIdAndOrderStatus(userId, "Đã Hủy");
+    //         // Kiểm tra số lần hủy và gán trạng thái nguy cơ cho người dùng
+    //         if (cancelledOrders > 3) {
+    //             user.setriskStatus("Nguy cơ vô hiệu hóa");
+    //         } else {
+    //             user.setriskStatus("An toàn");
+    //         }
+    //     }
+    //     return ResponseEntity.ok(users);
+    // }
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User registrationRequest) {
         try {
@@ -63,11 +99,9 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginRequest, HttpSession session) {
         try {
-            // Lấy thông tin đăng nhập
             String username = loginRequest.get("username");
             String passwords = loginRequest.get("passwords");
 
-            // Kiểm tra nếu các trường không rỗng
             if (username == null || username.isEmpty()) {
                 return ResponseEntity.badRequest().body("Tên người dùng không được để trống");
             }
@@ -75,24 +109,36 @@ public class UserController {
                 return ResponseEntity.badRequest().body("Mật khẩu không được để trống");
             }
 
-            // Đăng nhập và lấy đối tượng người dùng
             User user = userService.loginUser(username, passwords);
 
-            // Kiểm tra nếu người dùng tồn tại
             if (user != null) {
-                // Kiểm tra trạng thái của tài khoản
-                if (!user.getStatus()) {  // Giả sử `getStatus()` trả về `true` nếu tài khoản đang hoạt động
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Tài khoản của bạn đã bị vô hiệu hóa");
+                // Kiểm tra trạng thái ngay sau khi login
+                if (!user.getStatus()) {
+                    session.invalidate(); // Hủy session nếu có
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Tài khoản đã bị vô hiệu hóa.");
                 }
 
-                // Lưu thông tin người dùng vào session
-                session.setAttribute("user", user); // Lưu đối tượng user vào session
+                // Cảnh báo nếu hủy nhiều
+                long orderCancels = orderRepository.countByUserIdAndOrderStatus(user.getId().intValue(), "Đã Hủy");
+                long appointmentCancels = appointmentRepository.countByUserIdAndStatus(user.getId(), "Đã hủy lịch");
 
-                // Trả về thông tin người dùng
+                boolean isWarning = (orderCancels >= 2 || appointmentCancels >= 2);
+                String warningMessage = null;
+                if (isWarning) {
+                    warningMessage = "Tài khoản của bạn có nguy cơ bị khóa do hủy quá nhiều đơn hàng hoặc lịch hẹn!";
+                }
+
+                //  Đặt session sau khi đã qua kiểm tra khóa
+                session.setAttribute("user", user);
+
+                // Trả về thông tin user
                 Map<String, Object> response = new HashMap<>();
                 response.put("username", user.getUsername());
                 response.put("cartId", cartService.findCartByUserId(user.getId()) != null
                         ? cartService.findCartByUserId(user.getId()).getId() : null);
+                if (warningMessage != null) {
+                    response.put("warning", warningMessage);
+                }
 
                 return ResponseEntity.ok(response);
             } else {
@@ -109,16 +155,25 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
+    // @GetMapping("/info/{userId}")
+    // public ResponseEntity<User> getUserInfoById(@PathVariable Long userId) {
+    //     // Lấy thông tin người dùng từ userService theo userId
+    //     User user = userService.getUserById(userId);  // Giả sử bạn có phương thức getUserById trong userService
+    //     if (user != null) {
+    //         return new ResponseEntity<>(user, HttpStatus.OK);  // Trả về thông tin người dùng nếu tìm thấy
+    //     } else {
+    //         return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // Nếu không tìm thấy người dùng
+    //     }
+    // }
     @GetMapping("/info/{userId}")
-    public ResponseEntity<User> getUserInfoById(@PathVariable Long userId) {
-        // Lấy thông tin người dùng từ userService theo userId
-        User user = userService.getUserById(userId);  // Giả sử bạn có phương thức getUserById trong userService
+    public ResponseEntity<?> getUserInfo(@PathVariable Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
 
-        if (user != null) {
-            return new ResponseEntity<>(user, HttpStatus.OK);  // Trả về thông tin người dùng nếu tìm thấy
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // Nếu không tìm thấy người dùng
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy người dùng");
         }
+
+        return ResponseEntity.ok(user); //  Luôn trả về user, dù bị khóa
     }
 
     @PostMapping("/logout")
@@ -196,6 +251,37 @@ public class UserController {
         }
 
         return ResponseEntity.ok(imageUrl); // Trả về URL ảnh nếu tìm thấy
+    }
+
+    ///// vô hiệu hóa tài khoản
+
+     // Endpoint 1: Hủy đơn hàng và kiểm tra trạng thái tài khoản
+     @PostMapping("/cancel-order/{orderId}")
+    public ResponseEntity<String> cancelOrderAndCheckUser(@PathVariable Integer orderId) {
+        try {
+            orderService.cancelUserAccount(orderId);
+            return ResponseEntity.ok("Order cancelled and user status checked.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    // Endpoint 2: Kiểm tra tất cả người dùng đã hủy lịch hẹn quá 3 lần
+    @PostMapping("/check-appointment-cancellations")
+    public ResponseEntity<String> disableUsersFromAppointments() {
+        appointmentService.disableUsersWithTooManyCancellations();
+        return ResponseEntity.ok("Checked all users and disabled those with too many cancellations.");
+    }
+
+    @GetMapping
+    public List<User> getAllUsers2() {
+        return userService.getAllUsersOnlyRiskStatus();
+    }
+
+    @GetMapping("/warnings")
+    public ResponseEntity<List<UserWarningDTO>> getUsersWithWarningsOnly() {
+        List<UserWarningDTO> warnedUsers = userService.getAllUsersWithWarningOnly();
+        return ResponseEntity.ok(warnedUsers);
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.Pet.Modal.Appointment;
+import com.example.Pet.Modal.Serviceforpet;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
 
@@ -42,4 +43,32 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     Optional<Appointment> findById(Long id);
 
     List<Appointment> findByPets_Id(Integer petId);
+
+    //// kiểm tra lịch hẹn trong ngày
+    List<Appointment> findByAppDate(LocalDate appDate);
+
+    // Lấy danh sách các cuộc hẹn của dịch vụ trong khoảng thời gian
+    @Query("SELECT a FROM Appointment a JOIN a.services s WHERE s.id = :serviceId AND a.appDate BETWEEN :startDate AND :endDate")
+    List<Appointment> findByServiceAndDateRange(Integer serviceId, LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT a FROM Appointment a JOIN a.services s WHERE a.appDate BETWEEN :startDate AND :endDate")
+    List<Appointment> findByServiceAndDateRange(LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT a FROM Appointment a JOIN a.services s WHERE s = :service AND a.appDate BETWEEN :startDate AND :endDate")
+    List<Appointment> findByServiceAndDateRange2(@Param("service") Serviceforpet service,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
+    //  lấy theo ngày và trạng thái
+    List<Appointment> findByAppDateAndStatus(LocalDate date, String status);
+
+    long countByAppDate(LocalDate appDate);
+
+    // tìm kiếm để khóa tài khoản
+    List<Appointment> findAll();
+
+    long count();
+
+    long countByUserIdAndStatus(Long userId, String status);
+
 }

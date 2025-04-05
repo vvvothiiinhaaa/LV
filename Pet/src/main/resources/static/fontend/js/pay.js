@@ -202,11 +202,28 @@ function closeModal() {
 
 /////////////////////////////////////////////////////////////////////////////// chức năng hiển thị hình ảnh số lượng
 // Lắng nghe sự kiện khi trang bị thoát hoặc reload
-window.addEventListener("beforeunload", function () {
-    // Xóa dữ liệu trong localStorage khi người dùng thoát khỏi trang
-    localStorage.removeItem('couponCode');
-    localStorage.removeItem('discountAmount');
-    console.log("Dữ liệu trong localStorage đã được reset.");
+// window.addEventListener("beforeunload", function () {
+//     // Xóa dữ liệu trong localStorage khi người dùng thoát khỏi trang
+//     localStorage.removeItem('couponCode');
+//     localStorage.removeItem('discountAmount');
+//     console.log("Dữ liệu trong localStorage đã được reset.");
+// });
+//// chỉnh sửa ngày 13 / 3
+// Đánh dấu trang đã reload trong sessionStorage
+window.addEventListener("load", function () {
+    sessionStorage.setItem("reloaded", "true");
+});
+
+window.addEventListener("beforeunload", function (event) {
+    if (sessionStorage.getItem("reloaded")) {
+        // Nếu trang được reload, không xóa dữ liệu localStorage
+        sessionStorage.removeItem("reloaded");
+    } else {
+        // Nếu người dùng thoát khỏi trang, xóa dữ liệu trong localStorage
+        localStorage.removeItem("couponCode");
+        localStorage.removeItem("discountAmount");
+        console.log("Dữ liệu trong localStorage đã được reset.");
+    }
 });
 
 
@@ -323,18 +340,41 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Cập nhật thông tin đơn hàng
         updateOrderSummary(products);
 
-        // Gọi API reset trạng thái selected
+        // // Gọi API reset trạng thái selected
+        // const resetResponse = await fetch(`/api/cart/reset-selected?userId=${userId}`, {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     credentials: 'include',
+        // });
+
+        // if (!resetResponse.ok) {
+        //     throw new Error('Không thể reset trạng thái sản phẩm được chọn');
+        // }
+         // Kiểm tra xem trang có phải đang được reload không
+    if (performance.navigation.type === 1) { 
+        console.log("Trang chỉ reload, không reset giỏ hàng.");
+        return; // Không reset sản phẩm nếu chỉ reload
+    }
+
+    console.log("Người dùng thoát trang, reset giỏ hàng...");
+
+    try {
         const resetResponse = await fetch(`/api/cart/reset-selected?userId=${userId}`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
         });
 
         if (!resetResponse.ok) {
             throw new Error('Không thể reset trạng thái sản phẩm được chọn');
         }
+
+        console.log("Reset sản phẩm thành công khi thoát trang.");
+    } catch (error) {
+        console.error("Lỗi khi reset sản phẩm:", error);
+    }
 
         console.log('Trạng thái sản phẩm được chọn đã được reset thành công.');
     } catch (error) {
@@ -375,6 +415,7 @@ async function submitPayment() {
         // Lấy ID địa chỉ nhận hàng
         const addressBox = document.getElementById('address-box');
         const addressId = addressBox.getAttribute('data-address-id');
+        const note = document.getElementById("orderNote")?.value?.trim() || ""; /// thêm vào ngày 23
 
         if (!addressId) {
             console.error('Vui lòng chọn địa chỉ nhận hàng!');
@@ -417,6 +458,7 @@ async function submitPayment() {
             .innerText.trim()
             .replace(' VNĐ', '')
             .replace(/\./g, '');
+            
 
         // Gửi orderItems qua body và các thông tin khác qua query parameters
         const queryParams = new URLSearchParams({
@@ -425,6 +467,7 @@ async function submitPayment() {
             totalPayment: parseInt(totalPayment),
             paymentMethod: paymentMethod.toUpperCase(),
             addressId: parseInt(addressId),
+             note: note,
         }).toString();
 
         console.log('orderItems:', orderItems);
@@ -991,7 +1034,9 @@ async function openUpdateModal(addressId) {
         console.log('Dữ liệu địa chỉ nhận được:', address); // Kiểm tra dữ liệu
 
         // Điền dữ liệu vào form trong modal
-        populateUpdateAddressForm(address);
+        // populateUpdateAddressForm(address);
+
+       await loadAddressIntoModal(address);
 
         // Gán lại sự kiện "Lưu" cho địa chỉ
         setupSaveAddressEvent(addressId);
@@ -1048,8 +1093,7 @@ function setupSaveAddressEvent(addressId) {
 async function saveUpdatedAddress(addressId) {
     const userId = await getUserId();
     if (!userId) {
-        console.error('Không thể lấy userId.');
-        alert('Không thể lấy thông tin người dùng.');
+        alert('Bạn cần đăng nhập để cập nhật địa chỉ!');
         return;
     }
 
@@ -1063,7 +1107,7 @@ async function saveUpdatedAddress(addressId) {
         defaultAddress: document.getElementById('defaultAddress').checked
     };
 
-    console.log('Dữ liệu gửi lên API:', updatedData);
+    console.log('🔍 Dữ liệu gửi lên API:', updatedData); // Debug
 
     try {
         const response = await fetch(`http://localhost:8080/api/addresses/update/user/${userId}/address/${addressId}`, {
@@ -1072,18 +1116,20 @@ async function saveUpdatedAddress(addressId) {
             body: JSON.stringify(updatedData)
         });
 
-        if (!response.ok) throw new Error('Lỗi khi cập nhật địa chỉ');
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Lỗi khi cập nhật địa chỉ: ${errorText}`);
+        }
 
-        console.log('Cập nhật thành công! Làm mới danh sách địa chỉ...');
         alert('Cập nhật địa chỉ thành công!');
-        const modal = bootstrap.Modal.getInstance(document.getElementById('updateAddressModal'));
-        modal.hide();
-        loadUserAddresses(); // Cập nhật danh sách địa chỉ sau khi sửa thành công
+        bootstrap.Modal.getInstance(document.getElementById("updateAddressModal")).hide();
+        loadUserAddresses(); // Cập nhật danh sách địa chỉ sau khi sửa
     } catch (error) {
-        console.error('Lỗi khi cập nhật địa chỉ:', error);
-        alert('Không thể cập nhật địa chỉ. Vui lòng thử lại sau.');
+        console.error('❌ Lỗi khi cập nhật địa chỉ:', error);
+        alert('Không thể cập nhật địa chỉ.');
     }
 }
+
 
 // Hàm tải danh sách tỉnh/thành phố
 async function loadProvinces() {
@@ -1237,4 +1283,118 @@ async function loadOptionsFromAPI(apiUrl, selectId, defaultValue = null) {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+async function loadAddressIntoModal(address) {
+    try {
+        // Điền dữ liệu vào input text
+        document.getElementById('recipientName').value = address.recipientName || '';
+        document.getElementById('phoneNumber').value = address.phoneNumber || '';
+        document.getElementById('addressDetail').value = address.addressDetail || '';
+        document.getElementById('defaultAddress').checked = address.defaultAddress || false;
+
+        // Lấy các select elements
+        const provinceSelect = document.getElementById('provinceS');
+        const districtSelect = document.getElementById('districtS');
+        const wardSelect = document.getElementById('wardSubdistrictS');
+
+        // Load danh sách tỉnh/thành phố và chọn giá trị
+        const selectedProvinceCode = await loadProvinces(address.provinceCity);
+
+        // Nếu có tỉnh/thành phố, tải danh sách quận/huyện và chọn giá trị
+        if (selectedProvinceCode) {
+            const selectedDistrictCode = await loadDistricts(selectedProvinceCode, address.district);
+            
+            // Nếu có quận/huyện, tải danh sách phường/xã và chọn giá trị
+            if (selectedDistrictCode) {
+                await loadWards(selectedDistrictCode, address.wardSubdistrict);
+            }
+        }
+
+    } catch (error) {
+        console.error('Lỗi khi tải dữ liệu vào modal:', error);
+    }
+}
+async function loadProvinces(selectedProvinceName = null) {
+    const provinceSelect = document.getElementById('provinceS');
+    provinceSelect.innerHTML = '<option value="">Chọn tỉnh/thành phố</option>';
+    let selectedProvinceCode = null;
+
+    try {
+        const response = await fetch('https://provinces.open-api.vn/api/p/');
+        if (!response.ok) throw new Error('Không thể tải danh sách tỉnh/thành phố.');
+
+        const provinces = await response.json();
+
+        provinces.forEach(province => {
+            const option = document.createElement('option');
+            option.value = province.code;
+            option.textContent = province.name;
+            provinceSelect.appendChild(option);
+
+            // Nếu tên tỉnh/thành phố trùng khớp, đặt làm selected
+            if (province.name === selectedProvinceName) {
+                provinceSelect.value = province.code;
+                selectedProvinceCode = province.code;
+            }
+        });
+    } catch (error) {
+        console.error('Lỗi khi tải tỉnh/thành phố:', error);
+    }
+
+    return selectedProvinceCode; // Trả về mã tỉnh/thành phố để load quận/huyện
+}
+async function loadDistricts(provinceCode, selectedDistrictName = null) {
+    const districtSelect = document.getElementById('districtS');
+    districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>';
+    let selectedDistrictCode = null;
+
+    try {
+        const response = await fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`);
+        if (!response.ok) throw new Error('Không thể tải danh sách quận/huyện.');
+
+        const data = await response.json();
+        
+        data.districts.forEach(district => {
+            const option = document.createElement('option');
+            option.value = district.code;
+            option.textContent = district.name;
+            districtSelect.appendChild(option);
+
+            // Nếu tên quận/huyện trùng khớp, đặt làm selected
+            if (district.name === selectedDistrictName) {
+                districtSelect.value = district.code;
+                selectedDistrictCode = district.code;
+            }
+        });
+    } catch (error) {
+        console.error('Lỗi khi tải quận/huyện:', error);
+    }
+
+    return selectedDistrictCode; // Trả về mã quận/huyện để load phường/xã
+}
+async function loadWards(districtCode, selectedWardName = null) {
+    const wardSelect = document.getElementById('wardSubdistrictS');
+    wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+
+    try {
+        const response = await fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`);
+        if (!response.ok) throw new Error('Không thể tải danh sách phường/xã.');
+
+        const data = await response.json();
+
+        data.wards.forEach(ward => {
+            const option = document.createElement('option');
+            option.value = ward.code;
+            option.textContent = ward.name;
+            wardSelect.appendChild(option);
+
+            // Nếu tên phường/xã trùng khớp, đặt làm selected
+            if (ward.name === selectedWardName) {
+                wardSelect.value = ward.code;
+            }
+        });
+    } catch (error) {
+        console.error('Lỗi khi tải phường/xã:', error);
+    }
+}
 

@@ -24,16 +24,6 @@ public class PetSizeController {
         this.petSizeService = petSizeService;
     }
 
-    //  Thêm kích thước thú cưng mới
-    // @PostMapping("/add")
-    // public ResponseEntity<PetSize> addPetSize(@RequestParam String sizeName) {
-    //     return ResponseEntity.ok(petSizeService.addPetSize(sizeName));
-    // }
-    // Lấy danh sách tất cả kích thước thú cưng
-    // @GetMapping("/all")
-    // public ResponseEntity<List<PetSize>> getAllPetSizes() {
-    //     return ResponseEntity.ok(petSizeService.getAllPetSizes());
-    // }
     @GetMapping("/all")
     public ResponseEntity<List<PetSize>> getAllPetSizes() {
         List<PetSize> petSizes = petSizeService.getAllPetSizes();

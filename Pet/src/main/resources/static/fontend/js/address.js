@@ -1372,11 +1372,11 @@ document.addEventListener('DOMContentLoaded', function () {
 ////////////////////////////////////
 
 function setupSaveAddressEvent(addressId) {
-    console.log(`🔄 Gán lại sự kiện "Lưu" cho địa chỉ ID: ${addressId}`);
+    console.log(` Gán lại sự kiện "Lưu" cho địa chỉ ID: ${addressId}`);
 
     const saveButton = document.getElementById('saveAddressBtn');
     if (!saveButton) {
-        console.error('❌ Không tìm thấy nút "Lưu"!');
+        console.error(' Không tìm thấy nút "Lưu"!');
         return;
     }
 
@@ -1387,7 +1387,7 @@ function setupSaveAddressEvent(addressId) {
 }
 
 function populateUpdateAddressForm(address) {
-    console.log('📋 Điền dữ liệu vào form cập nhật...');
+    console.log(' Điền dữ liệu vào form cập nhật...');
    
     // document.getElementById('addressId').value = address.addressId ||'';
     document.getElementById('recipientName').value = address.recipientName || '';
@@ -1396,7 +1396,7 @@ function populateUpdateAddressForm(address) {
     document.getElementById('defaultAddress').checked = address.defaultAddress || false;
     // document.getElementById('saveAddressBtn').setAttribute('data-address-id', address.id);
 
-    console.log('✅ Điền xong dữ liệu, tiếp tục tải danh sách tỉnh/thành phố...');
+    console.log(' Điền xong dữ liệu, tiếp tục tải danh sách tỉnh/thành phố...');
     loadOptionsFromAPI('https://provinces.open-api.vn/api/p/', 'provinceS', address.provinceCity);
     loadOptionsFromAPI('https://provinces.open-api.vn/api/d/', 'districtS', address.district);
     loadOptionsFromAPI('https://provinces.open-api.vn/api/w/', 'wardSubdistrictS', address.wardSubdistrict);
@@ -1405,10 +1405,10 @@ function populateUpdateAddressForm(address) {
 
 
 async function saveUpdatedAddress() {
-    console.log('📌 Bắt đầu quá trình cập nhật địa chỉ...');
+    console.log(' Bắt đầu quá trình cập nhật địa chỉ...');
     const userId = await getUserId();
     if (!userId) {
-        console.error('❌ Không thể lấy userId.');
+        console.error(' Không thể lấy userId.');
         alert('Không thể lấy thông tin người dùng.');
         return;
     }
@@ -1425,7 +1425,7 @@ async function saveUpdatedAddress() {
         defaultAddress: document.getElementById('defaultAddress').checked
     };
 
-    console.log('📋 Dữ liệu gửi lên API:', updatedData);
+    console.log(' Dữ liệu gửi lên API:', updatedData);
 
     try {
         const response = await fetch(`http://localhost:8080/api/addresses/update/user/${userId}/address/${currentAddressId}`, {
@@ -1436,13 +1436,13 @@ async function saveUpdatedAddress() {
 
         if (!response.ok) throw new Error('Lỗi khi cập nhật địa chỉ');
 
-        console.log('✅ Cập nhật thành công! Làm mới danh sách địa chỉ...');
+        console.log(' Cập nhật thành công! Làm mới danh sách địa chỉ...');
         alert('Cập nhật địa chỉ thành công!');
         const modal = bootstrap.Modal.getInstance(document.getElementById('updateAddressModal'));
         modal.hide();
         loadUserAddresses(); // Cập nhật danh sách địa chỉ sau khi sửa thành công
     } catch (error) {
-        // console.error('❌ Lỗi khi cập nhật địa chỉ:', error);
+        // console.error(' Lỗi khi cập nhật địa chỉ:', error);
         // alert('Không thể cập nhật địa chỉ. Vui lòng thử lại sau.');
     }
 }

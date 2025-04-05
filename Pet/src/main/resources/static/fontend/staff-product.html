@@ -80,8 +80,11 @@
         #datatablesSimple th:nth-child(3), #datatablesSimple td:nth-child(3) {
             width: 400px; /* Thu nhỏ cột Name */
         }
+        #datatablesSimple th:nth-child(4), #datatablesSimple td:nth-child(4) {
+            width: 150px; /* Thu nhỏ cột Name */
+        }
         #datatablesSimple th:last-child, #datatablesSimple td:last-child {
-            width: 100px; /* Mở rộng cột Chi Tiết */
+            width: 200px; /* Mở rộng cột Chi Tiết */
         }
         /* Thêm hiệu ứng hover khi rê chuột vào hàng */
         #datatablesSimple tbody tr:hover {
@@ -95,12 +98,46 @@
         }
         .btn-submit {
                 background-color: #333333;
-                color: #ffff;
+                color: #ffff;                
             }
             .btn-submit:hover {
                 background-color: #9f7143;
                 color: black;
             }
+            .card-header {
+                display: flex;
+                justify-content: space-between; /* Chia đều các phần tử giữa trái và phải */
+                align-items: center;
+            }
+
+            .d-flex {
+                display: flex;
+            }
+
+            .gap-2 {
+                gap: 20px; /* Khoảng cách giữa các button */
+            }
+            td div {
+    display: flex;
+    gap: 10px; /* Khoảng cách giữa hai nút */
+}
+
+.btn {
+    padding: 6px 6px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-info {
+    background-color: #333333;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #9f7143;
+}
 
         </style>
     </head>
@@ -109,16 +146,16 @@
             <a class="navbar-brand ps-2 text-center" href="index.html">PETTIE</a>
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
             <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-                <div class="input-group">
+                <!-- <div class="input-group">
                     <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
                     <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
-                </div>
+                </div> -->
             </form>
             <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="./staff-profile.html">Settings</a></li>
                         <li><a class="dropdown-item" href="#">Activity Log</a></li>
                         <li><hr class="dropdown-divider" /></li>
                         <li><a class="dropdown-item" href="#" onclick="handleLogout()">Logout</a></li>
@@ -175,13 +212,21 @@
                                 
                             </div> -->
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <div>
-                                    <i class="fas fa-table me-1"></i>
+                                <div class="align-items-flex-start">
+                                    <i class="fas fa-table me-1 "></i>
                                     Danh sách sản phẩm
                                 </div>
-                                <button class="btn btn-submit" id="addProductBtn">
-                                    <i class="fas fa-plus"></i> Thêm Sản Phẩm Mới
-                                </button>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-submit" id="" onclick="window.location.href='./staff-stockentry.html';">
+                                        <i class="fas fa-plus"></i> Lịch Sử Nhập Hàng
+                                    </button>
+                                    <button class="btn btn-submit" id="StockEntryBtn">
+                                        <i class="fas fa-plus"></i> Nhập Hàng
+                                    </button>
+                                    <button class="btn btn-submit" id="addProductBtn">
+                                        <i class="fas fa-plus"></i> Thêm Sản Phẩm Mới
+                                    </button>
+                                </div>
                             </div>
                             
                             <div class="card-body">
@@ -190,10 +235,10 @@
                                         <tr>
                                             <th>ID</th>
                                             <th>Hình Ảnh</th>
-                                            <th>Name</th>
-                                            <th>Quantity</th>
-                                            <th>Origin</th>
-                                            <th>Brand</th>
+                                            <th>Tên Sản Phẩm</th>
+                                            <th>Số Lượng Trong Kho</th>
+                                            <th>Xuất Xứ</th>
+                                            <th>Thương Hiệu</th>
                                             <th>Đã Bán</th>
                                             <th>Chi Tiết</th>
                                         </tr>
@@ -210,7 +255,49 @@
         </div>
 
     <!-- Modal -->
-<!-- Modal -->
+<!-- Modal Nhập Hàng -->
+<div class="modal fade" id="stockEntryModal" tabindex="-1" aria-labelledby="stockEntryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="stockEntryModalLabel">Nhập Hàng Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="stockEntryForm">
+                    <div class="mb-3">
+                        <label for="productSelect" class="form-label">Chọn Sản Phẩm</label>
+                        <select class="form-select" id="productSelect" required>
+                            <option value="">-- Chọn Sản Phẩm --</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Số Lượng Nhập</label>
+                        <input type="number" class="form-control" id="quantity" min="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="purchasePrice" class="form-label">Giá Nhập (VNĐ)</label>
+                        <input type="number" class="form-control" id="purchasePrice" min="0" required>
+                    </div>
+                    <!-- <div class="mb-3">
+                        <label for="supplier" class="form-label">Nhà Cung Cấp</label>
+                        <input type="text" class="form-control" id="supplier" required>
+                    </div> -->
+                    <!-- <div class="mb-3">
+                        <label for="entryDate" class="form-label">Ngày Nhập Hàng</label>
+                        <input type="datetime-local" class="form-control" id="entryDate" required>
+                    </div> -->
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-submit w-100">Lưu Nhập Hàng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!--  -->
+<!-- Modal chỉnh sửasửa-->
 <div class="modal fade" id="productDetailModal" tabindex="-1" aria-labelledby="productDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -236,11 +323,11 @@
                 </div>
                 <div class="mb-3">
                     <label for="editProductPrice" class="form-label">Giá</label>
-                    <input type="number" class="form-control" id="editProductPrice" />
+                    <input type="number" class="form-control" id="editProductPrice" readonly />
                 </div>
                 <div class="mb-3">
                     <label for="editProductQuantity" class="form-label">Số lượng</label>
-                    <input type="number" class="form-control" id="editProductQuantity" />
+                    <input type="number" class="form-control" id="editProductQuantity" readonly />
                 </div>
                 <div class="mb-3">
                     <label for="editProductBrand" class="form-label">Thương hiệu</label>
@@ -333,6 +420,62 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="viewproductDetailModal" tabindex="-1" aria-labelledby="viewproductDetailModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chi Tiết Sản Phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Cột trái: Thông tin sản phẩm -->
+                    <div class="col-md-6 border-end">
+                        <div class="text-center mb-3">
+                            <img id="viewProductUrl" class="img-fluid rounded" style="width:150px;" alt="Hình ảnh sản phẩm" />
+                        </div>
+                        <div class="mb-3"><strong>Tên sản phẩm:</strong> <span id="viewProductName"></span></div>
+                        <div class="mb-3"><strong>Giá:</strong> <span id="viewProductPrice"></span></div>
+                        <div class="mb-3"><strong>Số lượng:</strong> <span id="viewProductQuantity"></span></div>
+                        <div class="mb-3"><strong>Thương hiệu:</strong> <span id="viewProductBrand"></span></div>
+                        <div class="mb-3"><strong>Xuất xứ:</strong> <span id="viewProductOrigin"></span></div>
+                        <div class="mb-3"><strong>Đã bán:</strong> <span id="viewProductSold"></span></div>
+                        <div class="mb-3"><strong>Phân loại:</strong> <span id="viewProductGenre"></span></div>
+                    </div>
+
+                    <!-- Cột phải: Thông tin dinh dưỡng, thành phần, mô tả -->
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <strong>Thông tin dinh dưỡng:</strong>
+                            <p id="viewProductIngredient" class="border p-2 rounded bg-light"></p>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Thành phần:</strong>
+                            <p id="viewProductComponent" class="border p-2 rounded bg-light"></p>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Mô tả:</strong>
+                            <p id="viewProductDescription" class="border p-2 rounded bg-light"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hình ảnh bổ sung -->
+                <div class="mt-4">
+                    <strong>Hình ảnh bổ sung:</strong>
+                    <div class="row mt-2 text-center" style="margin:0 auto;">
+                        <div class="col-auto"><img id="viewProductImage1" class="img-fluid rounded" style="width:100px; height:100px;" alt="Hình ảnh"></div>
+                        <div class="col-auto"><img id="viewProductImage2" class="img-fluid rounded" style="width:100px; height:100px;" alt="Hình ảnh"></div>
+                        <div class="col-auto"><img id="viewProductImage3" class="img-fluid rounded" style="width:100px; height:100px;" alt="Hình ảnh"></div>
+                        <div class="col-auto"><img id="viewProductImage4" class="img-fluid rounded" style="width:100px; height:100px;" alt="Hình ảnh"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">

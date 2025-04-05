@@ -215,4 +215,20 @@ public class ProductService {
     public List<Product> getBestSellers() {
         return productRepository.findTop10ByOrderBySoldDesc();
     }
+
+    // ///////////////////////////////
+    // Lấy sản phẩm mới nhất
+    public List<Product> getNewProducts() {
+        return productRepository.findTop5ByOrderByIdDesc();
+    }
+
+    // Lấy sản phẩm bán chạy nhất
+    public List<Product> getBestSellingProducts() {
+        return productRepository.findTop5ByOrderBySoldDesc();
+    }
+
+    ///// đếm có bao nhiêu sản phẩm
+    public long countAllProducts() {
+        return productRepository.count(); // Đếm tất cả sản phẩm
+    }
 }

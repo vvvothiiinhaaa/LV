@@ -57,7 +57,7 @@
         width: 150px;
     }
     #datatablesSimple th:nth-child(5), #datatablesSimple td:nth-child(5) {
-        width: 250px;
+        width: 350px;
     }
     #datatablesSimple th:nth-child(6), #datatablesSimple td:nth-child(6) {
         width: 200px;

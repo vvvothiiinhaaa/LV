@@ -150,7 +150,7 @@ public class ProductController {
         Product product = new Product();
         product.setName(name);
         product.setPrice(price);
-        product.setSold(0);  // 🔹 Mặc định giá trị `sold` là 0
+        product.setSold(0);  //  Mặc định giá trị `sold` là 0
         product.setGenre(genre);
         product.setOrigin(origin);
         product.setBrand(brand);
@@ -432,6 +432,25 @@ public class ProductController {
     @GetMapping("/best-sellers")
     public List<Product> getBestSellers() {
         return productService.getBestSellers();
+    }
+
+    //  API lấy 5 sản phẩm mới nhất
+    @GetMapping("/new")
+    public ResponseEntity<List<Product>> getNewProducts() {
+        List<Product> newProducts = productService.getNewProducts();
+        return ResponseEntity.ok(newProducts);
+    }
+
+    //  API lấy 5 sản phẩm bán chạy nhất
+    @GetMapping("/best-seller")
+    public ResponseEntity<List<Product>> getBestSellingProducts() {
+        List<Product> bestSellers = productService.getBestSellingProducts();
+        return ResponseEntity.ok(bestSellers);
+    }
+
+    @GetMapping("/product/count")
+    public long getProductCount() {
+        return productService.countAllProducts();
     }
 
 }

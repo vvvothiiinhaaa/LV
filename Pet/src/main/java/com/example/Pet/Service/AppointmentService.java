@@ -1,23 +1,36 @@
 package com.example.Pet.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.Pet.Modal.Appointment;
+import com.example.Pet.Modal.AppointmentPrice;
 import com.example.Pet.Modal.Pet;
+import com.example.Pet.Modal.PetSize;
+import com.example.Pet.Modal.ServicePrice;
 import com.example.Pet.Modal.Serviceforpet;
+import com.example.Pet.Modal.User;
+import com.example.Pet.Repository.AppointmentPriceRepository;
 import com.example.Pet.Repository.AppointmentRepository;
 import com.example.Pet.Repository.PetRepository;
+import com.example.Pet.Repository.ServicePriceRepository;
 import com.example.Pet.Repository.ServiceforpetRepository;
+import com.example.Pet.Repository.UserRepository;
 
 @Service
 public class AppointmentService {
@@ -25,6 +38,9 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final PetRepository petRepository;
     private final ServiceforpetRepository serviceRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private static final List<String> ALLOWED_SLOTS = List.of(
             "09:00-10:30", "11:00-12:00", "12:30-14:00",
@@ -93,12 +109,11 @@ public class AppointmentService {
 
         // **Chuyển đổi `timeSlot` thành `LocalTime` (chỉ lưu giờ và phút)**
         String[] times = timeSlot.split("-");
-        LocalTime startTime = LocalTime.parse(times[0].trim()); // Trim to avoid leading/trailing spaces
-        LocalTime endTime = LocalTime.parse(times[1].trim());   // Trim to avoid leading/trailing spaces
-
+        LocalTime startTime = LocalTime.parse(times[0].trim());
+        LocalTime endTime = LocalTime.parse(times[1].trim());
         // Kiểm tra số lượng lịch hẹn trong khung giờ đó của ngày hôm nay
         Long appointmentCount = appointmentRepository.countByStartTimeAndEndTimeAndAppDate(startTime, endTime, appDate);
-        if (appointmentCount >= 4) {
+        if (appointmentCount >= 2) {
             throw new RuntimeException("Vui Lòng Chọn Thời Gian Khác!!!!!");
         }
 
@@ -266,6 +281,203 @@ public class AppointmentService {
         return appointmentRepository.findByPets_Id(petId);
     }
 
+    //////////////////////////////////////////////////////
+    
+    private static final Map<String, Integer> TIME_SLOT_LIMITS = new HashMap<>() {
+        {
+            put("09:00-10:30", 2);
+            put("11:00-12:00", 2);
+            put("12:30-14:00", 2);
+            put("14:00-15:30", 2);
+            put("16:00-17:30", 2);
+            put("18:00-19:30", 2);
+            put("20:00-21:20", 2);
+        }
+    };
+
+    // Hàm lấy khung giờ trống cho ngày được chọn
+    public List<String> getAvailableTimeSlots(LocalDate date) {
+        // Danh sách khung giờ cố định kèm theo số lượng đặt tối đa
+        List<String> allTimeSlots = Arrays.asList(
+                "09:00-10:30", "11:00-12:00", "12:30-14:00",
+                "14:00-15:30", "16:00-17:30", "18:00-19:30", "20:00-21:20"
+        );
+
+        // Lấy danh sách lịch hẹn đã đặt trong ngày
+        List<Appointment> bookedAppointments = appointmentRepository.findByAppDate(date);
+
+        // Đếm số lượng đặt lịch cho từng khung giờ
+        Map<String, Integer> bookingCounts = new HashMap<>();
+        for (String slot : allTimeSlots) {
+            bookingCounts.put(slot, 0);
+        }
+
+        for (Appointment appointment : bookedAppointments) {
+            LocalTime bookedStart = appointment.getStartTime();
+            LocalTime bookedEnd = appointment.getEndTime();
+
+            for (String slot : allTimeSlots) {
+                String[] timeParts = slot.split("-");
+                LocalTime slotStart = LocalTime.parse(timeParts[0]);
+                LocalTime slotEnd = LocalTime.parse(timeParts[1]);
+
+                // Chỉ tăng bộ đếm nếu khoảng thời gian nằm hoàn toàn trong lịch đã đặt
+                if (!slotEnd.isBefore(bookedStart) && !slotStart.isAfter(bookedEnd.minusMinutes(1))) {
+                    bookingCounts.put(slot, bookingCounts.get(slot) + 1);
+                }
+            }
+        }
+
+        // Lọc các khung giờ chưa đạt giới hạn tối đa
+        List<String> availableTimeSlots = new ArrayList<>();
+        for (String slot : allTimeSlots) {
+            int maxBookings = TIME_SLOT_LIMITS.getOrDefault(slot, Integer.MAX_VALUE);
+            if (bookingCounts.get(slot) < maxBookings) {
+                availableTimeSlots.add(slot);
+            }
+        }
+
+        return availableTimeSlots; // Trả về danh sách khung giờ trống chính xác
+    }
+
+    /////////////////////////////////////// ngày 19 / 3
+    @Autowired
+    private ServicePriceRepository servicePriceRepository;
+
+    @Autowired
+    private AppointmentPriceRepository appointmentPriceRepository;
+
+    @Transactional
+    public void calculateAndSavePrice(Long appointmentId) {
+        // Lấy thông tin lịch hẹn từ cơ sở dữ liệu
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        // Kiểm tra trạng thái là "Hoàn Thành"
+        if ("Hoàn Thành".equals(appointment.getStatus())) {
+            BigDecimal totalPrice = BigDecimal.ZERO;
+
+            // Tính giá dịch vụ cho tất cả các thú cưng trong lịch hẹn
+            for (Pet pet : appointment.getPets()) {
+                for (Serviceforpet service : appointment.getServices()) {
+                    // Tìm giá dịch vụ cho thú cưng theo pet_size_id và service_id
+                    ServicePrice servicePrice = servicePriceRepository
+                            .findByPetSizeIdAndServiceforpetId(pet.getSize().getId(), service.getId());
+
+                    if (servicePrice != null) {
+                        totalPrice = totalPrice.add(servicePrice.getPrice());
+                    } else {
+                        throw new RuntimeException("Không tìm thấy giá dịch vụ cho dịch vụ "
+                                + service.getName() + " với kích thước thú cưng "
+                                + pet.getSize().getSizeName());
+                    }
+                }
+            }
+
+            // Lưu giá vào bảng appointment_price
+            AppointmentPrice appointmentPrice = new AppointmentPrice();
+            appointmentPrice.setAppointmentId(appointmentId);  // Chỉ gán ID của lịch hẹn
+            appointmentPrice.setTotalPrice(totalPrice);
+            appointmentPrice.setCreatedAt(LocalDateTime.now());  // Set ngày tạo (tự động)
+
+            // Lưu thông tin vào bảng appointment_price
+            appointmentPriceRepository.save(appointmentPrice);
+
+            System.out.println("Total Price: " + totalPrice);  // Debug thông tin giá
+        } else {
+            throw new RuntimeException("Appointment status is not 'Hoàn Thành'");
+        }
+    }
+
+    // Phương thức tính doanh thu của một dịch vụ theo thời gian
+    public BigDecimal getRevenueByServiceForPeriod(Integer serviceId, LocalDate startDate, LocalDate endDate) {
+        // Lấy danh sách các cuộc hẹn có liên quan đến dịch vụ trong khoảng thời gian
+        List<Appointment> appointments = appointmentRepository.findByServiceAndDateRange(serviceId, startDate, endDate);
+        BigDecimal totalRevenue = BigDecimal.ZERO;
+
+        for (Appointment appointment : appointments) {
+            // Lặp qua các dịch vụ trong mỗi cuộc hẹn
+            for (Serviceforpet service : appointment.getServices()) {
+                if (service.getId().equals(serviceId)) {
+                    // Lấy kích thước của pet đầu tiên trong cuộc hẹn
+                    PetSize petSize = appointment.getPets().iterator().next().getSize();
+
+                    // Tìm giá dịch vụ dựa trên Serviceforpet và PetSize
+                    ServicePrice servicePrice = servicePriceRepository.findByServiceforpetAndPetSize(service, petSize);
+
+                    if (servicePrice != null) {
+                        totalRevenue = totalRevenue.add(servicePrice.getPrice());
+                    }
+                }
+            }
+        }
+
+        return totalRevenue;
+    }
+
+    // Phương thức tính doanh thu cho tất cả dịch vụ trong một khoảng thời gian
+    public Map<String, BigDecimal> getRevenueByAllServices(LocalDate startDate, LocalDate endDate) {
+        List<Serviceforpet> services = serviceRepository.findAll();
+        Map<String, BigDecimal> revenueByService = new HashMap<>();
+
+        for (Serviceforpet service : services) {
+            // Tính doanh thu cho mỗi dịch vụ
+            BigDecimal serviceRevenue = getRevenueByServiceForPeriod(service.getId(), startDate, endDate);
+            revenueByService.put(service.getName(), serviceRevenue);
+        }
+
+        return revenueByService;
+    }
+
+    ///////////////////////////////////////////////////// ngày 23
+    public List<Appointment> getAppointmentsToday() {
+        LocalDate today = LocalDate.now();
+        return appointmentRepository.findByAppDate(today);
+    }
+
+    // Optional: thêm trạng thái nếu muốn lọc "đang chờ"
+    public List<Appointment> getTodayAppointmentsByStatus(String status) {
+        return appointmentRepository.findByAppDateAndStatus(LocalDate.now(), status);
+    }
+
+    public long countAppointmentsToday() {
+        return appointmentRepository.countByAppDate(LocalDate.now());
+    }
+
+    ////////////////////////// đếm số lịch hủy của tài khoản để khóa acc
+
+    public void disableUsersWithTooManyCancellations() {
+        // Lấy toàn bộ danh sách lịch hẹn
+        List<Appointment> allAppointments = appointmentRepository.findAll();
+
+        // Map để đếm số lần bị hủy của từng userId
+        Map<Long, Integer> cancelCountMap = new HashMap<>();
+
+        for (Appointment appointment : allAppointments) {
+            if ("cancelled".equalsIgnoreCase(appointment.getStatus())) {
+                Long userId = appointment.getUserId();
+                cancelCountMap.put(userId, cancelCountMap.getOrDefault(userId, 0) + 1);
+            }
+        }
+
+        // Với userId có số lần hủy > 3 thì cập nhật status của user về false
+        for (Map.Entry<Long, Integer> entry : cancelCountMap.entrySet()) {
+            if (entry.getValue() > 3) {
+                Long userId = entry.getKey();
+                Optional<User> userOptional = userRepository.findById(userId);
+                if (userOptional.isPresent()) {
+                    User user = userOptional.get();
+                    user.setStatus(false);
+                    userRepository.save(user);
+                }
+            }
+        }
+    }
+
+    /// đếm số lịch hẹn
+    public long countAppointments() {
+        return appointmentRepository.count();
+    }
 }
 
 //

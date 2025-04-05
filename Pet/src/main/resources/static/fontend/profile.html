@@ -40,110 +40,7 @@
     </div>
   </div>
 
-                        <!-- Modal -->
-              <!-- <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addressModalLabel">Địa chỉ mới</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="addressForm">
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Họ và tên" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Số điện thoại" required>
-                                </div>
-                                <div class="mb-3">
-                                    <select class="form-select" id="provinceSelect" aria-label="Tỉnh/Thành phố">
-                                        <option selected>Chọn Tỉnh/Thành phố</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <select class="form-select" id="districtSelect" aria-label="Quận/Huyện">
-                                        <option selected>Chọn Quận/Huyện</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <select class="form-select" id="wardSelect" aria-label="Phường/Xã">
-                                        <option selected>Chọn Phường/Xã</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <textarea class="form-control" placeholder="Địa chỉ cụ thể" required></textarea>
-                                </div>
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" value="" id="defaultAddressCheck">
-                                    <label class="form-check-label" for="defaultAddressCheck">
-                                        Đặt làm địa chỉ mặc định
-                                    </label>
-                                </div>
-                                <button type="submit" class="btn btn-lg">Hoàn thành</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-              </div> -->
-
-              <!-- Modal cập nhật địa chỉ -->
-<!-- <div class="modal fade" id="updateAddressModal" tabindex="-1" aria-labelledby="updateAddressModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="updateAddressModalLabel">Cập nhật địa chỉ</h5>
-                <input type="hidden" id="addressId">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="updateAddressForm">
-                    <div class="mb-3">
-                        <label for="recipientName" class="form-label">Tên người nhận</label>
-                        <input type="text" class="form-control" id="recipientName" name="recipientName" placeholder="Nhập tên người nhận" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="phoneNumber" class="form-label">Số điện thoại</label>
-                        <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Nhập số điện thoại" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="addressDetail" class="form-label">Chi tiết địa chỉ</label>
-                        <input type="text" class="form-control" id="addressDetail" name="addressDetail" placeholder="Nhập địa chỉ chi tiết" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="provinceCity" class="form-label">Tỉnh/Thành phố</label>
-                        <select class="form-select" id="provinceS" name="provinceCity" >
-                            <option value="">Chọn tỉnh/thành phố</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="district" class="form-label">Quận/Huyện</label>
-                        <select class="form-select" id="districtS" name="district">
-                            <option value="">Chọn quận/huyện</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="wardSubdistrict" class="form-label">Phường/Xã</label>
-                        <select class="form-select" id="wardSubdistrictS" name="wardSubdistrict">
-                            <option value="">Chọn Phường/Xã</option>
-                        </select>
-                    </div>
-
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="defaultAddress" name="defaultAddress" />
-                        <label class="form-check-label" for="defaultAddressS">Đặt làm địa chỉ mặc định</label>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary" id="saveAddressBtn" onclick="saveUpdatedAddress()">Lưu</button>
-            </div>
-        </div>
-    </div>
-</div> -->
-
+        
            
         </div>
     </div>
@@ -205,6 +102,7 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
+
 <!-- <script src="./js/profile.js"></script> -->
 <script src="./js/header.js"></script>
 <!-- <script src="./js/address.js"></script> -->
@@ -214,6 +112,8 @@
     const sidebarLinks = document.querySelectorAll(".list-group-item");
 
     function loadPage(page) {
+
+        
     fetch(`./${page}.html`)
         .then(response => response.text())
         .then(data => {
@@ -235,6 +135,7 @@
                             console.log("Lấy lại userId sau khi tải pet.js:", userId);
                             loadPets(userId);
                             attachPetEventListeners();
+                            loadPetSizes();
                             //  updatePetInfo();
                         } else {
                             console.error("Không lấy được userId sau khi tải pet.js");

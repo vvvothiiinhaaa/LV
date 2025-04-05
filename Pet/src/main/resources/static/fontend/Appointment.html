@@ -165,10 +165,13 @@ section.container {
                 <h3 class="text-dark text-center">Đặt Lịch Hẹn Cho Thú Cưng</h3>
                 <form id="appointmentForm" class="mt-3">
                     <label for="pet" class="font-weight-bold">Chọn Thú Cưng:</label>
-                    <select id="pet" class="form-control"></select>
+                    <select id="pet" class="form-control" multiple></select>
 
                     <label for="service" class="font-weight-bold mt-2">Chọn Dịch Vụ:</label>
                     <select id="service" class="form-control" multiple></select>
+
+                    <label for="appDate" class="font-weight-bold mt-2">Chọn Ngày:</label>
+                    <input type="date" id="appDate" class="form-control" required>
 
                     <label for="time" class="font-weight-bold mt-2">Chọn Thời Gian:</label>
                     <select id="time" class="form-control">
@@ -181,8 +184,7 @@ section.container {
                         <option value="20:00-21:20">20:00-21:20</option>
                     </select>
 
-                    <label for="appDate" class="font-weight-bold mt-2">Chọn Ngày:</label>
-                    <input type="date" id="appDate" class="form-control" required>
+                   
 
                     <button type="submit" class="btn btn-dark btn-block mt-3">Đặt Lịch</button>
                 </form>

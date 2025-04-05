@@ -103,14 +103,14 @@ document.addEventListener("DOMContentLoaded", function () {
                             .then(response => response.json())
                             .then(userData => {
                                 const row = document.createElement("tr");
-
+                                let paymentMethodDisplay = order.paymentMethod === "ONLINE" ? "Đã Thanh Toán" : order.paymentMethod;
                                 row.innerHTML = `
                                    <td><input type="checkbox" class="order-checkbox" data-order-id="${order.id}"></td>
                                     <td>${order.id}</td>
                                     <td>${userData.username}</td>
                                     <td>${new Date(order.orderDate).toLocaleString() || 'N/A'}</td>
                                     <td>${formatVND(order.totalPayment)}</td>
-                                    <td>${order.paymentMethod}</td>
+                                    <td>${paymentMethodDisplay}</td>
                                     <td>${order.orderStatus}</td>
                                     <td><button onclick="viewOrderDetails(${order.id})" class="btn btn-info">Chi tiết</button></td>
                                     <td><button onclick="approveOrder(${order.id})" class="btn btn-info">Duyệt</button></td>
@@ -215,54 +215,6 @@ $(document).on('change', '.order-checkbox', function() {
     console.log(`Số đơn hàng được chọn: ${checkedCount}`);
 });
 
-
-// document.addEventListener("DOMContentLoaded", function () {
-//     const approveOrderModal = new bootstrap.Modal(document.getElementById('approveOrderModal'));  // Lấy modal
-//     const approveOrderBtn = document.getElementById('approveOrderBtn'); // Nút mở modal
-//     const selectedOrdersCount = document.getElementById('selectedOrdersCount'); // Phần hiển thị số đơn hàng
-//     const checkAllCheckbox = document.getElementById('checkAll'); // Checkbox chọn tất cả
-
-//     // Lắng nghe sự kiện khi nhấn nút "Duyệt Đơn Hàng"
-//     approveOrderBtn.addEventListener('click', function () {
-//         const checkboxes = $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox');
-//         const checkedCount = checkboxes.filter(':checked').length; // Đếm số đơn hàng được chọn
-
-//         // Hiển thị số đơn hàng đã chọn trong modal
-//         selectedOrdersCount.textContent = `Số đơn hàng được chọn: ${checkedCount}`;
-
-//         // Nếu không có đơn hàng nào được chọn, cảnh báo và không mở modal
-//         if (checkedCount === 0) {
-//             alert("Vui lòng chọn ít nhất một đơn hàng để duyệt!");
-//             return;
-//         }
-
-//         // Mở modal
-//         approveOrderModal.show();
-//     });
-
-//     // Cập nhật số lượng đơn hàng được chọn khi chọn checkbox "Tất cả"
-//     checkAllCheckbox.addEventListener('change', function () {
-//         const checkboxes = $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox');
-//         checkboxes.prop('checked', this.checked);
-
-//         const checkedCount = checkboxes.filter(':checked').length;
-//         console.log(`Số đơn hàng được chọn: ${checkedCount}`);
-//     });
-
-//     // Cập nhật số lượng đơn hàng được chọn khi chọn từng đơn hàng
-//     $(document).on('change', '.order-checkbox', function () {
-//         const checkboxes = $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox');
-//         const checkedCount = checkboxes.filter(':checked').length;
-
-//         console.log(`Số đơn hàng được chọn: ${checkedCount}`);
-//     });
-
-//     // Đóng modal khi nhấn nút "Đóng"
-//     const hideBtnModal = document.getElementById("hideBtnModal");
-//     hideBtnModal.addEventListener('click', function () {
-//         approveOrderModal.hide();
-//     });
-// });
 
 document.addEventListener("DOMContentLoaded", function () {
     const approveOrderModal = new bootstrap.Modal(document.getElementById('approveOrderModal')); 
@@ -377,14 +329,14 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 async function printInvoices() {
-    // Lấy danh sách đơn hàng được chọn từ tất cả các trang DataTables
+    //  Lấy danh sách đơn hàng được chọn
     const selectedOrderIds = [];
     $('#datatablesSimple').DataTable().rows().nodes().to$().find('.order-checkbox:checked').each(function () {
         selectedOrderIds.push($(this).data('order-id'));
     });
 
     if (selectedOrderIds.length === 0) {
-        alert("Vui lòng chọn ít nhất một đơn hàng để in hóa đơn!");
+        alert(" Vui lòng chọn ít nhất một đơn hàng để in hóa đơn!");
         return;
     }
 
@@ -394,7 +346,8 @@ async function printInvoices() {
             <title>Hóa Đơn</title>
             <style>
                 body { font-family: Arial, sans-serif; margin: 20px; }
-                h2 { text-align: center; }
+                h2 { text-align: center; margin-bottom: 10px; }
+                .header-logo { text-align: center; margin-bottom: 10px; }
                 table { width: 100%; border-collapse: collapse; margin-top: 20px; }
                 th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
                 th { background-color: #f2f2f2; }
@@ -408,39 +361,41 @@ async function printInvoices() {
 
     for (let orderId of selectedOrderIds) {
         try {
+            //  Gọi API lấy thông tin đơn hàng
             const orderResponse = await fetch(`http://localhost:8080/api/orders/${orderId}`);
             const order = await orderResponse.json();
-
-            const userResponse = await fetch(`http://localhost:8080/api/auth/info/${order.userId}`);
-            const userData = await userResponse.json();
-
-            const addressResponse = await fetch(`http://localhost:8080/api/addresses/${order.userId}/${order.address.addressId}`);
-            const address = await addressResponse.json();
-
+            const paymentStatus = order.paymentMethod === "ONLINE" ? "Đã Thanh Toán" : order.paymentMethod;
+            // Tạo nội dung hóa đơn
             printContent += `
                 <div class="invoice-container">
+                    <div class="header-logo">
+                        <img src="logo.png" alt="PETTIE" width="150">
+                    </div>
                     <h2>HÓA ĐƠN ĐƠN HÀNG</h2>
-                    
-                    <!-- Thông tin khách hàng -->
+
+                    <!--  Thông tin địa chỉ nhận hàng -->
                     <div class="customer-info">
-                        <strong>Khách Hàng:</strong> ${address.recipientName} <br>
-                        <strong>Số Điện Thoại:</strong> ${address.phoneNumber} <br>
-                        <strong>Địa Chỉ:</strong> ${address.addressDetail}, ${address.wardSubdistrict}, ${address.district}, ${address.provinceCity}
+                        <p><strong>Người Nhận:</strong> ${order.address.recipientName}</p>
+                        <p><strong>Số Điện Thoại:</strong> ${order.address.phoneNumber}</p>
+                        <p><strong>Địa Chỉ:</strong> ${order.address.addressDetail}, ${order.address.wardSubdistrict}, ${order.address.district}, ${order.address.provinceCity}</p>
                     </div>
 
-                    <!-- Thông tin đơn hàng -->
+                    <!--  Thông tin đơn hàng -->
                     <table>
                         <tr><th>Mã Đơn</th><td>${orderId}</td></tr>
-                        <tr><th>Ngày Đặt</th> <td>${new Date(order.orderDate).toLocaleString() || 'N/A'}</td></tr>
-                        <tr><th>Phương Thức Thanh Toán</th><td>${order.paymentMethod}</td></tr>
-                    </table>
+                        <tr><th>Ngày Đặt</th> <td>${new Date(order.orderDate).toLocaleString()}</td></tr>
+                        <tr><th> Thanh Toán</th><td>${paymentStatus}</td></tr>
+                        <tr><th>Trạng Thái</th><td>${order.orderStatus}</td></tr>
+                        <tr><th>Ghi Chú</th><td>${order.note && order.note.trim() !== "" ? order.note : "Không có ghi chú"}</td></tr>
 
-                    <!-- Danh sách sản phẩm -->
+                    </table>
+       
+                    <!--  Danh sách sản phẩm -->
                     <h3>Chi Tiết Sản Phẩm</h3>
                     <table>
                         <thead>
                             <tr>
-                                <th>Mã SP</th>
+                                <th>#</th>
                                 <th>Tên Sản Phẩm</th>
                                 <th>Số Lượng</th>
                                 <th>Đơn Giá</th>
@@ -450,10 +405,10 @@ async function printInvoices() {
                         <tbody>
             `;
 
-            order.items.forEach(item => {
+            order.items.forEach((item, index) => {
                 printContent += `
                     <tr>
-                        <td>${item.id}</td>
+                        <td>${index + 1}</td>
                         <td>${item.productName}</td>
                         <td>${item.quantity}</td>
                         <td>${formatVND(item.price)}</td>
@@ -466,38 +421,34 @@ async function printInvoices() {
                         </tbody>
                     </table>
 
-                    <!-- Tổng tiền và giảm giá -->
+                    <!-- 🔹 Tổng tiền và giảm giá -->
                     <table>
                         <tr>
-                            <td colspan="5" style="text-align: right; font-weight: bold;">Giảm giá:</td>
+                            <td colspan="4" style="text-align: right; font-weight: bold;">Giảm giá:</td>
                             <td>${formatVND(order.discount)}</td>
                         </tr>
                         <tr>
-                            <td colspan="5" style="text-align: right; font-weight: bold;">Tổng thanh toán:</td>
+                            <td colspan="4" style="text-align: right; font-weight: bold;">Tổng thanh toán:</td>
                             <td>${formatVND(order.totalPayment)}</td>
                         </tr>
                     </table>
                 </div>
             `;
         } catch (error) {
-            console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
+            console.error("❌ Lỗi khi lấy dữ liệu đơn hàng:", error);
         }
     }
 
+    printContent += `</body></html>`;
 
-    // <td><img src="${item.url}" alt="${item.productName}" style="width:50px"></td>
-
-
-    printContent += `
-        </body>
-        </html>
-    `;
-
+    //  Tạo cửa sổ mới & in hóa đơn
     let newWindow = window.open("", "_blank");
     newWindow.document.write(printContent);
     newWindow.document.close();
     newWindow.print();
 }
+
+
 
 // Hàm định dạng tiền VND
 function formatVND(amount) {

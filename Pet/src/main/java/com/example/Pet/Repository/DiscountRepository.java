@@ -12,7 +12,10 @@ public interface DiscountRepository extends JpaRepository<Discount, Long> {
     // Các phương thức truy vấn tùy chỉnh có thể thêm ở đây (nếu cần)
 
     // Lấy tất cả các mã giảm giá còn hiệu lực (hiển thị các mã giảm giá có ngày bắt đầu trong quá khứ và ngày kết thúc trong tương lai)
-    List<Discount> findAllByStartDateBeforeAndEndDateAfter(LocalDateTime startDate, LocalDateTime endDate);
+    // List<Discount> findAllByStartDateBeforeAndEndDateAfter(LocalDateTime startDate, LocalDateTime endDate);
+    List<Discount> findAllByStartDateBeforeAndEndDateAfterAndUsageLimitGreaterThan(
+            LocalDateTime startDate, LocalDateTime endDate, int usageLimit
+    );
 
     // Lấy mã giảm giá theo mã (code)
     Discount findByCode(String code);
@@ -28,4 +31,5 @@ public interface DiscountRepository extends JpaRepository<Discount, Long> {
 
     //  kiểm tra mã giảm giá đã có chưa
     boolean existsByCode(String code);
+
 }

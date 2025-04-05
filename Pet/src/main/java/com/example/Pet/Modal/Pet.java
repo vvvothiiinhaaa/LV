@@ -46,6 +46,13 @@ public class Pet {
     @Column(nullable = false, length = 50)
     private String gender;
 
+    @Column(nullable = false)
+    private Float weight; // Cân nặng của thú cưng
+
+    @ManyToOne
+    @JoinColumn(name = "size_id")
+    private PetSize size; // Liên kết với bảng PetSize
+
     // Getter và Setter
     public Integer getId() {
         return id;

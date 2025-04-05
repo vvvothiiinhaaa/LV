@@ -124,7 +124,8 @@ import com.example.Pet.Repository.ServiceforpetRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.transaction.Transactional;
+// import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ServiceforpetService {
@@ -322,5 +323,45 @@ public class ServiceforpetService {
             throw new RuntimeException("Lỗi khi cập nhật dịch vụ: " + e.getMessage());
         }
     }
+
+    public long countAllServices() {
+        return serviceforpetRepository.count(); // Đếm số lượng dịch vụ
+    }
+
+    ///// gpt
+    /// 
+    // @Transactional(readOnly = true)
+    // public List<Serviceforpet> searchWithDetails(String keyword) {
+    //     List<Serviceforpet> list = serviceforpetRepository.searchByKeyword(keyword);
+    //     for (Serviceforpet s : list) {
+    //         s.getSteps().size();  // ép load
+    //         s.getPrices().size();
+    //     }
+    //     return list;
+    // }
+
+    @Transactional(readOnly = true)
+    public List<Serviceforpet> searchWithDetails(String keyword) {
+        List<Serviceforpet> services = serviceforpetRepository.searchByNameIgnoreCase(keyword);
+        // Ép Hibernate load steps & prices (nếu đang fetch LAZY)
+        for (Serviceforpet s : services) {
+            s.getSteps().size();
+            s.getPrices().size();
+        }
+        return services;
+    }
+
+    public List<Serviceforpet> searchWithDetails2(String message) {
+        // Đảm bảo rằng phương thức này trả về dịch vụ với thông tin chi tiết, bao gồm các bước và giá
+        return serviceforpetRepository.searchWithDetails(message);
+    }
+
+    public List<Serviceforpet> searchWithDetails3(String keyword) {
+        return serviceforpetRepository.searchByNameIgnoreCase(keyword);
+    }
+
+
+/////////////////////////// ngày 27
+    
 
 }

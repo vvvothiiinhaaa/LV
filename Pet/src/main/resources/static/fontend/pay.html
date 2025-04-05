@@ -17,20 +17,35 @@
     <div class="container mt-5">
         <h2 class="text-center" id="pay">Thanh Toán Đơn Hàng</h2>
 
-        <!-- Địa Chỉ Nhận Hàng -->
-        <div id="address-box" class="address-box">
-            <h5>📍 Địa Chỉ Nhận Hàng</h5>
-            <p id="address-name"><strong></strong></p>
-            <p id="address-location"></p>
-            <span class="default">Mặc Định</span>
-            <span class="change-address" onclick="changeAddress()">Thay Đổi</span>
+        <div class="row">
+            <!-- Địa chỉ nhận hàng -->
+            <div class="col-md-8">
+                <div id="address-box" class="address-box mb-3">
+                    <h5>📍 Địa Chỉ Nhận Hàng</h5>
+                    <p id="address-name"><strong></strong></p>
+                    <p id="address-location"></p>
+                    <span class="default">Mặc Định</span>
+                    <span class="change-address" onclick="changeAddress()">Thay Đổi</span>
+                </div>
+                <div id="address-container" class="alert alert-warning">
+                    Bạn chưa có địa chỉ nhận hàng. Vui lòng thêm địa chỉ mới.
+                    <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addressModal">
+                        Thêm địa chỉ mới
+                    </button>
+                </div>
+            </div>
+        
+            <!-- Ghi chú đơn hàng -->
+            <div class="col-md-2">
+                <div class="form-group mb-3">
+                    <label for="orderNote"><strong>📝 Ghi chú đơn hàng (nếu có):</strong></label>
+                    <textarea class="form-control" id="orderNote" rows="4" placeholder="Ví dụ: Giao sau 18h, gọi trước khi giao..."></textarea>
+                </div>
+            </div>
         </div>
-        <div id="address-container" class="alert alert-warning">
-            Bạn chưa có địa chỉ nhận hàng. Vui lòng thêm địa chỉ mới.
-            <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addressModal">
-                Thêm địa chỉ mới
-            </button>
-        </div>
+        
+
+
         <!-- Modal: Thêm địa chỉ mới -->
        
         <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
@@ -153,6 +168,7 @@
             </tbody>
         </table>
 
+    
         <!-- Thông Tin Đơn Hàng -->
         <div class="container mt-4">
             <div class="row g-3">
@@ -251,7 +267,6 @@ function closeModal() {
 }
 
    </script> 
-    <!-- <script src="./js/profile.js"></script> -->
-    
+
 </body>
 </html>

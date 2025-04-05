@@ -1,0 +1,45 @@
+.card { text-align: center; }
+/* .chart-container { margin-top: 20px; } */
+.filter-group { display: flex; gap: 10px; }
+.chart-container {
+    margin-top: 20px;
+    max-width: 90%; /* Giảm kích thước tối đa của container */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#lineChart, #pieChart {
+    width: 100% !important; /* Đảm bảo biểu đồ sử dụng 100% chiều rộng của container */
+    height: 100%; /* Giảm chiều cao của các biểu đồ */
+}
+#barChart{
+    width: 50% !important; /* Đảm bảo biểu đồ sử dụng 100% chiều rộng của container */
+    height: 50%;
+}
+.select {
+    border-radius: 35px;  /* Bo góc cho thẻ div */
+    background-color: #f0f0f0;  /* Màu nền cho thẻ div */
+    padding: 10px 20px;  /* Khoảng cách xung quanh */
+    display: flex;  /* Sử dụng Flexbox */
+    gap: 10px;  /* Khoảng cách giữa các nút */
+    justify-content: center;  /* Căn giữa các nút */
+}
+
+.btn {
+    border-radius: 25px;  /* Bo góc cho các nút */
+    padding: 10px 20px;  /* Khoảng cách bên trong nút */
+    cursor: pointer;
+}
+
+.btn-active {
+    background-color: #444444 !important;  /* Màu nền khi nút được chọn */
+    color: white;  /* Màu chữ khi nút được chọn */
+}
+#barChart  {
+    width:100% !important;
+    height:80% !important;
+}
+#areaChart {
+    width:100% !important;
+    height:60% !important;
+}

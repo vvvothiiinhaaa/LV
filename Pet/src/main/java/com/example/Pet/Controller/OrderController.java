@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.example.Pet.Modal.Order;
 import com.example.Pet.Modal.OrderItem;
 import com.example.Pet.Service.OrderService;
@@ -30,31 +32,67 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createOrder(
+    public ResponseEntity<?> createOrder(
             @RequestParam Integer userId,
             @RequestParam BigDecimal discount,
             @RequestParam BigDecimal totalPayment,
             @RequestParam String paymentMethod,
+            @RequestParam String note,
             @RequestParam Integer addressId,
             @RequestBody List<OrderItem> orderItems) {
         try {
-            // Kiểm tra danh sách sản phẩm
+            //  Kiểm tra danh sách sản phẩm
             if (orderItems == null || orderItems.isEmpty()) {
-                return ResponseEntity.badRequest().body("Danh sách sản phẩm (orderItems) không được để trống.");
+                return ResponseEntity.badRequest().body(" Danh sách sản phẩm (orderItems) không được để trống.");
             }
-            // Gọi service để tạo đơn hàng
-            Order savedOrder = orderService.createOrder(userId, discount, totalPayment, paymentMethod, orderItems, addressId);
-            return ResponseEntity.ok("Đơn hàng đã được tạo thành công với ID: " + savedOrder.getId());
+
+            //  Kiểm tra phương thức thanh toán
+            System.out.println(" Phương thức thanh toán nhận được: " + paymentMethod);
+
+            //  Gọi service để tạo đơn hàng
+            Order savedOrder = orderService.createOrder(userId, discount, totalPayment, paymentMethod, note, orderItems, addressId);
+
+            //  Trả về phản hồi với ID đơn hàng
+            return ResponseEntity.ok(Map.of(
+                    "message", " Đơn hàng đã được tạo thành công!",
+                    "orderId", savedOrder.getId(),
+                    "orderStatus", savedOrder.getOrderStatus()
+            ));
+
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Lỗi khi tạo đơn hàng: " + e.getMessage());
+            System.err.println(" Lỗi khi tạo đơn hàng: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi tạo đơn hàng: " + e.getMessage());
         }
     }
 
     ////////////////////////api lấy chi tiết đơn hàng
-      @GetMapping("/{orderId}")
-    public ResponseEntity<Map<String, Object>> getOrderDetails(@PathVariable Integer orderId) {
-        Map<String, Object> orderDetails = orderService.getOrderDetails(orderId);
-        return ResponseEntity.ok(orderDetails);
+    //   @GetMapping("/{orderId}")
+    // public ResponseEntity<Map<String, Object>> getOrderDetails(@PathVariable Integer orderId) {
+    //     Map<String, Object> orderDetails = orderService.getOrderDetails(orderId);
+    //     return ResponseEntity.ok(orderDetails);
+    // }
+    @GetMapping("/{orderId}")
+    public ResponseEntity<?> getOrderDetails(@PathVariable Integer orderId) {
+        try {
+            //  Gọi service để lấy chi tiết đơn hàng
+            Map<String, Object> orderDetails = orderService.getOrderDetails(orderId);
+
+            //  Kiểm tra nếu đơn hàng không tồn tại
+            if (orderDetails == null || orderDetails.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Không tìm thấy đơn hàng với ID: " + orderId));
+            }
+
+            //  Trả về dữ liệu đơn hàng
+            return ResponseEntity.ok(orderDetails);
+        } catch (Exception e) {
+            //  Ghi log lỗi để dễ debug
+            System.err.println(" Lỗi khi lấy chi tiết đơn hàng: " + e.getMessage());
+
+            //  Trả về lỗi 500 nếu có lỗi xảy ra
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Không thể lấy thông tin đơn hàng. Vui lòng thử lại sau!"));
+        }
     }
 
     @GetMapping("/status/{status}")
@@ -127,6 +165,18 @@ public class OrderController {
         }
         return orderService.getOrders(status, orderDateString); // Gọi service để lấy đơn hàng
     }
+
+    @GetMapping("/count/pending")
+    public long getPendingOrderCount() {
+        return orderService.countPendingOrders();
+    }
+
+    /// đếm số sp đã bán
+    @GetMapping("/total-sold-products")
+    public Map<String, Integer> getTotalSoldProducts() {
+        int total = orderService.countSoldProducts();
+        return Map.of("totalProducts", total);
+    }
 }
 
 //////////////////////////////////////////////////
@@ -161,7 +211,7 @@ public class OrderController {
 //     @Autowired
 //     private OrderService orderService;
 
-//     // ✅ API tạo đơn hàng (orderDate tự động lấy `LocalDateTime.now()`)
+//     //  API tạo đơn hàng (orderDate tự động lấy `LocalDateTime.now()`)
 //     @PostMapping("/create")
 //     public ResponseEntity<String> createOrder(
 //             @RequestParam Integer userId,
@@ -197,7 +247,7 @@ public class OrderController {
 //         return ResponseEntity.ok(orders);
 //     }
 
-//     // ✅ API lấy đơn hàng theo userId & trạng thái
+//     //  API lấy đơn hàng theo userId & trạng thái
 //     @GetMapping("/user/{userId}/status/{status}")
 //     public ResponseEntity<List<Order>> getOrdersByUserAndStatus(
 //             @PathVariable Integer userId,
@@ -206,21 +256,21 @@ public class OrderController {
 //         return ResponseEntity.ok(orders);
 //     }
 
-//     // ✅ API lấy tất cả đơn hàng theo userId
+//     //  API lấy tất cả đơn hàng theo userId
 //     @GetMapping("/user/{userId}")
 //     public ResponseEntity<List<Order>> getOrdersByUserId(@PathVariable Integer userId) {
 //         List<Order> orders = orderService.getOrdersByUserId(userId);
 //         return ResponseEntity.ok(orders);
 //     }
 
-//     // ✅ API lấy tất cả đơn hàng cho nhân viên/admin
+//     //  API lấy tất cả đơn hàng cho nhân viên/admin
 //     @GetMapping("/employee")
 //     public List<Order> getAllOrders() {
 //         return orderService.getAllOrders();
 //     }
 
-//     // ✅ API hủy đơn hàng
-//     @PutMapping("/{orderId}/cancel")
+//     //  API hủy đơn hàng
+//     @PutMpping("/{orderId}/cancel")
 //     public ResponseEntity<String> cancelOrder(@PathVariable int orderId) {
 //         try {
 //             orderService.cancelOrder(orderId);
@@ -230,7 +280,7 @@ public class OrderController {
 //         }
 //     }
 
-//     // ✅ API cập nhật trạng thái đơn hàng
+//     //  API cập nhật trạng thái đơn hàng
 //     @PutMapping("/{orderId}/status")
 //     public ResponseEntity<String> updateOrderStatus(@PathVariable int orderId, @RequestParam String newStatus) {
 //         try {
@@ -241,14 +291,14 @@ public class OrderController {
 //         }
 //     }
 
-//     // ✅ API lấy đơn hàng theo ngày (bỏ giờ phút giây)
+//     //  API lấy đơn hàng theo ngày (bỏ giờ phút giây)
 //     @GetMapping("/date")
 //     public List<Order> getOrdersByDate(
 //             @RequestParam("orderDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate orderDate) {
 //         return orderService.getOrdersByDate(orderDate);
 //     }
 
-//     // ✅ API lọc đơn hàng theo trạng thái và ngày (bỏ giờ phút giây)
+//     //  API lọc đơn hàng theo trạng thái và ngày (bỏ giờ phút giây)
 //     @GetMapping("/filter")
 //     public ResponseEntity<List<Order>> getOrdersByStatusAndDate(
 //             @RequestParam(value = "orderStatus", required = false) String status,

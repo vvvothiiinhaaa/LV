@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>QL TK STAFF</title>
+    <link href="./css/style-employee.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <link rel="stylesheet" href="./css/admin-staff.css"> -->
+    <style>
+         #datatablesSimple th:nth-child(2), #datatablesSimple td:nth-child(6) {
+            width: 200px; 
+        }
+        #datatablesSimple th:nth-child(3), #datatablesSimple td:nth-child(4) {
+            width: 300px; 
+        }
+        #datatablesSimple th:nth-child(4), #datatablesSimple td:nth-child(5) {
+            width: 300px; 
+        }
+        #datatablesSimple th:last-child, #datatablesSimple td:last-child {
+            width: 300px; /* Mở rộng cột Chi Tiết */
+        }
+        .table {
+            margin: 0 auto;
+            width: 100%;  /* Điều chỉnh width của bảng, có thể thay đổi tùy theo yêu cầu */
+            border-collapse: collapse;  /* Đảm bảo các viền không bị chồng chéo */
+        }
+        #datatablesSimple td:nth-child(1){
+            width: 100px;
+        }
+        #datatablesSimple td:nth-child(7){
+            width: 200px;
+        }
+
+        /* Tạo viền cho bảng, các cột và hàng
+        #datatablesSimple th, #tadatatablesSimpleble td , #datatablesSimple tr  {
+            border: 1px solid #ddd; 
+            padding: 10px;
+            text-align: center;
+        }
+
+      */
+      #datatablesSimple tr {
+        border: 1px solid #ddd; /* Viền giữa các ô */
+        padding: 10px;
+        text-align: center;
+    }
+        
+        #datatablesSimple th {
+            border: 2px solid #ddd; 
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        #datatablesSimple td {
+            border: 1px solid #ddd; /* Viền giữa các ô */
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* Tạo viền cho tiêu đề cột */
+        .table th {
+            background-color: #f4f4f4;  /* Màu nền cho tiêu đề */
+            font-weight: bold;
+        }
+
+        /* Thêm hiệu ứng hover cho các hàng */
+        .table tr:hover {
+            background-color: #f1f1f1;  /* Màu nền khi di chuột qua hàng */
+        }
+        .table td button {
+            margin-top: 10px;
+            padding: 8px;
+            width: 40%;
+            border: none;
+            background: #333333;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .table td button:hover {
+            background: #9f7143;
+        }
+        #addStaffBtn {
+            background-color: #333333;
+            color:#fff;
+            margin-left: 10px;
+        }
+
+        /* button close */
+     .table tbody{
+        border: 1px solid #ddd;
+     }
+
+     #datatablesSimple_wrapper {
+        border: none !important; /* Loại bỏ viền của DataTables */
+    }
+    
+    #datatablesSimple {
+        border: none !important; /* Loại bỏ viền của bảng */
+    }
+    /* Ghi đè modal-xl để mở rộng chiều ngang */
+.modal-xl {
+    max-width: 80% !important; /* Bạn có thể chỉnh từ 80%–100% */
+}
+
+    
+    </style>
+</head>
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <a class="navbar-brand ps-2 text-center" href="#">PETTIE</a>
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+        <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+            <!-- <div class="input-group">
+                <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+            </div> -->
+        </form>
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="./admin.html">Settings</a></li>
+                    <li><a class="dropdown-item" href="#">Activity Log</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item" href="#" onclick="handleLogout()">Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Quản lý</div>
+                        <a class="nav-link" href="./dashboard-admin.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                            Trang Chủ ADMIN
+                        </a>
+                        <a class="nav-link" href="./admin-staff.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-box"></i></div>
+                            Quản lý TK nhân viên
+                        </a>
+                        <a class="nav-link" href="#">
+                            <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div>
+                            Quản lý TK khách hàng
+                        </a>
+                        <a class="nav-link" href="./dashboard-report.html">
+                            <div class="sb-nav-link-icon"><i class="fas fa-calendar-alt"></i></div>
+                            Báo Cáo Thống Kê
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">Quản Lý Tài Khoản khách hàng PETTIE</h1>
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-table me-1"></i>
+                                Danh sách tài khoản khách hàng
+                            </div>
+                            <div class="d-flex">
+                                <button class="btn btn-danger" id="disableAccountBtn"  >
+                                    <i class="fas fa-ban"></i>Tài Khoản bị cảnh cáo
+                                </button>
+                                
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <table id="datatablesSimple" class="table">
+                                <thead>
+                                    <tr>
+                                        
+                                        <th>ID</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Số Điện Thoại</th>
+                                        <th>Ngày sinh</th>
+                                        <th>Trạng Thái</th>
+                                        <th>Quyền</th>
+                                        <th>Nguy Cơ Vô Hiệu Hóa</th> <!-- Cột hiển thị nguy cơ -->
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody id="user-list">
+                                    <!-- Dữ liệu nhân viên sẽ được điền vào đây -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Modal hiển thị tài khoản bị cảnh cáo -->
+<div class="modal fade" id="warningAccountsModal" tabindex="-1" aria-labelledby="warningAccountsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-center" id="warningAccountsModalLabel">Danh sách tài khoản bị cảnh cáo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-bordered table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>SĐT</th>
+                <th>Ngày sinh</th>
+                <th>Giới tính</th>
+                <th>Hủy đơn</th>
+                <th>Hủy lịch</th>
+                <th>Cảnh báo</th>
+              </tr>
+            </thead>
+            <tbody id="warning-account-list">
+              <!-- Dữ liệu cảnh cáo sẽ được thêm bằng JS -->
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+            </main>
+        </div>
+    </div>
+
+ 
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="./js/admin-login.js"></script>
+    <script src="./js/admin-user.js"></script>
+    <script>
+
+    </script>
+</body>
+</html>

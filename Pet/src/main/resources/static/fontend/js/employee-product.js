@@ -55,7 +55,12 @@ function fetchProducts() {
                     <td>${product.origin}</td>
                     <td>${product.brand}</td>
                     <td>${product.sold}</td>
-                    <td><button onclick="viewDetails(${product.id})" class="btn btn-info">Xem</button></td>
+                    <td>
+                    <div>
+                       <button onclick="viewDetails(${product.id})" class="btn btn-info">Chỉnh Sửa</button>
+                        <button onclick="viewDetailsProduct(${product.id})" class="btn btn-info">Xem</button>
+                    </div>
+                    </td>
                 `;
 
                 tableBody.appendChild(row);
@@ -88,61 +93,43 @@ function fetchProducts() {
         .catch(error => console.error("Lỗi khi lấy dữ liệu sản phẩm:", error));
 }
 
-// document.addEventListener("DOMContentLoaded", function () {
-  
+function viewDetailsProduct(productId) {
+    // Fetch product details by product ID
+    fetch(`http://localhost:8080/api/products/${productId}`)
+        .then(response => response.json())
+        .then(product => {
+            // Điền thông tin sản phẩm vào modal
+            document.getElementById("viewProductName").textContent = product.name;
+            document.getElementById("viewProductUrl").src = product.url;
+            document.getElementById("viewProductPrice").textContent = product.price.toLocaleString() + " VNĐ";
+            document.getElementById("viewProductQuantity").textContent = product.quantity;
+            document.getElementById("viewProductBrand").textContent = product.brand;
+            document.getElementById("viewProductOrigin").textContent = product.origin;
+            document.getElementById("viewProductSold").textContent = product.sold;
+            document.getElementById("viewProductIngredient").textContent = product.ingredient;
+            document.getElementById("viewProductComponent").textContent = product.component;
+            document.getElementById("viewProductDescription").textContent = product.description;
+            document.getElementById("viewProductGenre").textContent = product.genre;
 
-//     fetch("http://localhost:8080/api/products")
-//         .then(response => response.json())
-//         .then(data => {
-//             const tableBody = document.getElementById("tableBody");
+            // Fetch images
+            fetch(`http://localhost:8080/api/images/img/${productId}`)
+                .then(response => response.json())
+                .then(images => {
+                    if (images && images.images) {
+                        const imagesArray = images.images;
+                        document.getElementById("viewProductImage1").src = imagesArray[0] || 'https://via.placeholder.com/100';
+                        document.getElementById("viewProductImage2").src = imagesArray[1] || 'https://via.placeholder.com/100';
+                        document.getElementById("viewProductImage3").src = imagesArray[2] || 'https://via.placeholder.com/100';
+                        document.getElementById("viewProductImage4").src = imagesArray[3] || 'https://via.placeholder.com/100';
+                    }
+                })
+                .catch(error => console.error("Lỗi khi tải ảnh:", error));
 
-//             const products = Array.isArray(data) ? data : [data];
-
-//             products.forEach(product => {
-//                 const row = document.createElement("tr");
-
-//                 row.innerHTML = `
-//                     <td>${product.id}</td>
-//                     <td><img src="${product.url}" alt="${product.name}" width="50"></td>
-//                     <td>${product.name}</td>
-//                     <td>${product.quantity}</td>
-//                     <td>${product.origin}</td>
-//                     <td>${product.brand}</td>
-//                     <td>${product.sold}</td>
-//                     <td><button onclick="viewDetails(${product.id})" class="btn btn-info">Xem</button>
-//                     </td>
-                    
-//                 `;
-
-//                 tableBody.appendChild(row);
-//             });
-
-//             // Khởi tạo DataTables
-//             $('#datatablesSimple').DataTable({
-//                 "stripeClasses": [],
-//                 "paging": true,        // Phân trang
-//                 "searching": true,     // Ô tìm kiếm
-//                 "ordering": true,      // Cho phép sắp xếp
-//                 "info": true,          // Hiển thị số lượng bản ghi
-//                 "lengthMenu": [5, 10, 30, 100], // Chọn số bản ghi mỗi trang
-//                 "language": {
-//                     "lengthMenu": "Hiển thị _MENU_ bản ghi mỗi trang",
-//                     "zeroRecords": "Không tìm thấy dữ liệu",
-//                     "info": "Hiển thị _START_ đến _END_ của _TOTAL_ bản ghi",
-//                     "infoEmpty": "Không có bản ghi nào",
-//                     "infoFiltered": "(Lọc từ _MAX_ bản ghi)",
-//                     "search": "Tìm kiếm:",
-//                     "paginate": {
-//                         "first": "Đầu",
-//                         "last": "Cuối",
-//                         "next": ">",
-//                         "previous": "<"
-//                     }
-//                 }
-//             });
-//         })
-//         .catch(error => console.error("Error fetching data:", error));
-// });
+            // Mở modal
+            $('#viewproductDetailModal').modal('show');
+        })
+        .catch(error => console.error("Lỗi khi tải thông tin sản phẩm:", error));
+}
 
 
 /// mở html thêm sản phẩm 
@@ -257,3 +244,74 @@ function updateProduct(productId) {
         alert("Cập nhật sản phẩm không thành công!");
     });
 }
+// /////////////// nhập hàng
+document.addEventListener("DOMContentLoaded", function () {
+    const stockEntryBtn = document.getElementById("StockEntryBtn");
+    const stockEntryModal = new bootstrap.Modal(document.getElementById("stockEntryModal"));
+    
+    // Mở modal khi bấm nút "Nhập Hàng"
+    stockEntryBtn.addEventListener("click", function () {
+        stockEntryModal.show();
+        loadProductOptions(); // Load danh sách sản phẩm
+    });
+
+    // Lấy danh sách sản phẩm từ API và hiển thị trong dropdown
+    async function loadProductOptions() {
+        try {
+            const response = await fetch("http://localhost:8080/api/products");
+            if (!response.ok) throw new Error("Lỗi khi tải danh sách sản phẩm");
+            const products = await response.json();
+
+            const productSelect = document.getElementById("productSelect");
+            productSelect.innerHTML = `<option value="">-- Chọn Sản Phẩm --</option>`;
+
+            products.forEach(product => {
+                const option = document.createElement("option");
+                option.value = product.id;
+                option.textContent = product.name;
+                productSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error("Lỗi khi tải danh sách sản phẩm:", error);
+        }
+    }
+
+    // Xử lý gửi dữ liệu nhập hàng lên API
+    document.getElementById("stockEntryForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const productId = document.getElementById("productSelect").value;
+        const quantity = document.getElementById("quantity").value;
+        const purchasePrice = document.getElementById("purchasePrice").value;
+        // const supplier = document.getElementById("supplier").value;
+
+        if (!productId) {
+            alert("Vui lòng chọn sản phẩm.");
+            return;
+        }
+
+        // Tạo FormData để gửi dưới dạng form-data như trên Postman
+        const formData = new FormData();
+        formData.append("productId", productId);
+        formData.append("quantity", quantity);
+        formData.append("purchasePrice", purchasePrice);
+        // formData.append("supplier", supplier);
+
+        try {
+            const response = await fetch("http://localhost:8080/api/stock/add", {
+                method: "POST",
+                body: formData // Gửi dữ liệu dưới dạng form-data
+            });
+
+            if (!response.ok) throw new Error("Lỗi khi lưu nhập hàng");
+
+            alert("Nhập hàng thành công!");
+            stockEntryModal.hide();
+            document.getElementById("stockEntryForm").reset();
+            location.reload();
+        } catch (error) {
+            console.error("Lỗi khi gửi dữ liệu nhập hàng:", error);
+            alert("Không thể lưu nhập hàng. Vui lòng thử lại!");
+        }
+    });
+});

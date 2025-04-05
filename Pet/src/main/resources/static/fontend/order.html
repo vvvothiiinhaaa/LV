@@ -132,7 +132,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- Địa Chỉ Nhận Hàng -->
+                   <!-- Địa Chỉ Nhận Hàng + Ghi Chú -->
                     <div class="mb-5">
                         <h5 class="mb-1">Địa Chỉ Nhận Hàng</h5>
                         <p id="order-address" class="mb-0">
@@ -140,7 +140,14 @@
                             Số điện thoại: 0332219196,<br>
                             Địa chỉ: khóm 7, Phường 1, Thị xã Ngã Năm, Tỉnh Sóc Trăng
                         </p>
+                        <div class="mt-5">
+                            <strong>📝 Ghi chú đơn hàng:</strong>
+                            <p id="order-note" class="mb-0 text-muted">Không có ghi chú</p>
+                        </div>
+                        
                     </div>
+
+
                     <!-- Chi Tiết Sản Phẩm -->
                     <h5>Chi Tiết Sản Phẩm</h5>
                     <table class="table table-bordered">
@@ -198,5 +205,10 @@
    });
    
    </script>
+   <script type="module">
+    import { checkUserStatusOnPageLoad } from '/fontend/js/main.js';
+    checkUserStatusOnPageLoad();
+</script>
+
 </body>
 </html>

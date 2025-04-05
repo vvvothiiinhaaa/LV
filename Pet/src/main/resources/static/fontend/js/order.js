@@ -54,13 +54,14 @@ function renderOrders(orders) {
         const isCompleted = order.orderStatus === "Hoàn Thành" || order.orderStatus ==="Chờ Xác Nhận" || order.orderStatus=== "Đã Hủy" || order.orderStatus === "Đã Xác Nhận"; // Kiểm tra trạng thái đơn hàng
         const isCompletedOrShipping = order.orderStatus === "Đang Giao" || order.orderStatus === "Hoàn Thành"; // Kiểm tra trạng thái
         const isdelete = order.orderStatus=== "Đã Hủy" || order.orderStatus === "Hoàn Thành" || order.orderStatus === "Đang Giao" || order.orderStatus === "Đã Xác Nhận" ;
+        let paymentMethodDisplay = order.paymentMethod === "ONLINE" ? "Đã Thanh Toán" : order.paymentMethod;
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${order.id}</td>
             <td>${new Date(order.orderDate).toLocaleString() || 'N/A'}</td>
             <td>${order.orderStatus || 'N/A'}</td>
-            <td>${order.paymentMethod}</td>
+            <td>${paymentMethodDisplay}</td>
             <td>${(order.totalPayment || 0).toLocaleString()} VNĐ</td>
             <td>
                 <button class="btn btn-custom view-details-btn" data-order-id="${order.id}" data-bs-toggle="modal" data-bs-target="#orderDetailsModal">
@@ -178,85 +179,165 @@ function attachViewDetailsEvents() {
     });
 }
 
+// // Hiển thị chi tiết đơn hàng
+// async function renderOrderDetails(order) {
+//     // Lấy thông tin địa chỉ từ API
+//     const address = await fetchAddressDetails(order.address.userId, order.address.addressId);
+
+//     // Hiển thị thông tin địa chỉ
+//     if (address) {
+//         document.getElementById('order-address').innerText = `
+//             Người nhận: ${address.recipientName}, 
+//             Số điện thoại: ${address.phoneNumber}, 
+//             Địa chỉ: ${address.addressDetail}, ${address.wardSubdistrict}, ${address.district}, ${address.provinceCity}
+//         `;
+//     } else {
+//         document.getElementById('order-address').innerText = "Không thể lấy thông tin địa chỉ.";
+//     }
+
+//     // Xử lý bảng chi tiết sản phẩm
+//     const orderDetailsTable = document.getElementById('order-details');
+//     orderDetailsTable.innerHTML = ''; // Xóa nội dung cũ
+
+//     // Kiểm tra nếu không có sản phẩm
+//     if (!order.items || order.items.length === 0) {
+//         orderDetailsTable.innerHTML = `<tr><td colspan="6">Không có sản phẩm trong đơn hàng</td></tr>`;
+//         return;
+//     }
+
+//      // Kiểm tra trạng thái đơn hàng
+//     //  const isCompleted = order.orderStatus === "Hoàn Thành";
+//     const isPendingOrShipping = order.orderStatus === "Chờ Xác Nhận" || order.orderStatus === "Đang Giao" || order.orderStatus === "Đã Xác Nhận"; // Kiểm tra trạng thái
+
+//    // Hiển thị danh sách sản phẩm
+
+// order.items.forEach(async (item, index) => {
+//     console.log(`Item ${index + 1}:`, item); // Log toàn bộ dữ liệu của từng item
+    
+//     try {
+        
+//         // Tạo dòng mới trong bảng
+//         const row = document.createElement('tr');
+//         row.innerHTML = `
+//             <td>${item.id}</td>
+//             <td><img src="${item.url}" alt="" class="img-thumbnail" style="width: 50px; height: 50px;"></td>
+//             <td>${item.productName}</td>
+//             <td>${item.quantity}</td>
+//             <td>${(item.total / item.quantity).toLocaleString()} VNĐ</td>
+//             <td>${item.total.toLocaleString()} VNĐ</td>
+//             <td>
+//              <button type="button" class="btn btn-custom review-btn" data-order-item-id="${item.id}"
+//               style="white-space: nowrap; display: inline-flex;"${isPendingOrShipping ? 'disabled' : ''} >Đánh Giá</button>
+//             </td>
+//         `;
+        
+//         orderDetailsTable.appendChild(row);
+//     } catch (error) {
+//         console.error(`Không thể lấy thông tin sản phẩm với ID: ${item.productId}`, error);
+//     }
+// });
+
+
+//             const orderSummary = document.getElementById('order-summary');
+//             orderSummary.innerHTML = `
+//                 <tr>
+//                     <td colspan="5" style="text-align: right; font-weight: bold;">Giảm giá:</td>
+//                     <td colspan="2">${order.discount.toLocaleString()} VNĐ</td>
+//                 </tr>
+//                 <tr>
+//                     <td colspan="5" style="text-align: right; font-weight: bold;">Tổng thanh toán:</td>
+//                     <td colspan="2">${order.totalPayment.toLocaleString()} VNĐ</td>
+//                 </tr>
+//             `;
+
+
+//          // Sau khi hiển thị sản phẩm, kiểm tra trạng thái đánh giá & vô hiệu hóa nếu cần
+//         await checkAndDisableReviewButtons();
+    
+//         // Gắn sự kiện cho các nút "Đánh Giá"
+//             attachReviewEvents();
+// }
+
 // Hiển thị chi tiết đơn hàng
 async function renderOrderDetails(order) {
-    // Lấy thông tin địa chỉ từ API
-    const address = await fetchAddressDetails(order.address.userId, order.address.addressId);
-
-    // Hiển thị thông tin địa chỉ
-    if (address) {
-        document.getElementById('order-address').innerText = `
-            Người nhận: ${address.recipientName}, 
-            Số điện thoại: ${address.phoneNumber}, 
-            Địa chỉ: ${address.addressDetail}, ${address.wardSubdistrict}, ${address.district}, ${address.provinceCity}
-        `;
-    } else {
-        document.getElementById('order-address').innerText = "Không thể lấy thông tin địa chỉ.";
-    }
-
-    // Xử lý bảng chi tiết sản phẩm
-    const orderDetailsTable = document.getElementById('order-details');
-    orderDetailsTable.innerHTML = ''; // Xóa nội dung cũ
-
-    // Kiểm tra nếu không có sản phẩm
-    if (!order.items || order.items.length === 0) {
-        orderDetailsTable.innerHTML = `<tr><td colspan="6">Không có sản phẩm trong đơn hàng</td></tr>`;
-        return;
-    }
-
-     // Kiểm tra trạng thái đơn hàng
-    //  const isCompleted = order.orderStatus === "Hoàn Thành";
-    const isPendingOrShipping = order.orderStatus === "Chờ Xác Nhận" || order.orderStatus === "Đang Giao" || order.orderStatus === "Đã Xác Nhận"; // Kiểm tra trạng thái
-
-   // Hiển thị danh sách sản phẩm
-
-order.items.forEach(async (item, index) => {
-    console.log(`Item ${index + 1}:`, item); // Log toàn bộ dữ liệu của từng item
-    
     try {
-        
-        // Tạo dòng mới trong bảng
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${item.id}</td>
-            <td><img src="${item.url}" alt="" class="img-thumbnail" style="width: 50px; height: 50px;"></td>
-            <td>${item.productName}</td>
-            <td>${item.quantity}</td>
-            <td>${(item.total / item.quantity).toLocaleString()} VNĐ</td>
-            <td>${item.total.toLocaleString()} VNĐ</td>
-            <td>
-             <button type="button" class="btn btn-custom review-btn" data-order-item-id="${item.id}"
-              style="white-space: nowrap; display: inline-flex;"${isPendingOrShipping ? 'disabled' : ''} >Đánh Giá</button>
-            </td>
+        // Kiểm tra xem đơn hàng có thông tin địa chỉ không
+        if (!order.address) {
+            document.getElementById('order-address').innerText = "Không tìm thấy thông tin địa chỉ.";
+        } else {
+            // Hiển thị thông tin địa chỉ từ `order.address`
+            document.getElementById('order-address').innerHTML = `
+            <strong>Người nhận:</strong>     ${order.address.recipientName} <br>
+            <strong>Số điện thoại:</strong>     ${order.address.phoneNumber} <br>
+            <strong>Địa chỉ:</strong>     ${order.address.addressDetail}, ${order.address.wardSubdistrict},  ${order.address.district}, ${order.address.provinceCity}
+           
         `;
-        
-        orderDetailsTable.appendChild(row);
-    } catch (error) {
-        console.error(`Không thể lấy thông tin sản phẩm với ID: ${item.productId}`, error);
-    }
-});
+        }
+        const noteElement = document.getElementById('order-note');
+        if (noteElement) {
+            noteElement.innerText = order.note && order.note.trim() !== "" ? order.note : "Không có ghi chú";
+        }
 
+        // Xử lý bảng chi tiết sản phẩm
+        const orderDetailsTable = document.getElementById('order-details');
+        orderDetailsTable.innerHTML = ''; // Xóa nội dung cũ
 
-            const orderSummary = document.getElementById('order-summary');
-            orderSummary.innerHTML = `
-                <tr>
-                    <td colspan="5" style="text-align: right; font-weight: bold;">Giảm giá:</td>
-                    <td colspan="2">${order.discount.toLocaleString()} VNĐ</td>
-                </tr>
-                <tr>
-                    <td colspan="5" style="text-align: right; font-weight: bold;">Tổng thanh toán:</td>
-                    <td colspan="2">${order.totalPayment.toLocaleString()} VNĐ</td>
-                </tr>
+        // Kiểm tra nếu không có sản phẩm
+        if (!order.items || order.items.length === 0) {
+            orderDetailsTable.innerHTML = `<tr><td colspan="6">Không có sản phẩm trong đơn hàng</td></tr>`;
+            return;
+        }
+
+        // Kiểm tra trạng thái đơn hàng
+        const isPendingOrShipping = ["Chờ Xác Nhận", "Đang Giao", "Đã Xác Nhận"].includes(order.orderStatus);
+
+        // Hiển thị danh sách sản phẩm
+        order.items.forEach((item, index) => {
+            console.log(`Item ${index + 1}:`, item); // Log dữ liệu từng sản phẩm
+
+            // Tạo dòng mới trong bảng
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.id}</td>
+                <td><img src="${item.url}" alt="" class="img-thumbnail" style="width: 50px; height: 50px;"></td>
+                <td>${item.productName}</td>
+                <td>${item.quantity}</td>
+                <td>${(item.total / item.quantity).toLocaleString()} VNĐ</td>
+                <td>${item.total.toLocaleString()} VNĐ</td>
+                <td>
+                    <button type="button" class="btn btn-custom review-btn" 
+                        data-order-item-id="${item.id}" style="white-space: nowrap; display: inline-flex;" 
+                        ${isPendingOrShipping ? 'disabled' : ''}>Đánh Giá</button>
+                </td>
             `;
 
+            orderDetailsTable.appendChild(row);
+        });
 
-         // Sau khi hiển thị sản phẩm, kiểm tra trạng thái đánh giá & vô hiệu hóa nếu cần
+        // Hiển thị tổng tiền & giảm giá
+        const orderSummary = document.getElementById('order-summary');
+        orderSummary.innerHTML = `
+            <tr>
+                <td colspan="5" style="text-align: right; font-weight: bold;">Giảm giá:</td>
+                <td colspan="2">${order.discount.toLocaleString()} VNĐ</td>
+            </tr>
+            <tr>
+                <td colspan="5" style="text-align: right; font-weight: bold;">Tổng thanh toán:</td>
+                <td colspan="2">${order.totalPayment.toLocaleString()} VNĐ</td>
+            </tr>
+        `;
+
+        // Sau khi hiển thị sản phẩm, kiểm tra trạng thái đánh giá & vô hiệu hóa nếu cần
         await checkAndDisableReviewButtons();
-    
-        // Gắn sự kiện cho các nút "Đánh Giá"
-            attachReviewEvents();
-}
 
+        // Gắn sự kiện cho các nút "Đánh Giá"
+        attachReviewEvents();
+
+    } catch (error) {
+        console.error("Lỗi khi hiển thị chi tiết đơn hàng:", error);
+        document.getElementById('order-address').innerText = "Lỗi khi tải thông tin địa chỉ.";
+    }
+}
 
 
 // // Lấy thông tin chi tiết sản phẩm từ API

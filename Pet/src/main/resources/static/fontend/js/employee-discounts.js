@@ -239,52 +239,70 @@ function formatVND(amount) {
 //     });
 // });
 
-
-document.getElementById("discountForm").addEventListener("submit", function (event) {
+document.getElementById("discountForm").addEventListener("submit", async function (event) {
     event.preventDefault(); // Ngăn chặn reload trang
 
-    // Lấy dữ liệu từ form
+    // Lấy dữ liệu từ form và kiểm tra
     const discountData = {
-        code: document.getElementById("code").value,
-        discountPercentage: parseFloat(document.getElementById("discountPercentage").value),
-        startDate: convertToISOWithTimezone(document.getElementById("startDate").value),
-        endDate: convertToISOWithTimezone(document.getElementById("endDate").value),
-        minOrderAmount: parseFloat(document.getElementById("minOrderAmount").value),
-        usageLimit: parseInt(document.getElementById("usageLimit").value)
+        code: document.getElementById("code").value.trim(),
+        discountPercentage: parseFloat(document.getElementById("discountPercentage").value) || 0,
+        startDate: convertToISOWithoutTimezone(document.getElementById("startDate").value),
+        endDate: convertToISOWithoutTimezone(document.getElementById("endDate").value),
+        minOrderAmount: parseFloat(document.getElementById("minOrderAmount").value) || 0,
+        usageLimit: parseInt(document.getElementById("usageLimit").value) || 0
     };
+    
+    // Kiểm tra dữ liệu trước khi gửi
+    if (!discountData.code || discountData.discountPercentage <= 0 || !discountData.startDate || !discountData.endDate) {
+        alert("Vui lòng nhập đầy đủ thông tin hợp lệ!");
+        return;
+    }
 
-    // Gửi dữ liệu lên server bằng Fetch API
-    fetch("http://localhost:8080/api/discounts", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(discountData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert("Mã giảm giá đã được thêm thành công!");
-        document.getElementById("discountForm").reset(); 
-        let modal = bootstrap.Modal.getInstance(document.getElementById('discountModal'));
-        modal.hide(); // Đóng modal
-        location.reload();
-    })
-    .catch(error => {
-        console.error("Lỗi khi thêm mã giảm giá:", error);
-        alert("Có lỗi xảy ra, vui lòng thử lại!");
-    });
+    try {
+        const response = await fetch("http://localhost:8080/api/discounts", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(discountData)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.text();
+            throw new Error(errorData || "Lỗi không xác định!");
+        }
+
+        const result = await response.json();
+        alert(" Mã giảm giá đã được thêm thành công!");
+
+        // Reset form
+        document.getElementById("discountForm").reset();
+
+        // Ẩn modal nếu sử dụng Bootstrap 5
+        let modalElement = document.getElementById('discountModal');
+        if (modalElement) {
+            let modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) modalInstance.hide();
+        }
+
+        // Reload trang sau 0.5 giây để cập nhật danh sách mã giảm giá
+        setTimeout(() => location.reload(), 500);
+
+    } catch (error) {
+        console.error(" Lỗi khi thêm mã giảm giá:", error.message);
+        alert(" lỗi" + error.message);
+    }
 });
 
-
-function convertToISOWithTimezone(dateStr) {
-    if (!dateStr) return null; // Nếu không có dữ liệu, trả về null
+// Hàm chuyển đổi thời gian về ISO 8601 với múi giờ UTC+7
+function convertToISOWithoutTimezone(dateStr) {
+    if (!dateStr) return null;
 
     let date = new Date(dateStr);
-    let offset = 7 * 60; // UTC+7 => 7 giờ * 60 phút
+    if (isNaN(date.getTime())) return null;
 
-    // Chuyển đổi thành chuỗi ISO 8601 với múi giờ +07:00
-    let localISO = new Date(date.getTime() + offset * 60000).toISOString();
-    
-    // Thay thế 'Z' (UTC) bằng múi giờ +07:00
-    return localISO.replace('Z', '+07:00');
+    // Bù thêm 7 giờ để giữ đúng giờ Việt Nam (GMT+7)
+    date.setHours(date.getHours() + 7);
+
+    return date.toISOString().split("Z")[0]; // Bỏ phần 'Z' (UTC)
 }

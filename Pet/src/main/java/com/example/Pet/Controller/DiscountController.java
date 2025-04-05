@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,12 +31,12 @@ public class DiscountController {
     //     return ResponseEntity.ok(createdDiscount);
     // }
     @PostMapping
-    public ResponseEntity<?> addDiscount(@RequestBody Discount discount) {
+    public ResponseEntity<?> createDiscount(@RequestBody Discount discount) {
         try {
-            Discount savedDiscount = discountService.addDiscount(discount);
-            return ResponseEntity.ok(savedDiscount);
+            Discount newDiscount = discountService.createDiscount(discount);
+            return ResponseEntity.ok(newDiscount);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -89,8 +88,8 @@ public class DiscountController {
     // API lấy tất cả mã giảm giá còn hiệu lực
     @GetMapping("/all")
     public ResponseEntity<List<Discount>> getAllActiveDiscounts() {
-        List<Discount> discounts = discountService.getAllActiveDiscounts();
-        return ResponseEntity.ok(discounts);
+        List<Discount> activeDiscounts = discountService.getAllActiveDiscounts();
+        return ResponseEntity.ok(activeDiscounts);
     }
 
     // API kiểm tra mã giảm giá

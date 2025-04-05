@@ -261,6 +261,10 @@
                 }
             })
             .then(data => {
+
+                if (data.warning) {
+                    alert(data.warning); // hoặc hiển thị bằng Toast, Modal tùy bạn
+                }
                 console.log('Đăng nhập thành công:', data);
                 localStorage.setItem('userID', data.userID); // Lưu userID vào localStorage
                 updateNavbar(data.userID); // Cập nhật giao diện navbar
