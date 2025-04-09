@@ -97,8 +97,8 @@
        
  
         let selectedType = ''; 
-let selectedFormat = 'day'; // Mặc định là ngày
-let lineChart, pieChart; 
+        let selectedFormat = 'day'; // Mặc định là ngày
+        let lineChart, pieChart; 
 
 function toggleButtonActive(button, type) {
 console.log('Button clicked:', type); 
@@ -128,9 +128,9 @@ fetchStatistics2();
 
 function destroyCharts() {
 // Hủy bỏ biểu đồ Line nếu đã tạo
-if(lineChart){
-    lineChart.destroy();
-}
+// if(lineChart){
+//     lineChart.destroy();
+// }
 if(pieChart){
     pieChart.destroy();
 }
@@ -140,6 +140,9 @@ if(barChart){
 if(areaChart){
     areaChart.destroy();
 }
+// if(combinedChart){
+//     combinedChart.destroy();
+// }
 
 }
 
@@ -211,17 +214,19 @@ fetch(url)
 .catch(error => console.error('Error fetching data:', error));
 }
 const colors = [
-'rgba(255, 99, 132, 1)',
-'rgba(54, 162, 235, 1)',
-'rgba(255, 206, 86, 1)',
-'rgba(75, 192, 192, 1)',
-'rgba(153, 102, 255, 1)',
-'rgba(255, 159, 64, 1)',
-'rgba(255, 99, 132, 1)',
-'rgba(54, 162, 235, 1)',
-'rgba(75, 192, 192, 1)'
-];
-
+    'rgba(255, 99, 132, 1)',  // Màu đỏ nổi bật
+    'rgba(54, 162, 235, 1)',  // Màu xanh dương tươi sáng
+    'rgba(255, 206, 86, 1)',  // Màu vàng sáng
+    'rgba(75, 192, 192, 1)',  // Màu xanh lục nhạt
+    'rgba(153, 102, 255, 1)', // Màu tím
+    'rgba(255, 159, 64, 1)',  // Màu cam
+    'rgba(0, 255, 0, 1)',     // Màu xanh lá cây tươi sáng
+    'rgba(255, 0, 255, 1)',   // Màu hồng đậm
+    'rgba(255, 69, 0, 1)',    // Màu đỏ cam
+    'rgba(0, 0, 255, 1)',     // Màu xanh da trời
+    'rgba(128, 0, 128, 1)'    // Màu tím đậm
+  ];
+  
 let barChart; 
 
 function renderCharts(data) {
@@ -245,40 +250,40 @@ let revenue = categories.map(category => {
     });
 });
 
-// Tạo biểu đồ Line
-const lineChartCtx = document.getElementById("lineChart").getContext('2d');
-lineChart = new Chart(lineChartCtx, {
-    type: 'line',
-    data: {
-        labels: labels,  // Các mốc thời gian (tháng)
-        datasets: categories.map((category, index) => ({
-            label: category,
-            data: revenue[index], 
-            borderColor: colors[index % colors.length],
-            fill: false,
-            tension: 0.1
-        }))
-    },
-    options: {
-        responsive: true,
-        scales: {
-            x: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Tháng'
-                }
-            },
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: 'Doanh thu (VND)'
-                }
-            }
-        }
-    }
-});
+// // Tạo biểu đồ Line
+// const lineChartCtx = document.getElementById("lineChart").getContext('2d');
+// lineChart = new Chart(lineChartCtx, {
+//     type: 'line',
+//     data: {
+//         labels: labels,  // Các mốc thời gian (tháng)
+//         datasets: categories.map((category, index) => ({
+//             label: category,
+//             data: revenue[index], 
+//             borderColor: colors[index % colors.length],
+//             fill: false,
+//             tension: 0.1
+//         }))
+//     },
+//     options: {
+//         responsive: true,
+//         scales: {
+//             x: {
+//                 beginAtZero: true,
+//                 title: {
+//                     display: true,
+//                     text: 'Tháng'
+//                 }
+//             },
+//             y: {
+//                 beginAtZero: true,
+//                 title: {
+//                     display: true,
+//                     text: 'Doanh thu (VND)'
+//                 }
+//             }
+//         }
+//     }
+// });
 
 // Tạo biểu đồ Pie
 const pieChartCtx = document.getElementById("pieChart").getContext('2d');
@@ -292,18 +297,26 @@ pieChart = new Chart(pieChartCtx, {
                 return labels.reduce((sum, label) => sum + (data[label][category] || 0), 0);  // Tổng doanh thu của từng danh mục
             }),
             backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)'
+                'rgba(255, 99, 132, 0.8)',  // Đỏ
+                'rgba(54, 162, 235, 0.8)',  // Xanh dương
+                'rgba(255, 206, 86, 0.8)',  // Vàng
+                'rgba(75, 192, 192, 0.8)',  // Xanh lá cây
+                'rgba(153, 102, 255, 0.8)', // Tím
+                'rgba(255, 159, 64, 0.8)',  // Cam
+                'rgba(0, 255, 0, 0.8)',     // Xanh lá cây sáng
+                'rgba(255, 0, 255, 0.8)',   // Hồng
             ],
             borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)'
+                'rgba(255, 99, 132, 1)',  // Đỏ
+                'rgba(54, 162, 235, 1)',  // Xanh dương
+                'rgba(255, 206, 86, 1)',  // Vàng
+                'rgba(75, 192, 192, 1)',  // Xanh lá cây
+                'rgba(153, 102, 255, 1)', // Tím
+                'rgba(255, 159, 64, 1)',  // Cam
+                'rgba(0, 255, 0, 1)',     // Xanh lá cây sáng
+                'rgba(255, 0, 255, 1)',   // Hồng
             ],
-            borderWidth: 1
+            borderWidth: 3
         }]
     },
     options: {
@@ -315,7 +328,10 @@ pieChart = new Chart(pieChartCtx, {
             tooltip: {
                 callbacks: {
                     label: function(tooltipItem) {
-                        return tooltipItem.label + ': ' + tooltipItem.raw + ' VND';
+                        // return tooltipItem.label + ': ' + tooltipItem.raw + ' VND';
+                        const total = tooltipItem.dataset.data.reduce((acc, value) => acc + value, 0); // Tổng doanh thu
+                        const percentage = ((tooltipItem.raw / total) * 100).toFixed(2); // Tính phần trăm
+                        return `${tooltipItem.label}: ${tooltipItem.raw} VND (${percentage}%)`; // Hiển thị doanh thu và phần trăm
                     }
                 }
             }
@@ -323,7 +339,7 @@ pieChart = new Chart(pieChartCtx, {
     }
 });
 
-// Tạo biểu đồ Bar (cùng dữ liệu với Line và Pie)
+// Tạo biểu đồ Bar
 const barChartCtx = document.getElementById("barChart").getContext('2d');
 barChart = new Chart(barChartCtx, {
     type: 'bar',
@@ -343,8 +359,14 @@ barChart = new Chart(barChartCtx, {
             x: {
                 title: {
                     display: true,
-                    text: 'Tháng'
-                }
+                },
+                // Điều chỉnh khoảng cách giữa các cột
+                grid: {
+                    offset: true  // Giảm khoảng cách giữa các cột
+                },
+                // Điều chỉnh tỷ lệ và khoảng cách giữa các cột
+                categoryPercentage: 0.5, // Điều chỉnh tỷ lệ giữa các cột
+                barPercentage: 2.0  // Cột chiếm tỷ lệ đầy đủ trong không gian có sẵn
             },
             y: {
                 beginAtZero: true,
@@ -363,7 +385,6 @@ barChart = new Chart(barChartCtx, {
     }
 });
 }
-
 
 function fetchStatistics2() {
 const selectedFormat = document.getElementById('statisticFormat').value;
@@ -478,4 +499,127 @@ areaChart = new Chart(ctx, {
     }
 });
 }
+// function fetchStatistics2() {
+//     const selectedFormat = document.getElementById('statisticFormat').value;
 
+//     let startDate = document.getElementById("startDate") ? document.getElementById("startDate").value : '';
+//     let endDate = document.getElementById("endDate") ? document.getElementById("endDate").value : '';
+//     let startMonth = document.getElementById("startMonth") ? document.getElementById("startMonth").value : '';
+//     let endMonth = document.getElementById("endMonth") ? document.getElementById("endMonth").value : '';
+//     let startYear = document.getElementById("startYear") ? document.getElementById("startYear").value : '';
+//     let endYear = document.getElementById("endYear") ? document.getElementById("endYear").value : '';
+
+//     // Kiểm tra dữ liệu nhập
+//     if (selectedFormat === 'day' && (!startDate || !endDate)) {
+//         console.error('Vui lòng chọn cả ngày bắt đầu và kết thúc!');
+//         alert('Vui lòng chọn cả ngày bắt đầu và kết thúc!');
+//         return;
+//     }
+//     if (selectedFormat === 'month' && (!startMonth || !endMonth)) {
+//         console.error('Vui lòng chọn cả tháng bắt đầu và kết thúc!');
+//         alert('Vui lòng chọn cả tháng bắt đầu và kết thúc!');
+//         return;
+//     }
+//     if (selectedFormat === 'year' && (!startYear || !endYear)) {
+//         console.error('Vui lòng chọn cả năm bắt đầu và kết thúc!');
+//         alert('Vui lòng chọn cả năm bắt đầu và kết thúc!');
+//         return;
+//     }
+
+//     let urlTotal = '';
+//     let urlProduct = '';
+//     let urlService = '';
+
+//     // URL API cho tổng doanh thu, doanh thu sản phẩm và doanh thu dịch vụ
+//     if (selectedFormat === 'day') {
+//         urlTotal = `http://localhost:8080/api/revenue/total/daily?startDate=${startDate}&endDate=${endDate}`;
+//         urlProduct = `http://localhost:8080/api/revenue/byGenres/daily?startDate=${startDate}&endDate=${endDate}`;
+//         urlService = `http://localhost:8080/api/appointments/services/day?startDate=${startDate}&endDate=${endDate}`;
+//     } else if (selectedFormat === 'month') {
+//         const startMonthFormatted = startMonth ? startMonth.split('-').reverse().join('-') : '';
+//         const endMonthFormatted = endMonth ? endMonth.split('-').reverse().join('-') : '';
+
+//         urlTotal = `http://localhost:8080/api/revenue/total/monthly?startMonth=${startMonthFormatted}&endMonth=${endMonthFormatted}`;
+//         urlProduct = `http://localhost:8080/api/revenue/byGenres/monthly?startMonth=${startMonthFormatted}&endMonth=${endMonthFormatted}`;
+//         urlService = `http://localhost:8080/api/appointments/services/month?startMonth=${startMonthFormatted}&endMonth=${endMonthFormatted}`;
+//     }
+
+//     // Gọi các API và hiển thị biểu đồ
+//     Promise.all([fetch(urlTotal), fetch(urlProduct), fetch(urlService)])
+//         .then(responses => Promise.all(responses.map(res => res.json())))
+//         .then(([totalData, productData, serviceData]) => {
+//             renderCombinedChart(totalData, productData, serviceData);
+//         })
+//         .catch(error => console.error('Error fetching data:', error));
+// }
+
+// let combinedChart;
+// function renderCombinedChart(totalData, productData, serviceData) {
+//     const ctx = document.getElementById('combinedChart').getContext('2d');
+
+//     // Lấy các labels (thời gian hoặc tháng) từ dữ liệu
+//     let labels = Object.keys(totalData);
+
+//     // Lấy giá trị doanh thu cho từng loại
+//     const totalRevenue = labels.map(label => totalData[label] || 0);
+//     const productRevenue = labels.map(label => productData[label] || 0);
+//     const serviceRevenue = labels.map(label => serviceData[label] || 0);
+
+//     // Tạo biểu đồ với 3 datasets: tổng doanh thu, doanh thu sản phẩm, doanh thu dịch vụ
+//     new Chart(ctx, {
+//         type: 'line', // Có thể đổi thành 'line' nếu bạn muốn biểu đồ đường
+//         data: {
+//             labels: labels,  // Các mốc thời gian (ngày/tháng/năm)
+//             datasets: [
+//                 {
+//                     label: 'Tổng Doanh Thu',
+//                     data: totalRevenue, 
+//                     backgroundColor: 'rgba(75, 192, 192, 0.6)', 
+//                     borderColor: 'rgba(75, 192, 192, 1)',
+//                     borderWidth: 1
+//                 },
+//                 {
+//                     label: 'Doanh Thu Sản Phẩm',
+//                     data: productRevenue,
+//                     backgroundColor: 'rgba(255, 99, 132, 0.6)', 
+//                     borderColor: 'rgba(255, 99, 132, 1)',
+//                     borderWidth: 1
+//                 },
+//                 {
+//                     label: 'Doanh Thu Dịch Vụ',
+//                     data: serviceRevenue,
+//                     backgroundColor: 'rgba(54, 162, 235, 0.6)', 
+//                     borderColor: 'rgba(54, 162, 235, 1)',
+//                     borderWidth: 1
+//                 }
+//             ]
+//         },
+//         options: {
+//             responsive: true,
+//             scales: {
+//                 x: {
+//                     title: { display: true, text: 'Thời gian' }
+//                 },
+//                 y: {
+//                     beginAtZero: true,
+//                     title: { display: true, text: 'Doanh thu (VND)' },
+//                     ticks: {
+//                         callback: function(value) {
+//                             return value.toLocaleString('vi-VN');
+//                         }
+//                     }
+//                 }
+//             },
+//             plugins: {
+//                 tooltip: {
+//                     callbacks: {
+//                         label: function(tooltipItem) {
+//                             const value = tooltipItem.raw;
+//                             return tooltipItem.dataset.label + ': ' + value.toLocaleString('vi-VN') + ' VND';
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     });
+// }

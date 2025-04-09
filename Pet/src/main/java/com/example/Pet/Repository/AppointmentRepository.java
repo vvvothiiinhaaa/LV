@@ -71,4 +71,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
 
     long countByUserIdAndStatus(Long userId, String status);
 
+    // mở khóa tài khoản
+    void deleteByUserIdAndStatusIgnoreCase(Long userId, String status);
+
+    // Trong appointmentRepository
+    // List<Appointment> findByDateRange(LocalDate startDate, LocalDate endDate);
 }

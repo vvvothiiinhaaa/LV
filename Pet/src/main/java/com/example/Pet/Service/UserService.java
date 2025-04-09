@@ -3,6 +3,7 @@ package com.example.Pet.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import com.example.Pet.Modal.Appointment;
 import com.example.Pet.Modal.Cart;
 import com.example.Pet.Modal.Order;
 import com.example.Pet.Modal.User;
-import com.example.Pet.Modal.UserWarningLog;
 import com.example.Pet.Repository.AppointmentRepository;
 import com.example.Pet.Repository.CartRepository;
 import com.example.Pet.Repository.EmployeeRepository;
@@ -62,6 +62,7 @@ public class UserService {
         newUser.setUsername(username);
         newUser.setPasswords(password); // Mật khẩu chưa mã hóa
         newUser.setRole("user");
+        newUser.setIsUnlocked(false);
         newUser.setStatus(true);
 
         // Lưu người dùng vào cơ sở dữ liệu
@@ -191,58 +192,240 @@ public class UserService {
         return (user != null) ? user.getUrl() : null; // Trả về URL ảnh của người dùng nếu tồn tại
     }
 
-    public List<User> getAllUsersOnlyRiskStatus() {
+    // public List<User> getAllUsersOnlyRiskStatus() {
+    //     List<User> users = userRepository.findAll();
+    //     List<Appointment> allAppointments = appointmentRepository.findAll();
+    //     List<Order> allOrders = orderRepository.findAll();
+    //     Map<Long, Long> cancelledOrdersMap = allOrders.stream()
+    //             .filter(o -> "Đã Hủy".equalsIgnoreCase(o.getOrderStatus()))
+    //             .collect(Collectors.groupingBy(o -> o.getUserId().longValue(), Collectors.counting()));
+    //     Map<Long, Long> cancelledAppointmentsMap = allAppointments.stream()
+    //             .filter(a -> "Đã hủy lịch".equalsIgnoreCase(a.getStatus()))
+    //             .collect(Collectors.groupingBy(Appointment::getUserId, Collectors.counting()));
+    //     return users.stream().map(user -> {
+    //         long orderCancels = cancelledOrdersMap.getOrDefault(user.getId(), 0L);
+    //         long appointmentCancels = cancelledAppointmentsMap.getOrDefault(user.getId(), 0L);
+    //         boolean isRiskHigh = (orderCancels >= 5 || appointmentCancels >= 5);
+    //         boolean isWarning = (orderCancels >= 1 || appointmentCancels >= 1);
+    //         // Gán trạng thái nguy cơ 3 mức
+    //         if (isRiskHigh) {
+    //             user.setriskStatus("Cao");
+    //         } else if (isWarning) {
+    //             user.setriskStatus("Cảnh báo");
+    //         } else {
+    //             user.setriskStatus("Bình Thường");
+    //         }
+    //         // Gán thông báo cảnh báo nếu cần
+    //         if (isWarning && !isRiskHigh) {
+    //             user.setWarningMessage("Tài khoản của bạn có nguy cơ bị khóa do hủy quá nhiều!");
+    //         }
+    //         // Ghi log nếu chưa từng log với lý do này
+    //         String reason = "Hủy ≥ 3 đơn hàng hoặc lịch hẹn";
+    //         if (!userWarningLogRepository.existsByUserIdAndReason(user.getId(), reason)) {
+    //             userWarningLogRepository.save(new UserWarningLog(user.getId(), reason));
+    //         }
+    //         // Nếu nguy cơ cao thì vô hiệu hóa tài khoản (nếu chưa bị khóa)
+    //         if (isRiskHigh && Boolean.TRUE.equals(user.getStatus())) {
+    //             user.setStatus(false);
+    //             userRepository.save(user); // cập nhật DB
+    //         }
+    //         return user;
+    //     }).collect(Collectors.toList());
+    // }
+    //////////////////////////////////////////////////////////////////////////
+//     public List<User> getAllUsersOnlyRiskStatus() {
+//         List<User> users = userRepository.findAll();
+//         List<Appointment> allAppointments = appointmentRepository.findAll();
+//         List<Order> allOrders = orderRepository.findAll();
+
+//         Map<Long, Long> cancelledOrdersMap = allOrders.stream()
+//                 .filter(o -> "Đã Hủy".equalsIgnoreCase(o.getOrderStatus()))
+//                 .collect(Collectors.groupingBy(o -> o.getUserId().longValue(), Collectors.counting()));
+
+//         Map<Long, Long> cancelledAppointmentsMap = allAppointments.stream()
+//                 .filter(a -> "Đã hủy lịch".equalsIgnoreCase(a.getStatus()))
+//                 .collect(Collectors.groupingBy(Appointment::getUserId, Collectors.counting()));
+
+//         return users.stream().map(user -> {
+//             long orderCancels = cancelledOrdersMap.getOrDefault(user.getId(), 0L);
+//             long appointmentCancels = cancelledAppointmentsMap.getOrDefault(user.getId(), 0L);
+
+//             boolean isRiskHigh = (orderCancels >= 5 || appointmentCancels >= 5);
+//             boolean isWarning = (orderCancels >= 1 || appointmentCancels >= 1);
+
+//             // Ghi log cảnh báo nếu cần
+//             String warningReason = "Hủy ≥ 3 đơn hàng hoặc lịch hẹn";
+//             if (isWarning && !userWarningLogRepository.existsByUserIdAndReason(user.getId(), warningReason)) {
+//                 userWarningLogRepository.save(new UserWarningLog(user.getId(), warningReason));
+//             }
+
+//             // Gán cảnh báo người dùng
+//             if (isWarning && !isRiskHigh) {
+//                 user.setWarningMessage("Tài khoản của bạn có nguy cơ bị khóa do hủy quá nhiều!");
+//             } else {
+//                 user.setWarningMessage(null);
+//             }
+
+//             // Đánh giá nguy cơ & trạng thái
+//             if (isRiskHigh) {
+//                 user.setriskStatus("Cao");
+//                 if (Boolean.TRUE.equals(user.getStatus()) && !Boolean.TRUE.equals(user.isManuallyUnlocked())) {
+//                     user.setStatus(false); // Khóa tự động
+//                     userWarningLogRepository.save(new UserWarningLog(user.getId(), "Khóa tự động do nguy cơ cao"));
+//                 }
+//             } else if (!isRiskHigh && Boolean.FALSE.equals(user.getStatus())) {
+//                 user.setStatus(true); // Mở tự động
+//                 user.setManuallyUnlocked(false); // Reset cờ mở thủ công
+//                 userWarningLogRepository.save(new UserWarningLog(user.getId(), "Mở khóa tự động do nguy cơ giảm"));
+//             }
+
+//             // Gán trạng thái nguy cơ 3 mức
+//             if (isRiskHigh) {
+//                 user.setriskStatus("Cao");
+//             } else if (isWarning) {
+//                 user.setriskStatus("Cảnh báo");
+//             } else {
+//                 user.setriskStatus("Bình Thường");
+//             }
+
+//             return userRepository.save(user);
+//         }).collect(Collectors.toList());
+//     }
+
+//     //// lọc các tài khoản bị cảnh cáo
+//   public List<UserWarningDTO> getAllUsersWithWarningOnly() {
+//         List<User> users = userRepository.findAll();
+//         List<Appointment> allAppointments = appointmentRepository.findAll();
+//         List<Order> allOrders = orderRepository.findAll();
+
+//         Map<Long, Long> cancelledOrdersMap = allOrders.stream()
+//                 .filter(o -> "Đã Hủy".equalsIgnoreCase(o.getOrderStatus()))
+//                 .collect(Collectors.groupingBy(o -> o.getUserId().longValue(), Collectors.counting()));
+
+//         Map<Long, Long> cancelledAppointmentsMap = allAppointments.stream()
+//                 .filter(a -> "Đã hủy lịch".equalsIgnoreCase(a.getStatus()))
+//                 .collect(Collectors.groupingBy(Appointment::getUserId, Collectors.counting()));
+
+//         return users.stream()
+//                 .map(user -> {
+//                     long orderCancels = cancelledOrdersMap.getOrDefault(user.getId(), 0L);
+//                     long appointmentCancels = cancelledAppointmentsMap.getOrDefault(user.getId(), 0L);
+
+//                     boolean isRiskHigh = (orderCancels >= 5 || appointmentCancels >= 5);
+//                     boolean isWarning = (orderCancels >= 1 || appointmentCancels >= 1);
+
+//                     if (isWarning && !isRiskHigh) {
+//                         return new UserWarningDTO(
+//                                 user.getId(),
+//                                 user.getUsername(),
+//                                 user.getPasswords(), //  Bạn nên ẩn trường này nếu không cần thiết
+//                                 user.getEmail(),
+//                                 user.getBirthday(),
+//                                 user.getPhonenumber(),
+//                                 user.getGender(),
+//                                 orderCancels,
+//                                 appointmentCancels,
+//                                 "Tài khoản của bạn có nguy cơ bị khóa do hủy quá nhiều!"
+//                         );
+//                     } else {
+//                         return null;
+//                     }
+//                 })
+//                 .filter(Objects::nonNull)
+//                 .collect(Collectors.toList());
+//     }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+public List<UserWarningDTO> getAllUsersOnlyRiskStatus() {
+        // Lấy tất cả người dùng, cuộc hẹn và đơn hàng
         List<User> users = userRepository.findAll();
         List<Appointment> allAppointments = appointmentRepository.findAll();
         List<Order> allOrders = orderRepository.findAll();
 
+        // Kiểm tra dữ liệu có hợp lệ không
+        if (users == null || allAppointments == null || allOrders == null) {
+            throw new RuntimeException("Dữ liệu người dùng, cuộc hẹn hoặc đơn hàng không hợp lệ.");
+        }
+
+        // Đếm số đơn hàng đã hủy của từng người dùng
         Map<Long, Long> cancelledOrdersMap = allOrders.stream()
                 .filter(o -> "Đã Hủy".equalsIgnoreCase(o.getOrderStatus()))
                 .collect(Collectors.groupingBy(o -> o.getUserId().longValue(), Collectors.counting()));
 
+        // Đếm số cuộc hẹn đã hủy của từng người dùng
         Map<Long, Long> cancelledAppointmentsMap = allAppointments.stream()
                 .filter(a -> "Đã hủy lịch".equalsIgnoreCase(a.getStatus()))
                 .collect(Collectors.groupingBy(Appointment::getUserId, Collectors.counting()));
 
-        return users.stream().map(user -> {
-            long orderCancels = cancelledOrdersMap.getOrDefault(user.getId(), 0L);
-            long appointmentCancels = cancelledAppointmentsMap.getOrDefault(user.getId(), 0L);
+        // Lọc và xử lý danh sách người dùng
+        return users.stream()
+                .map(user -> {
+                    if (user == null) {
+                        return null; // Bỏ qua các người dùng null
+                    }
 
-            boolean isRiskHigh = (orderCancels >= 5 || appointmentCancels >= 5);
-            boolean isWarning = (orderCancels >= 1 || appointmentCancels >= 1);
+                    // Lấy số lần hủy đơn hàng và cuộc hẹn của người dùng
+                    long orderCancels = cancelledOrdersMap.getOrDefault(user.getId(), 0L);
+                    long appointmentCancels = cancelledAppointmentsMap.getOrDefault(user.getId(), 0L);
 
-            // Gán trạng thái nguy cơ 3 mức
-            if (isRiskHigh) {
-                user.setriskStatus("Cao");
-            } else if (isWarning) {
-                user.setriskStatus("Cảnh báo");
-            } else {
-                user.setriskStatus("Bình Thường");
-            }
+                    // Kiểm tra trạng thái tài khoản (đã mở khóa hoặc chưa)
+                    boolean isUnlocked = user.isIsUnlocked() != null && user.isIsUnlocked();  // Trạng thái tài khoản đã mở khóa (cải thiện kiểm tra null)
+                    boolean isRiskHigh = false;
+                    boolean isWarning = false;
 
-            // Gán thông báo cảnh báo nếu cần
-            if (isWarning && !isRiskHigh) {
-                user.setWarningMessage("Tài khoản của bạn có nguy cơ bị khóa do hủy quá nhiều!");
-            }
+                    // Kiểm tra điều kiện cảnh báo và nguy cơ cao
+                    if (orderCancels >= 1 || appointmentCancels >= 1) {
+                        isWarning = true;
+                    }
+                    if (orderCancels >= 5 || appointmentCancels >= 5) {
+                        isRiskHigh = true;
+                    }
 
-            // Ghi log nếu chưa từng log với lý do này
-            String reason = "Hủy ≥ 3 đơn hàng hoặc lịch hẹn";
-            if (!userWarningLogRepository.existsByUserIdAndReason(user.getId(), reason)) {
-                userWarningLogRepository.save(new UserWarningLog(user.getId(), reason));
-            }
+                    // Gán trạng thái nguy cơ cho người dùng
+                    String riskStatus = "Bình Thường";
+                    if (isRiskHigh) {
+                        riskStatus = "Cao";
+                    } else if (isWarning) {
+                        riskStatus = "Cảnh báo";
+                    }
 
-            // Nếu nguy cơ cao thì vô hiệu hóa tài khoản (nếu chưa bị khóa)
-            if (isRiskHigh && Boolean.TRUE.equals(user.getStatus())) {
-                user.setStatus(false);
-                userRepository.save(user); // cập nhật DB
-            }
+                    // Nếu tài khoản đã mở khóa và đã hủy >= 5 lần, không cần thay đổi số hủy
+                    // chỉ cần gán trạng thái nguy cơ theo logic bên trên
+                    if (isWarning && !isRiskHigh && !user.isManuallyUnlocked()) {
+                        return new UserWarningDTO(
+                                user.getId(),
+                                user.getUsername(),
+                                user.getPasswords(), // Ẩn trường này nếu không cần thiết
+                                user.getEmail(),
+                                user.getBirthday(),
+                                user.getPhonenumber(),
+                                user.getGender(),
+                                orderCancels,
+                                appointmentCancels,
+                                "Tài khoản của bạn có nguy cơ bị khóa do hủy quá nhiều!",
+                                riskStatus
+                        );
+                    }
 
-            return user;
-        }).collect(Collectors.toList());
+                    // Trả về người dùng nếu không có cảnh báo nhưng vẫn có trạng thái "Bình Thường" hoặc "Cao"
+                    return new UserWarningDTO(
+                            user.getId(),
+                            user.getUsername(),
+                            user.getPasswords(),
+                            user.getEmail(),
+                            user.getBirthday(),
+                            user.getPhonenumber(),
+                            user.getGender(),
+                            orderCancels,
+                            appointmentCancels,
+                            "Tài khoản của bạn đang hoạt động bình thường.",
+                            riskStatus
+                    );
+                })
+                .filter(Objects::nonNull) // Loại bỏ các kết quả null
+                .collect(Collectors.toList());  // Trả về danh sách kết quả
     }
 
-    //// lọc các tài khoản bị cảnh cáo
-  public List<UserWarningDTO> getAllUsersWithWarningOnly() {
+    public List<UserWarningDTO> getAllUsersWithWarningOnly() {
         List<User> users = userRepository.findAll();
         List<Appointment> allAppointments = appointmentRepository.findAll();
         List<Order> allOrders = orderRepository.findAll();
@@ -263,18 +446,28 @@ public class UserService {
                     boolean isRiskHigh = (orderCancels >= 5 || appointmentCancels >= 5);
                     boolean isWarning = (orderCancels >= 1 || appointmentCancels >= 1);
 
-                    if (isWarning && !isRiskHigh) {
+                    // Tính giá trị riskStatus dựa vào cảnh báo và nguy cơ cao
+                    String riskStatus = "Bình Thường"; // Mặc định là bình thường
+                    if (isRiskHigh) {
+                        riskStatus = "Cao";
+                    } else if (isWarning) {
+                        riskStatus = "Cảnh báo";
+                    }
+
+                    // Nếu người dùng có cảnh báo và không phải là tài khoản thủ công đã mở khóa
+                    if (isWarning && !isRiskHigh && !user.isManuallyUnlocked()) {
                         return new UserWarningDTO(
                                 user.getId(),
                                 user.getUsername(),
-                                user.getPasswords(), //  Bạn nên ẩn trường này nếu không cần thiết
+                                user.getPasswords(), // Ẩn trường này nếu không cần thiết
                                 user.getEmail(),
                                 user.getBirthday(),
                                 user.getPhonenumber(),
                                 user.getGender(),
                                 orderCancels,
                                 appointmentCancels,
-                                "Tài khoản của bạn có nguy cơ bị khóa do hủy quá nhiều!"
+                                "Tài khoản của bạn có nguy cơ bị khóa do hủy quá nhiều!",
+                                riskStatus // Truyền giá trị riskStatus vào UserWarningDTO
                         );
                     } else {
                         return null;
@@ -282,6 +475,27 @@ public class UserService {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    // Phương thức mở khóa tài khoản
+    public void unlockUserAccount(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+
+            // Kiểm tra xem tài khoản có bị khóa không
+            if (user.getStatus() != null && !user.getStatus()) {
+                user.setStatus(true); // Đổi trạng thái tài khoản thành "Đang hoạt động"
+                user.setriskStatus("Bình Thường");
+                user.setIsUnlocked(true); // Đánh dấu tài khoản đã được mở khóa
+
+                userRepository.save(user); // Lưu thay đổi
+            } else {
+                throw new RuntimeException("Tài khoản này không bị khóa.");
+            }
+        } else {
+            throw new RuntimeException("Người dùng không tồn tại.");
+        }
     }
 
 }

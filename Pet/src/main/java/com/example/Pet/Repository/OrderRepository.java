@@ -54,6 +54,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query("SELECT oi FROM OrderItem oi WHERE oi.productId = :productId AND oi.order.orderDate BETWEEN :startDate AND :endDate AND oi.order.orderStatus = :status")
     List<OrderItem> findOrderItemsByProductIdAndDateRangeAndStatus(Long productId, Date startDate, Date endDate, String status);
 
+    /// mở khóa tài khoản
+    /// 
+    void deleteByUserIdAndOrderStatusIgnoreCase(Long userId, String orderStatus);
+
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // import java.time.LocalDate;

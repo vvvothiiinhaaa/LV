@@ -48,6 +48,54 @@ public class ChatGPTService {
     @Autowired
     private ServiceforpetRepository serviceforpetRepository;
 
+    // public String getChatResponse(String userMessage) {
+    //     RestTemplate restTemplate = new RestTemplate();
+    //     Set<IntentType> intents = detectIntent(userMessage);
+    //     String additionalData = fetchDataByIntent(userMessage, intents);
+    //     // Rút gọn dữ liệu nếu quá dài
+    //     if (additionalData.length() > 2500) {
+    //         additionalData = additionalData.substring(0, 2000) + "\n...(dữ liệu đã được rút gọn)";
+    //     }
+    //     // Nếu có dữ liệu nội bộ → ép GPT ưu tiên dùng
+    //     if (!additionalData.isEmpty()) {
+    //         chatHistory.add(Map.of(
+    //                 "role", "system",
+    //                 "content", "Dữ liệu từ hệ thống có thể giúp trả lời người dùng:\n" + additionalData
+    //                 + "\nVui lòng ưu tiên sử dụng thông tin trên để phản hồi nếu phù hợp."
+    //         ));
+    //     }
+    //     // Câu hỏi người dùng sau cùng
+    //     chatHistory.add(Map.of("role", "user", "content", userMessage));
+    //     // Giới hạn số lượt hội thoại gửi GPT
+    //     int maxHistorySize = 4;
+    //     if (chatHistory.size() > maxHistorySize) {
+    //         chatHistory = new ArrayList<>(chatHistory.subList(chatHistory.size() - maxHistorySize, chatHistory.size()));
+    //     }
+    //     HttpHeaders headers = new HttpHeaders();
+    //     headers.setContentType(MediaType.APPLICATION_JSON);
+    //     headers.setBearerAuth(API_KEY);
+    //     Map<String, Object> body = new HashMap<>();
+    //     body.put("model", "gpt-4-turbo");
+    //     body.put("temperature", 0.2);
+    //     body.put("messages", chatHistory);
+    //     HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+    //     long start = System.currentTimeMillis();
+    //     ResponseEntity<Map> response = restTemplate.exchange(API_URL, HttpMethod.POST, request, Map.class);
+    //     long duration = System.currentTimeMillis() - start;
+    //     System.out.println(" Gọi GPT mất: " + duration + "ms");
+    //     if (duration > 10000) {
+    //         System.err.println(" CẢNH BÁO: GPT phản hồi quá chậm (" + duration + "ms)");
+    //     }
+    //     if (response.getBody() != null) {
+    //         List<Map<String, Object>> choices = (List<Map<String, Object>>) response.getBody().get("choices");
+    //         if (!choices.isEmpty()) {
+    //             String botReply = (String) ((Map<String, Object>) choices.get(0).get("message")).get("content");
+    //             chatHistory.add(Map.of("role", "assistant", "content", botReply));
+    //             return botReply;
+    //         }
+    //     }
+    //     return "Xin lỗi, không thể xử lý yêu cầu.";
+    // }
     public String getChatResponse(String userMessage) {
         RestTemplate restTemplate = new RestTemplate();
 
@@ -55,23 +103,24 @@ public class ChatGPTService {
         String additionalData = fetchDataByIntent(userMessage, intents);
 
         // Rút gọn dữ liệu nếu quá dài
-        if (additionalData.length() > 2500) {
-            additionalData = additionalData.substring(0, 2000) + "\n...(dữ liệu đã được rút gọn)";
+        // Rút gọn dữ liệu nếu quá dài
+        if (additionalData.length() > 4000) {
+            additionalData = additionalData.substring(0, 3500) + "\n...(dữ liệu đã được rút gọn)";
         }
 
         // Nếu có dữ liệu nội bộ → ép GPT ưu tiên dùng
         if (!additionalData.isEmpty()) {
             chatHistory.add(Map.of(
                     "role", "system",
-                    "content", "Dữ liệu từ hệ thống có thể giúp trả lời người dùng:\n" + additionalData
-                    + "\nVui lòng ưu tiên sử dụng thông tin trên để phản hồi nếu phù hợp."
+                    "content", "Dưới đây là dữ liệu nội bộ để hỗ trợ trả lời người dùng:\n" + additionalData
+                    + "\nVui lòng sử dụng thông tin này để trả lời nếu phù hợp."
             ));
         }
 
         // Câu hỏi người dùng sau cùng
         chatHistory.add(Map.of("role", "user", "content", userMessage));
 
-        // Giới hạn số lượt hội thoại gửi GPT
+        // Giới hạn số lượt hội thoại gửi GPT (chỉ giữ lại 3-4 câu gần nhất)
         int maxHistorySize = 4;
         if (chatHistory.size() > maxHistorySize) {
             chatHistory = new ArrayList<>(chatHistory.subList(chatHistory.size() - maxHistorySize, chatHistory.size()));
@@ -82,7 +131,7 @@ public class ChatGPTService {
         headers.setBearerAuth(API_KEY);
 
         Map<String, Object> body = new HashMap<>();
-        body.put("model", "gpt-4-turbo");
+        body.put("model", "gpt-3.5-turbo"); // Sử dụng model nhẹ và nhanh hơn
         body.put("temperature", 0.2);
         body.put("messages", chatHistory);
 
@@ -106,7 +155,7 @@ public class ChatGPTService {
             }
         }
 
-        return "Xin lỗi, không thể xử lý yêu cầu.";
+        return "Xin lỗi, không thể xử lý yêu cầu lúc này.";
     }
 
     public void resetChatHistory() {
@@ -287,21 +336,19 @@ public class ChatGPTService {
             } else {
                 result.append("Dịch vụ này chưa có bảng giá.\n");
             }
-        } // Nếu người dùng hỏi theo mẫu "Các bước thực hiện của dịch vụ X" hoặc "Quy trình của dịch vụ X"
-        else if (isStepsQuery) {
+        } else if (isStepsQuery) {
             if (service.getSteps() != null && !service.getSteps().isEmpty()) {
-                result.append("Các bước thực hiện:\n");
+                result.append("Các bước thực hiện:\n\n");
                 service.getSteps().stream()
                         .sorted(Comparator.comparingInt(ServiceStep::getStepOrder))
-                        .forEach(step -> result.append("  • Bước ")
-                        .append(step.getStepOrder()).append(": ")
-                        .append(step.getStepTitle()).append(" - ")
-                        .append(step.getStepDescription()).append("\n"));
+                        .forEach(step -> result.append("• Bước: ")
+                        .append(step.getStepTitle()).append("\n")
+                        .append("  Mô tả: ").append(step.getStepDescription()).append("\n\n"));
             } else {
                 result.append("Dịch vụ này chưa có quy trình/bước thực hiện.\n");
             }
-        } // Nếu không theo mẫu cố định, hiển thị đầy đủ thông tin của dịch vụ
-        else {
+
+        } else {
             result.append("Mô tả: ").append(service.getDescription()).append("\n");
             result.append("Thời gian thực hiện: ").append(service.getDuration()).append("\n");
 
@@ -315,13 +362,12 @@ public class ChatGPTService {
                 result.append("Dịch vụ này chưa có bảng giá.\n");
             }
             if (service.getSteps() != null && !service.getSteps().isEmpty()) {
-                result.append("Các bước thực hiện:\n");
+                result.append("Các bước thực hiện:\n\n");
                 service.getSteps().stream()
                         .sorted(Comparator.comparingInt(ServiceStep::getStepOrder))
-                        .forEach(step -> result.append("  • Bước ")
-                        .append(step.getStepOrder()).append(": ")
-                        .append(step.getStepTitle()).append(" - ")
-                        .append(step.getStepDescription()).append("\n"));
+                        .forEach(step -> result.append("• Bước ")
+                        .append(step.getStepOrder()).append(": ").append(step.getStepTitle()).append("\n")
+                        .append("  Mô tả: ").append(step.getStepDescription()).append("\n\n"));
             } else {
                 result.append("Dịch vụ này chưa có quy trình/bước thực hiện.\n");
             }

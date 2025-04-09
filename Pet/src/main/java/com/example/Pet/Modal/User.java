@@ -27,6 +27,9 @@ public class User {
     private String name;
     private String gender;
 
+    @Transient
+    private Boolean manuallyUnlocked = false;
+
     @Column(name = "role")
     private String role;  // Mặc định role là user
 
@@ -49,6 +52,9 @@ public class User {
 
     @Transient
     private String warningMessage; //Thông báo cảnh báo
+
+    @Column(name = "is_unlocked")
+    private Boolean isUnlocked = false;
 
     //============================
     //*** */ cho warningMessage
@@ -221,6 +227,34 @@ public class User {
      */
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    /**
+     * @return Boolean return the manuallyUnlocked
+     */
+    public Boolean isManuallyUnlocked() {
+        return manuallyUnlocked;
+    }
+
+    /**
+     * @param manuallyUnlocked the manuallyUnlocked to set
+     */
+    public void setManuallyUnlocked(Boolean manuallyUnlocked) {
+        this.manuallyUnlocked = manuallyUnlocked;
+    }
+
+    /**
+     * @return Boolean return the isUnlocked
+     */
+    public Boolean isIsUnlocked() {
+        return isUnlocked;
+    }
+
+    /**
+     * @param isUnlocked the isUnlocked to set
+     */
+    public void setIsUnlocked(Boolean isUnlocked) {
+        this.isUnlocked = isUnlocked;
     }
 
 }

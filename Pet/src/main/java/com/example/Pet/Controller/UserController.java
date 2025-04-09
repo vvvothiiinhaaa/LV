@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -273,9 +274,23 @@ public class UserController {
         return ResponseEntity.ok("Checked all users and disabled those with too many cancellations.");
     }
 
+    // @GetMapping
+    // public List<User> getAllUsers2() {
+    //     return userService.getAllUsersOnlyRiskStatus();
+    // }
     @GetMapping
-    public List<User> getAllUsers2() {
-        return userService.getAllUsersOnlyRiskStatus();
+    public ResponseEntity<List<UserWarningDTO>> getAllUsersOnlyRiskStatus() {
+        try {
+            // Gọi service để lấy danh sách người dùng có cảnh báo hoặc nguy cơ cao
+            List<UserWarningDTO> warningUsers = userService.getAllUsersOnlyRiskStatus();
+
+            // Trả về danh sách người dùng với trạng thái nguy cơ
+            return ResponseEntity.ok(warningUsers);
+        } catch (Exception ex) {
+            // Ghi log lỗi chi tiết
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @GetMapping("/warnings")
@@ -284,4 +299,13 @@ public class UserController {
         return ResponseEntity.ok(warnedUsers);
     }
 
+    @PatchMapping("/unlock/{userId}")
+    public ResponseEntity<String> unlockUser(@PathVariable Long userId) {
+        try {
+            userService.unlockUserAccount(userId); // Gọi service mở khóa tài khoản
+            return ResponseEntity.ok("Tài khoản đã được mở khóa.");
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        }
+    }
 }

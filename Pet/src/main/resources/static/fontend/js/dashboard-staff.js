@@ -119,11 +119,14 @@ fetch('/api/appointments/today/count')
         });
 /// hiển thị thông báo
 
-
 async function renderNotificationList(limit = 3) {
     try {
-        const res = await fetch("/admin/announcements");
+        const res = await fetch("http://localhost:8080/admin/announcements");
+        if (!res.ok) {
+            throw new Error(`Lỗi HTTP ${res.status}: Không thể lấy thông báo`);
+        }
         const data = await res.json();
+        console.log(data);  // In dữ liệu ra để kiểm tra
         const listContainer = document.getElementById("notificationList");
 
         listContainer.innerHTML = "";
@@ -133,7 +136,6 @@ async function renderNotificationList(limit = 3) {
             return;
         }
 
-        // Lấy thông báo mới nhất, giới hạn theo tham số truyền vào
         data.slice(-limit).reverse().forEach(item => {
             const createdDate = new Date(item.createdAt);
             const formattedDate = createdDate.toLocaleString('vi-VN', {
@@ -158,3 +160,7 @@ async function renderNotificationList(limit = 3) {
         console.error("Lỗi khi tải thông báo:", err);
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    renderNotificationList();
+});

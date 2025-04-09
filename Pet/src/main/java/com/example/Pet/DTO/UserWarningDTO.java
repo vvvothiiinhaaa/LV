@@ -18,12 +18,13 @@ public class UserWarningDTO {
     // Constructor không tham số
     public UserWarningDTO() {
     }
+    private String riskStatus;
 
 // Constructor đầy đủ tham số
     public UserWarningDTO(Long userId, String username, String passwords, String email,
             LocalDate birthday, String phonenumber, String gender,
             Long orderCancelCount, Long appointmentCancelCount,
-            String warningMessage) {
+            String warningMessage, String riskStatus) {
         this.userId = userId;
         this.username = username;
         this.passwords = passwords;
@@ -34,6 +35,7 @@ public class UserWarningDTO {
         this.orderCancelCount = orderCancelCount;
         this.appointmentCancelCount = appointmentCancelCount;
         this.warningMessage = warningMessage;
+        this.riskStatus = riskStatus;
     }
 
 // Getters & Setters
@@ -116,4 +118,19 @@ public class UserWarningDTO {
     public void setWarningMessage(String warningMessage) {
         this.warningMessage = warningMessage;
     }
+
+    /**
+     * @return String return the riskStatus
+     */
+    public String getRiskStatus() {
+        return riskStatus;
+    }
+
+    /**
+     * @param riskStatus the riskStatus to set
+     */
+    public void setRiskStatus(String riskStatus) {
+        this.riskStatus = riskStatus;
+    }
+
 }

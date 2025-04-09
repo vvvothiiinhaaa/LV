@@ -1,14 +1,18 @@
 package com.example.Pet.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,7 @@ import com.example.Pet.Modal.Appointment;
 import com.example.Pet.Modal.AppointmentPrice;
 import com.example.Pet.Modal.Order;
 import com.example.Pet.Modal.OrderItem;
+import com.example.Pet.Modal.Pet;
 import com.example.Pet.Modal.Product;
 import com.example.Pet.Modal.ServicePrice;
 import com.example.Pet.Modal.Serviceforpet;
@@ -79,112 +84,112 @@ public class RevenueService {
 
     /// ngày 21
     /// 
-    // Tính doanh thu dịch vụ cho từng ngày
-    public Map<String, Map<String, BigDecimal>> getRevenueForServicesByDay(LocalDate startDate, LocalDate endDate) {
-        Map<String, Map<String, BigDecimal>> revenueByDay = new HashMap<>();
+    // // Tính doanh thu dịch vụ cho từng ngày
+    // public Map<String, Map<String, BigDecimal>> getRevenueForServicesByDay(LocalDate startDate, LocalDate endDate) {
+    //     Map<String, Map<String, BigDecimal>> revenueByDay = new HashMap<>();
 
-        LocalDate currentDate = startDate;
-        while (!currentDate.isAfter(endDate)) {
-            Map<String, BigDecimal> dailyRevenue = calculateServiceRevenueForDay(currentDate, currentDate);
-            revenueByDay.put(currentDate.toString(), dailyRevenue);  // Lưu doanh thu từng dịch vụ cho ngày đó
-            currentDate = currentDate.plusDays(1);  // Tiến đến ngày tiếp theo
-        }
+    //     LocalDate currentDate = startDate;
+    //     while (!currentDate.isAfter(endDate)) {
+    //         Map<String, BigDecimal> dailyRevenue = calculateServiceRevenueForDay(currentDate, currentDate);
+    //         revenueByDay.put(currentDate.toString(), dailyRevenue);  // Lưu doanh thu từng dịch vụ cho ngày đó
+    //         currentDate = currentDate.plusDays(1);  // Tiến đến ngày tiếp theo
+    //     }
 
-        return revenueByDay;
-    }
+    //     return revenueByDay;
+    // }
 
-    // Phương thức tính doanh thu cho mỗi ngày
-    private Map<String, BigDecimal> calculateServiceRevenueForDay(LocalDate startDate, LocalDate endDate) {
-        Map<String, BigDecimal> serviceRevenue = new HashMap<>();
+    // // Phương thức tính doanh thu cho mỗi ngày
+    // private Map<String, BigDecimal> calculateServiceRevenueForDay(LocalDate startDate, LocalDate endDate) {
+    //     Map<String, BigDecimal> serviceRevenue = new HashMap<>();
 
-        List<Serviceforpet> allServices = serviceforpetRepository.findAll(); // Giả sử bạn có một phương thức lấy tất cả các dịch vụ
+    //     List<Serviceforpet> allServices = serviceforpetRepository.findAll(); // Giả sử bạn có một phương thức lấy tất cả các dịch vụ
 
-        List<Appointment> appointments = appointmentRepository.findByServiceAndDateRange(startDate, endDate);
+    //     List<Appointment> appointments = appointmentRepository.findByServiceAndDateRange(startDate, endDate);
 
-        for (Appointment appointment : appointments) {
-            for (Serviceforpet service : appointment.getServices()) {
-                ServicePrice servicePrice = servicePriceRepository.findByServiceforpetAndPetSize(service, appointment.getPets().iterator().next().getSize());
-                if (servicePrice != null) {
-                    serviceRevenue.put(service.getName(), serviceRevenue.getOrDefault(service.getName(), BigDecimal.ZERO).add(servicePrice.getPrice()));
-                }
-            }
-        }
+    //     for (Appointment appointment : appointments) {
+    //         for (Serviceforpet service : appointment.getServices()) {
+    //             ServicePrice servicePrice = servicePriceRepository.findByServiceforpetAndPetSize(service, appointment.getPets().iterator().next().getSize());
+    //             if (servicePrice != null) {
+    //                 serviceRevenue.put(service.getName(), serviceRevenue.getOrDefault(service.getName(), BigDecimal.ZERO).add(servicePrice.getPrice()));
+    //             }
+    //         }
+    //     }
 
-        for (Serviceforpet service : allServices) {
-            serviceRevenue.putIfAbsent(service.getName(), BigDecimal.ZERO);
-        }
+    //     for (Serviceforpet service : allServices) {
+    //         serviceRevenue.putIfAbsent(service.getName(), BigDecimal.ZERO);
+    //     }
 
-        return serviceRevenue;
-    }
+    //     return serviceRevenue;
+    // }
 
-    /////////////////////////////////////////////////////////////////////// tính tháng dịch vụ
-    public Map<String, Map<String, BigDecimal>> getRevenueForServicesByMonth(String startMonth, String endMonth) {
-        // Parse the start and end month to LocalDate
-        LocalDate startDate = parseMonthToDate(startMonth, true);
-        LocalDate endDate = parseMonthToDate(endMonth, false);
+    // /////////////////////////////////////////////////////////////////////// tính tháng dịch vụ
+    // public Map<String, Map<String, BigDecimal>> getRevenueForServicesByMonth(String startMonth, String endMonth) {
+    //     // Parse the start and end month to LocalDate
+    //     LocalDate startDate = parseMonthToDate(startMonth, true);
+    //     LocalDate endDate = parseMonthToDate(endMonth, false);
 
-        // Prepare a map to store revenue data by month
-        Map<String, Map<String, BigDecimal>> revenueByMonth = new HashMap<>();
+    //     // Prepare a map to store revenue data by month
+    //     Map<String, Map<String, BigDecimal>> revenueByMonth = new HashMap<>();
 
-        // Loop through each month in the range from startDate to endDate
-        LocalDate currentMonth = startDate;
-        while (!currentMonth.isAfter(endDate)) {
-            LocalDate nextMonth = currentMonth.plusMonths(1);
+    //     // Loop through each month in the range from startDate to endDate
+    //     LocalDate currentMonth = startDate;
+    //     while (!currentMonth.isAfter(endDate)) {
+    //         LocalDate nextMonth = currentMonth.plusMonths(1);
 
-            // Calculate the revenue for the current month
-            Map<String, BigDecimal> monthlyRevenue = calculateServiceRevenueForMonth(currentMonth, nextMonth.minusDays(1));
+    //         // Calculate the revenue for the current month
+    //         Map<String, BigDecimal> monthlyRevenue = calculateServiceRevenueForMonth(currentMonth, nextMonth.minusDays(1));
 
-            // Use the MM-yyyy format for the month key
-            String formattedMonth = currentMonth.format(DateTimeFormatter.ofPattern("MM-yyyy"));
-            revenueByMonth.put(formattedMonth, monthlyRevenue);
+    //         // Use the MM-yyyy format for the month key
+    //         String formattedMonth = currentMonth.format(DateTimeFormatter.ofPattern("MM-yyyy"));
+    //         revenueByMonth.put(formattedMonth, monthlyRevenue);
 
-            // Move to the next month
-            currentMonth = nextMonth;
-        }
+    //         // Move to the next month
+    //         currentMonth = nextMonth;
+    //     }
 
-        return revenueByMonth;
-    }
+    //     return revenueByMonth;
+    // }
 
-    private LocalDate parseMonthToDate(String monthYear, boolean isStartOfMonth) {
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            String monthYearWithDay = "01-" + monthYear;
-            LocalDate date = LocalDate.parse(monthYearWithDay, formatter);
-            if (!isStartOfMonth) {
-                date = date.withDayOfMonth(date.lengthOfMonth());
-            }
-            return date;
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid month-year format: " + monthYear);
-        }
-    }
+    // private LocalDate parseMonthToDate(String monthYear, boolean isStartOfMonth) {
+    //     try {
+    //         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    //         String monthYearWithDay = "01-" + monthYear;
+    //         LocalDate date = LocalDate.parse(monthYearWithDay, formatter);
+    //         if (!isStartOfMonth) {
+    //             date = date.withDayOfMonth(date.lengthOfMonth());
+    //         }
+    //         return date;
+    //     } catch (DateTimeParseException e) {
+    //         throw new IllegalArgumentException("Invalid month-year format: " + monthYear);
+    //     }
+    // }
 
-    private Map<String, BigDecimal> calculateServiceRevenueForMonth(LocalDate startDate, LocalDate endDate) {
-        Map<String, BigDecimal> serviceRevenue = new HashMap<>();
+    // private Map<String, BigDecimal> calculateServiceRevenueForMonth(LocalDate startDate, LocalDate endDate) {
+    //     Map<String, BigDecimal> serviceRevenue = new HashMap<>();
 
-        // Get all the services available
-        List<Serviceforpet> allServices = serviceforpetRepository.findAll();
+    //     // Get all the services available
+    //     List<Serviceforpet> allServices = serviceforpetRepository.findAll();
 
-        // Get all the appointments for the given period
-        List<Appointment> appointments = appointmentRepository.findByServiceAndDateRange(startDate, endDate);
+    //     // Get all the appointments for the given period
+    //     List<Appointment> appointments = appointmentRepository.findByServiceAndDateRange(startDate, endDate);
 
-        // Iterate through each appointment and calculate revenue
-        for (Appointment appointment : appointments) {
-            for (Serviceforpet service : appointment.getServices()) {
-                ServicePrice servicePrice = servicePriceRepository.findByServiceforpetAndPetSize(service, appointment.getPets().iterator().next().getSize());
-                if (servicePrice != null) {
-                    serviceRevenue.put(service.getName(), serviceRevenue.getOrDefault(service.getName(), BigDecimal.ZERO).add(servicePrice.getPrice()));
-                }
-            }
-        }
+    //     // Iterate through each appointment and calculate revenue
+    //     for (Appointment appointment : appointments) {
+    //         for (Serviceforpet service : appointment.getServices()) {
+    //             ServicePrice servicePrice = servicePriceRepository.findByServiceforpetAndPetSize(service, appointment.getPets().iterator().next().getSize());
+    //             if (servicePrice != null) {
+    //                 serviceRevenue.put(service.getName(), serviceRevenue.getOrDefault(service.getName(), BigDecimal.ZERO).add(servicePrice.getPrice()));
+    //             }
+    //         }
+    //     }
 
-        // Ensure all services are included in the result, even if they had no revenue
-        for (Serviceforpet service : allServices) {
-            serviceRevenue.putIfAbsent(service.getName(), BigDecimal.ZERO);
-        }
+    //     // Ensure all services are included in the result, even if they had no revenue
+    //     for (Serviceforpet service : allServices) {
+    //         serviceRevenue.putIfAbsent(service.getName(), BigDecimal.ZERO);
+    //     }
 
-        return serviceRevenue;
-    }
+    //     return serviceRevenue;
+    // }
 
     /////////////////////////////////////////////// ngày 22
     /// 
@@ -193,17 +198,15 @@ public class RevenueService {
         // Map để lưu doanh thu theo ngày và theo danh mục
         Map<String, Map<String, BigDecimal>> revenueByDateAndGenre = new HashMap<>();
 
+        // Lặp qua tất cả các ngày trong khoảng thời gian
         LocalDate currentDate = startDate;
+
         while (!currentDate.isAfter(endDate)) {
-            // Đảm bảo rằng currentDate chỉ là ngày, không có giờ phút giây
-            Date currentStartOfDay = java.sql.Date.valueOf(currentDate.atStartOfDay().toLocalDate());
-            Date currentEndOfDay = java.sql.Date.valueOf(currentDate.atTime(23, 59, 59).toLocalDate());
+            // Map để lưu doanh thu cho từng danh mục trong ngày hiện tại
+            Map<String, BigDecimal> dailyRevenue = new HashMap<>();
 
             // Lấy danh sách tất cả các danh mục (genre)
             List<String> genres = productRepository.findAllGenres();
-
-            // Map để lưu doanh thu cho từng danh mục trong ngày hiện tại
-            Map<String, BigDecimal> dailyRevenue = new HashMap<>();
 
             // Lặp qua tất cả các danh mục và tính doanh thu cho từng danh mục trong ngày
             for (String genre : genres) {
@@ -214,9 +217,13 @@ public class RevenueService {
 
                 // Lặp qua các sản phẩm và tính doanh thu của chúng trong ngày
                 for (Product product : products) {
+                    // Chuyển đổi LocalDate thành Date
+                    Date startOfDay = convertToDateAtStartOfDay(currentDate); // Lấy thời gian bắt đầu của ngày
+                    Date endOfDay = convertToDateAtEndOfDay(currentDate); // Lấy thời gian kết thúc của ngày
+
                     // Lấy danh sách các OrderItem cho sản phẩm này trong ngày và trạng thái "Hoàn Thành"
                     List<OrderItem> orderItems = orderRepository.findOrderItemsByProductIdAndDateRangeAndStatus(
-                            product.getId(), currentStartOfDay, currentEndOfDay, "Hoàn Thành");
+                            product.getId(), startOfDay, endOfDay, "Hoàn Thành");
 
                     for (OrderItem orderItem : orderItems) {
                         totalRevenue = totalRevenue.add(orderItem.getTotal());
@@ -227,7 +234,7 @@ public class RevenueService {
             }
 
             // Chuyển đổi currentDate thành chuỗi ngày theo định dạng yyyy-MM-dd
-            String formattedDate = currentDate.toString();
+            String formattedDate = currentDate.toString(); // LocalDate.toString() đã có định dạng yyyy-MM-dd sẵn
 
             // Thêm doanh thu của ngày vào tổng doanh thu theo ngày và danh mục
             revenueByDateAndGenre.put(formattedDate, dailyRevenue);
@@ -239,6 +246,60 @@ public class RevenueService {
         return revenueByDateAndGenre;
     }
 
+    private Date convertToDateAtStartOfDay(LocalDate localDate) {
+        // Chuyển LocalDate thành Date vào lúc 00:00:00
+        Instant instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        return Date.from(instant);  // Chuyển từ Instant thành Date
+    }
+
+    private Date convertToDateAtEndOfDay(LocalDate localDate) {
+        // Chuyển LocalDate thành Date vào lúc 23:59:59
+        Instant instant = localDate.atTime(23, 59, 59).atZone(ZoneId.systemDefault()).toInstant();
+        return Date.from(instant);  // Chuyển từ Instant thành Date
+    }
+
+    // public Map<String, BigDecimal> getRevenueByGenresDaily(LocalDate startDate, LocalDate endDate) {
+    //     // Tạo map để lưu doanh thu theo ngày cho từng danh mục sản phẩm
+    //     Map<String, BigDecimal> revenueByDate = new HashMap<>();
+    //     // Lấy tất cả danh mục sản phẩm
+    //     List<String> genres = productRepository.findAllGenres();
+    //     // Lặp qua từng ngày trong khoảng thời gian đã cho
+    //     LocalDate currentDate = startDate;
+    //     while (!currentDate.isAfter(endDate)) {
+    //         // Khởi tạo doanh thu của các danh mục sản phẩm cho ngày hiện tại
+    //         Map<String, BigDecimal> dailyRevenue = new HashMap<>();
+    //         // Lặp qua tất cả các danh mục sản phẩm
+    //         for (String genre : genres) {
+    //             BigDecimal totalRevenueForGenre = BigDecimal.ZERO;
+    //             // Lấy danh sách các sản phẩm trong danh mục này
+    //             List<Product> products = productRepository.findByGenre(genre);
+    //             // Lặp qua tất cả sản phẩm trong danh mục để tính doanh thu
+    //             for (Product product : products) {
+    //                 // Lấy danh sách các OrderItem của sản phẩm trong ngày hiện tại và có trạng thái "Hoàn Thành"
+    //                 List<OrderItem> orderItems = orderRepository.findOrderItemsByProductIdAndDateRangeAndStatus(
+    //                         product.getId(),
+    //                         java.sql.Date.valueOf(currentDate), // Chỉ tính cho ngày hiện tại
+    //                         java.sql.Date.valueOf(currentDate), // Chỉ tính cho ngày hiện tại
+    //                         "Hoàn Thành" // Chỉ tính các đơn hàng đã hoàn thành
+    //                 );
+    //                 // Cộng doanh thu cho từng OrderItem
+    //                 for (OrderItem orderItem : orderItems) {
+    //                     totalRevenueForGenre = totalRevenueForGenre.add(orderItem.getTotal());
+    //                 }
+    //             }
+    //             // Lưu doanh thu của từng danh mục sản phẩm cho ngày hiện tại
+    //             dailyRevenue.put(genre, totalRevenueForGenre);
+    //         }
+    //         // Cộng doanh thu của từng danh mục sản phẩm vào tổng doanh thu theo ngày
+    //         for (String genre : dailyRevenue.keySet()) {
+    //             BigDecimal currentRevenue = revenueByDate.getOrDefault(currentDate.toString(), BigDecimal.ZERO);
+    //             revenueByDate.put(currentDate.toString(), currentRevenue.add(dailyRevenue.get(genre)));
+    //         }
+    //         // Tiến đến ngày kế tiếp
+    //         currentDate = currentDate.plusDays(1);
+    //     }
+    //     return revenueByDate;  // Trả về doanh thu theo ngày
+    // }
     // Trả về ngày đầu tháng
     private Date getStartOfMonth(Date date) {
         Calendar calendar = Calendar.getInstance();
@@ -332,21 +393,69 @@ public class RevenueService {
     public Map<String, BigDecimal> getTotalRevenueByDay(LocalDate startDate, LocalDate endDate) {
         Map<String, BigDecimal> totalRevenueByDay = new HashMap<>();
 
+        // Lấy doanh thu từ dịch vụ theo ngày
         Map<String, Map<String, BigDecimal>> serviceRevenueByDay = getRevenueForServicesByDay(startDate, endDate);
-        Map<String, Map<String, BigDecimal>> genreRevenueByDay = getRevenueByGenresDaily(startDate, endDate);
 
-        // Kết hợp doanh thu dịch vụ và danh mục sản phẩm
-        for (String date : serviceRevenueByDay.keySet()) {
-            BigDecimal totalRevenue = serviceRevenueByDay.get(date).values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-            if (genreRevenueByDay.containsKey(date)) {
-                totalRevenue = totalRevenue.add(genreRevenueByDay.get(date).values().stream().reduce(BigDecimal.ZERO, BigDecimal::add));
+        // Lấy doanh thu từ sản phẩm theo ngày
+        Map<String, Map<String, BigDecimal>> productRevenueByDay = getRevenueByGenresDaily(startDate, endDate);
+
+        // Lấy tất cả các ngày từ dịch vụ và sản phẩm
+        Set<String> allDates = new HashSet<>();
+        allDates.addAll(serviceRevenueByDay.keySet());
+        allDates.addAll(productRevenueByDay.keySet());
+
+        // Duyệt qua tất cả các ngày
+        for (String date : allDates) {
+            BigDecimal totalRevenue = BigDecimal.ZERO;
+
+            // Cộng doanh thu dịch vụ cho ngày đó
+            if (serviceRevenueByDay.containsKey(date)) {
+                BigDecimal serviceRevenue = serviceRevenueByDay.get(date).values().stream()
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                totalRevenue = totalRevenue.add(serviceRevenue);
             }
+
+            // Cộng doanh thu sản phẩm cho ngày đó
+            if (productRevenueByDay.containsKey(date)) {
+                BigDecimal productRevenue = productRevenueByDay.get(date).values().stream()
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                totalRevenue = totalRevenue.add(productRevenue);
+            }
+
+            // Lưu tổng doanh thu vào map
             totalRevenueByDay.put(date, totalRevenue);
         }
 
         return totalRevenueByDay;
     }
 
+    // public Map<String, BigDecimal> getTotalRevenueByDay(LocalDate startDate, LocalDate endDate) {
+    //     Map<String, BigDecimal> totalRevenueByDay = new HashMap<>();
+    //     // Lấy doanh thu từ dịch vụ theo ngày
+    //     Map<String, Map<String, BigDecimal>> serviceRevenueByDay = getRevenueForServicesByDay(startDate, endDate);
+    //     // System.out.println("Service Revenue: " + serviceRevenueByDay);
+    //     // Lấy doanh thu từ sản phẩm theo ngày
+    //     Map<String, Map<String, BigDecimal>> productRevenueByDay = getRevenueByGenresDaily(startDate, endDate);
+    //     // System.out.println("Product Revenue: " + productRevenueByDay);
+    //     // Kết hợp doanh thu dịch vụ và sản phẩm vào tổng doanh thu cho từng ngày
+    //     for (String date : serviceRevenueByDay.keySet()) {
+    //         // Lấy tổng doanh thu dịch vụ cho ngày đó
+    //         BigDecimal totalRevenue = serviceRevenueByDay.get(date).values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+    //         // Cộng thêm doanh thu sản phẩm nếu có cho ngày đó
+    //         if (productRevenueByDay.containsKey(date)) {
+    //             totalRevenue = totalRevenue.add(productRevenueByDay.get(date));  // Cộng doanh thu sản phẩm
+    //         }
+    //         // Đưa tổng doanh thu vào Map
+    //         totalRevenueByDay.put(date, totalRevenue);
+    //     }
+    //     // Nếu ngày đó không có doanh thu dịch vụ nhưng có doanh thu sản phẩm
+    //     for (String date : productRevenueByDay.keySet()) {
+    //         if (!totalRevenueByDay.containsKey(date)) {
+    //             totalRevenueByDay.put(date, productRevenueByDay.get(date));  // Cộng doanh thu sản phẩm nếu chưa có
+    //         }
+    //     }
+    //     return totalRevenueByDay;
+    // }
     public Map<String, BigDecimal> getTotalRevenueByMonth(String startMonth, String endMonth) {
         // Parse the start and end month to LocalDate
         LocalDate startDate = parseMonthToDate(startMonth, true);
@@ -391,9 +500,7 @@ public class RevenueService {
         return totalRevenueByMonth;
     }
 
-    ////// ngày 23
-   
-public BigDecimal getTotalRevenue() {
+    public BigDecimal getTotalRevenue() {
         BigDecimal totalRevenue = BigDecimal.ZERO;
 
         // 1. Doanh thu từ dịch vụ (AppointmentPrice)
@@ -435,6 +542,136 @@ public BigDecimal getTotalRevenue() {
         }
 
         return total;
+    }
+
+// Tính doanh thu dịch vụ cho từng ngày
+    public Map<String, Map<String, BigDecimal>> getRevenueForServicesByDay(LocalDate startDate, LocalDate endDate) {
+        Map<String, Map<String, BigDecimal>> revenueByDay = new HashMap<>();
+
+        LocalDate currentDate = startDate;
+        while (!currentDate.isAfter(endDate)) {
+            // Tính doanh thu cho ngày hiện tại
+            Map<String, BigDecimal> dailyRevenue = calculateServiceRevenueForDay(currentDate, currentDate);
+            revenueByDay.put(currentDate.toString(), dailyRevenue);  // Lưu doanh thu cho từng dịch vụ của ngày đó
+            currentDate = currentDate.plusDays(1);  // Tiến đến ngày tiếp theo
+        }
+
+        return revenueByDay;
+    }
+
+// Phương thức tính doanh thu cho mỗi ngày
+    private Map<String, BigDecimal> calculateServiceRevenueForDay(LocalDate startDate, LocalDate endDate) {
+        Map<String, BigDecimal> serviceRevenue = new HashMap<>();
+
+        // Lấy tất cả các dịch vụ
+        List<Serviceforpet> allServices = serviceforpetRepository.findAll();
+
+        // Lấy các cuộc hẹn trong khoảng thời gian
+        List<Appointment> appointments = appointmentRepository.findByServiceAndDateRange(startDate, endDate);
+
+        // Lặp qua tất cả các cuộc hẹn
+        for (Appointment appointment : appointments) {
+            // Lặp qua tất cả thú cưng trong lịch hẹn
+            for (Pet pet : appointment.getPets()) {
+                // Lặp qua tất cả các dịch vụ trong cuộc hẹn
+                for (Serviceforpet service : appointment.getServices()) {
+                    // Lấy giá dịch vụ cho dịch vụ và kích thước thú cưng
+                    ServicePrice servicePrice = servicePriceRepository.findByServiceforpetAndPetSize(service, pet.getSize());
+
+                    if (servicePrice != null) {
+                        // Cộng dồn doanh thu cho dịch vụ này
+                        serviceRevenue.put(service.getName(),
+                                serviceRevenue.getOrDefault(service.getName(), BigDecimal.ZERO).add(servicePrice.getPrice()));
+                    }
+                }
+            }
+        }
+
+        // Đảm bảo rằng tất cả dịch vụ đều có mặt trong kết quả, ngay cả khi không có doanh thu
+        for (Serviceforpet service : allServices) {
+            serviceRevenue.putIfAbsent(service.getName(), BigDecimal.ZERO);
+        }
+
+        return serviceRevenue;
+    }
+
+// Tính doanh thu dịch vụ cho từng tháng
+    public Map<String, Map<String, BigDecimal>> getRevenueForServicesByMonth(String startMonth, String endMonth) {
+        // Parse the start and end month to LocalDate
+        LocalDate startDate = parseMonthToDate(startMonth, true);
+        LocalDate endDate = parseMonthToDate(endMonth, false);
+
+        // Prepare a map to store revenue data by month
+        Map<String, Map<String, BigDecimal>> revenueByMonth = new HashMap<>();
+
+        // Loop through each month in the range from startDate to endDate
+        LocalDate currentMonth = startDate;
+        while (!currentMonth.isAfter(endDate)) {
+            LocalDate nextMonth = currentMonth.plusMonths(1);
+
+            // Calculate the revenue for the current month
+            Map<String, BigDecimal> monthlyRevenue = calculateServiceRevenueForMonth(currentMonth, nextMonth.minusDays(1));
+
+            // Use the MM-yyyy format for the month key
+            String formattedMonth = currentMonth.format(DateTimeFormatter.ofPattern("MM-yyyy"));
+            revenueByMonth.put(formattedMonth, monthlyRevenue);
+
+            // Move to the next month
+            currentMonth = nextMonth;
+        }
+
+        return revenueByMonth;
+    }
+
+// Phương thức chuyển đổi chuỗi tháng thành LocalDate
+    private LocalDate parseMonthToDate(String monthYear, boolean isStartOfMonth) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            String monthYearWithDay = "01-" + monthYear;
+            LocalDate date = LocalDate.parse(monthYearWithDay, formatter);
+            if (!isStartOfMonth) {
+                date = date.withDayOfMonth(date.lengthOfMonth());
+            }
+            return date;
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid month-year format: " + monthYear);
+        }
+    }
+
+// Phương thức tính doanh thu cho dịch vụ trong một tháng
+    private Map<String, BigDecimal> calculateServiceRevenueForMonth(LocalDate startDate, LocalDate endDate) {
+        Map<String, BigDecimal> serviceRevenue = new HashMap<>();
+
+        // Lấy tất cả các dịch vụ
+        List<Serviceforpet> allServices = serviceforpetRepository.findAll();
+
+        // Lấy các cuộc hẹn trong khoảng thời gian
+        List<Appointment> appointments = appointmentRepository.findByServiceAndDateRange(startDate, endDate);
+
+        // Lặp qua tất cả các cuộc hẹn
+        for (Appointment appointment : appointments) {
+            // Lặp qua tất cả thú cưng trong lịch hẹn
+            for (Pet pet : appointment.getPets()) {
+                // Lặp qua tất cả các dịch vụ trong cuộc hẹn
+                for (Serviceforpet service : appointment.getServices()) {
+                    // Lấy giá dịch vụ cho dịch vụ và kích thước thú cưng
+                    ServicePrice servicePrice = servicePriceRepository.findByServiceforpetAndPetSize(service, pet.getSize());
+
+                    if (servicePrice != null) {
+                        // Cộng dồn doanh thu cho dịch vụ này
+                        serviceRevenue.put(service.getName(),
+                                serviceRevenue.getOrDefault(service.getName(), BigDecimal.ZERO).add(servicePrice.getPrice()));
+                    }
+                }
+            }
+        }
+
+        // Đảm bảo rằng tất cả dịch vụ đều có mặt trong kết quả, ngay cả khi không có doanh thu
+        for (Serviceforpet service : allServices) {
+            serviceRevenue.putIfAbsent(service.getName(), BigDecimal.ZERO);
+        }
+
+        return serviceRevenue;
     }
 
 }
