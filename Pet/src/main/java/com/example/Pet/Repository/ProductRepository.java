@@ -18,6 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Optional<Product> findById(Long id);
 
+    // Product findById1(long id);
     // Tìm sản phẩm theo genre và price
     List<Product> findByGenreAndPriceBetween(String genre, Double minPrice, Double maxPrice);
 
@@ -79,4 +80,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT DISTINCT p.genre FROM Product p")
     List<String> findAllGenres();
 
+    // // Phương thức tính tổng số lượng đã bán cho sản phẩm
+    // @Query("SELECT SUM(s.sold) FROM Sale s WHERE s.product.id = :productId")
+    // int sumQuantitySoldByProductId(@Param("productId") Long productId);
 }

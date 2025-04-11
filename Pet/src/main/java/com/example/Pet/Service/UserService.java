@@ -486,7 +486,6 @@ public List<UserWarningDTO> getAllUsersOnlyRiskStatus() {
             // Kiểm tra xem tài khoản có bị khóa không
             if (user.getStatus() != null && !user.getStatus()) {
                 user.setStatus(true); // Đổi trạng thái tài khoản thành "Đang hoạt động"
-                user.setriskStatus("Bình Thường");
                 user.setIsUnlocked(true); // Đánh dấu tài khoản đã được mở khóa
 
                 userRepository.save(user); // Lưu thay đổi

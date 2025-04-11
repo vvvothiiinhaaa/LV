@@ -18,8 +18,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
 
     // @Query(value = "SELECT COUNT(*) FROM appointment WHERE start_time = :startTime AND end_time = :endTime AND app_date = :appDate", nativeQuery = true)
     // Long countByStartTimeAndEndTimeAndAppDate(@Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime, @Param("appDate") LocalDate appDate);
-    @Query(value = "SELECT COUNT(*) FROM appointment WHERE CONVERT(time, start_time) = CONVERT(time, :startTime) AND CONVERT(time, end_time) = CONVERT(time, :endTime) AND app_date = :appDate", nativeQuery = true)
-    Long countByStartTimeAndEndTimeAndAppDate(@Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime, @Param("appDate") LocalDate appDate);
+    // @Query(value = "SELECT COUNT(*) FROM appointment WHERE CONVERT(time, start_time) = CONVERT(time, :startTime) AND CONVERT(time, end_time) = CONVERT(time, :endTime) AND app_date = :appDate", nativeQuery = true)
+    // Long countByStartTimeAndEndTimeAndAppDate(@Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime, @Param("appDate") LocalDate appDate);
+    @Query(value = "SELECT COUNT(*) FROM appointment "
+            + "WHERE CONVERT(time, start_time) = CONVERT(time, :startTime) "
+            + "AND CONVERT(time, end_time) = CONVERT(time, :endTime) "
+            + "AND app_date = :appDate "
+            + "AND status = N'Đã đặt lịch'", nativeQuery = true)
+    Long countByStartTimeAndEndTimeAndAppDate(
+            @Param("startTime") LocalTime startTime,
+            @Param("endTime") LocalTime endTime,
+            @Param("appDate") LocalDate appDate);
 
     @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END FROM appointment_pets WHERE appointment_id = :appointmentId AND pet_id = :petId", nativeQuery = true)
     int existsPetInAppointment(@Param("appointmentId") Integer appointmentId, @Param("petId") Integer petId);

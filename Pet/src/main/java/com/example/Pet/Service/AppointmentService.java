@@ -297,22 +297,24 @@ public class AppointmentService {
 
     // Hàm lấy khung giờ trống cho ngày được chọn
     public List<String> getAvailableTimeSlots(LocalDate date) {
-        // Danh sách khung giờ cố định kèm theo số lượng đặt tối đa
         List<String> allTimeSlots = Arrays.asList(
                 "09:00-10:30", "11:00-12:00", "12:30-14:00",
                 "14:00-15:30", "16:00-17:30", "18:00-19:30", "20:00-21:20"
         );
 
-        // Lấy danh sách lịch hẹn đã đặt trong ngày
         List<Appointment> bookedAppointments = appointmentRepository.findByAppDate(date);
 
-        // Đếm số lượng đặt lịch cho từng khung giờ
         Map<String, Integer> bookingCounts = new HashMap<>();
         for (String slot : allTimeSlots) {
             bookingCounts.put(slot, 0);
         }
 
         for (Appointment appointment : bookedAppointments) {
+            // Bỏ qua lịch hẹn đã bị hủy
+            if ("Đã hủy lịch".equals(appointment.getStatus())) {
+                continue;
+            }
+
             LocalTime bookedStart = appointment.getStartTime();
             LocalTime bookedEnd = appointment.getEndTime();
 
@@ -321,14 +323,12 @@ public class AppointmentService {
                 LocalTime slotStart = LocalTime.parse(timeParts[0]);
                 LocalTime slotEnd = LocalTime.parse(timeParts[1]);
 
-                // Chỉ tăng bộ đếm nếu khoảng thời gian nằm hoàn toàn trong lịch đã đặt
                 if (!slotEnd.isBefore(bookedStart) && !slotStart.isAfter(bookedEnd.minusMinutes(1))) {
                     bookingCounts.put(slot, bookingCounts.get(slot) + 1);
                 }
             }
         }
 
-        // Lọc các khung giờ chưa đạt giới hạn tối đa
         List<String> availableTimeSlots = new ArrayList<>();
         for (String slot : allTimeSlots) {
             int maxBookings = TIME_SLOT_LIMITS.getOrDefault(slot, Integer.MAX_VALUE);
@@ -337,7 +337,7 @@ public class AppointmentService {
             }
         }
 
-        return availableTimeSlots; // Trả về danh sách khung giờ trống chính xác
+        return availableTimeSlots;
     }
 
     /////////////////////////////////////// ngày 19 / 3

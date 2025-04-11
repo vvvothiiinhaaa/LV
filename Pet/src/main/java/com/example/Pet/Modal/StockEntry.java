@@ -20,8 +20,8 @@ public class StockEntry {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product; // Liên kết với bảng Product
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity; // Số lượng nhập
@@ -33,6 +33,9 @@ public class StockEntry {
     // private String supplier; // Nhà cung cấp
     @Column(name = "entry_date", nullable = false)
     private LocalDateTime entryDate; // Ngày nhập hàng
+
+    @Column(name = "remaining_quantity", nullable = false)
+    private Integer remainingQuantity;
 
     public StockEntry() {
     }
@@ -53,6 +56,7 @@ public class StockEntry {
     public StockEntry(Product product, Integer quantity, Double purchasePrice, LocalDateTime entryDate) {
         this.product = product;
         this.quantity = quantity;
+        this.remainingQuantity = quantity; // ban đầu bằng số lượng nhập
         this.purchasePrice = purchasePrice;
         this.entryDate = entryDate;
     }
@@ -101,4 +105,19 @@ public class StockEntry {
     public void setEntryDate(LocalDateTime entryDate) {
         this.entryDate = entryDate;
     }
+
+    /**
+     * @return Integer return the remainingQuantity
+     */
+    public Integer getRemainingQuantity() {
+        return remainingQuantity;
+    }
+
+    /**
+     * @param remainingQuantity the remainingQuantity to set
+     */
+    public void setRemainingQuantity(Integer remainingQuantity) {
+        this.remainingQuantity = remainingQuantity;
+    }
+
 }
