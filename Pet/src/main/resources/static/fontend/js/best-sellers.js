@@ -166,3 +166,17 @@ function formatPrice(price) {
 document.addEventListener("DOMContentLoaded", function () {
     loadProducts("http://localhost:8080/api/products/best-sellers", "product-best-list");
 });
+function updateCartCount(userId) {
+    fetch(`http://localhost:8080/api/cart/count/${userId}`, { credentials: 'include' })
+        .then(response => response.json())
+        .then(productCount => {
+            // Hiển thị số lượng sản phẩm trong giỏ hàng lên giao diện
+            const cartCountElement = document.getElementById("cartCount");
+            if (cartCountElement) {
+                cartCountElement.textContent = productCount; // Cập nhật số lượng vào phần tử có id="cartCount"
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi khi lấy số lượng sản phẩm trong giỏ hàng:', error);
+        });
+    }

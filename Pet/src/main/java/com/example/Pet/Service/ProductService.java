@@ -219,7 +219,7 @@ public class ProductService {
     // ///////////////////////////////
     // Lấy sản phẩm mới nhất
     public List<Product> getNewProducts() {
-        return productRepository.findTop5ByOrderByIdDesc();
+        return productRepository.findTop10ByOrderByIdDesc();
     }
 
     // Lấy sản phẩm bán chạy nhất
@@ -231,6 +231,7 @@ public class ProductService {
     public long countAllProducts() {
         return productRepository.count(); // Đếm tất cả sản phẩm
     }
+
 
 ////////////////////////////////////////////////////
   

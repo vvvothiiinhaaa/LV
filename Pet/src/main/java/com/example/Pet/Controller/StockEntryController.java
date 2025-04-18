@@ -1,13 +1,22 @@
 package com.example.Pet.Controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Pet.DTO.StockEntryRequest;
+import com.example.Pet.Modal.StockEntry;
 import com.example.Pet.Repository.ProductRepository;
 import com.example.Pet.Repository.StockEntryRepository;
+import com.example.Pet.Service.OrderService;
 import com.example.Pet.Service.StockEntryService;
 
 @RestController
@@ -22,6 +31,8 @@ public class StockEntryController {
 
     @Autowired
     private StockEntryRepository stockEntryRepository;
+    @Autowired
+    private OrderService orderService;
 
     // // API thêm nhập hàng
     // @PostMapping("/add")
@@ -88,33 +99,48 @@ public class StockEntryController {
     //         return "Lỗi: " + e.getMessage();
     //     }
     // }
-    @PostMapping("/add")
-    public String addStock(@RequestParam Long productId,
-            @RequestParam Integer quantity,
-            @RequestParam Double purchasePrice) {
+    ///////////////////////////////////////////////////////////////////  có thể sử dụng
+    // @PostMapping("/add")
+    // public String addStock(@RequestParam Long productId,
+    //         @RequestParam Integer quantity,
+    //         @RequestParam Double purchasePrice) {
+    //     try {
+    //         // Gọi phương thức addStock từ StockService để nhập hàng và cập nhật giá bán
+    //         stockEntryService.addStock(productId, quantity, purchasePrice);
+    //         return "Nhập hàng thành công và cập nhật giá bán!";
+    //     } catch (Exception e) {
+    //         return "Lỗi: " + e.getMessage();
+    //     }
+    // }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+     @PostMapping("/add")
+    public ResponseEntity<String> addStock(@RequestBody StockEntryRequest request) {
         try {
-            // Gọi phương thức addStock từ StockService để nhập hàng và cập nhật giá bán
-            stockEntryService.addStock(productId, quantity, purchasePrice);
-            return "Nhập hàng thành công và cập nhật giá bán!";
-        } catch (Exception e) {
-            return "Lỗi: " + e.getMessage();
+            orderService.addStock(request.getProductId(), request.getQuantity(), request.getPurchasePrice());
+            return ResponseEntity.ok("Nhập hàng thành công!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi: " + e.getMessage());
         }
     }
 
 // // API lấy toàn bộ lịch sử nhập hàng
-// @GetMapping("/all")
-// public List<StockEntry> getAllStockEntries() {
-//     return stockEntryService.getAllStockEntries();
-// }
-// // API chỉnh sửa số lượng nhập hàng
+    @GetMapping("/all")
+    public List<StockEntry> getAllStockEntries() {
+        return stockEntryService.getAllStockEntries();
+    }
+// API chỉnh sửa số lượng nhập hàng
 // @PutMapping("/update/{id}")
 // public StockEntry updateStockQuantity(@PathVariable Long id,
 //         @RequestParam Integer newQuantity) {
 //     return stockEntryService.updateStockQuantity(id, newQuantity);
 // }
-// // API lấy bản ghi nhập hàng mới nhất của sản phẩm
-// @GetMapping("/product/{productId}/latest")
-// public StockEntry getLatestStockEntry(@PathVariable Long productId) {
-//     return stockEntryService.getLatestStockEntry(productId);
-// }
+// API lấy bản ghi nhập hàng mới nhất của sản phẩm
+
+    @GetMapping("/product/{productId}/latest")
+    public StockEntry getLatestStockEntry(@PathVariable Long productId) {
+        return stockEntryService.getLatestStockEntry(productId);
+    }
+
 }

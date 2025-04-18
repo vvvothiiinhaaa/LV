@@ -3,11 +3,13 @@ package com.example.Pet.Service;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,12 +22,14 @@ import com.example.Pet.Modal.Order;
 import com.example.Pet.Modal.OrderAddress;
 import com.example.Pet.Modal.OrderItem;
 import com.example.Pet.Modal.Product;
+import com.example.Pet.Modal.StockEntry;
 import com.example.Pet.Modal.User;
 import com.example.Pet.Repository.AddressRepository;
 import com.example.Pet.Repository.OrderAddressRepository;
 import com.example.Pet.Repository.OrderItemRepository;
 import com.example.Pet.Repository.OrderRepository;
 import com.example.Pet.Repository.ProductRepository;
+import com.example.Pet.Repository.StockEntryRepository;
 import com.example.Pet.Repository.UserRepository;
 
 @Service
@@ -43,6 +47,9 @@ public class OrderService {
     private AddressRepository addressRepository;
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private StockEntryRepository stockEntryRepository;
 
     @Transactional
     // public Order createOrder(Integer userId, BigDecimal discount, BigDecimal totalPayment, String paymentMethod,
@@ -84,9 +91,59 @@ public class OrderService {
     //     return savedOrder;
     // }
 
-    public Order createOrder(Integer userId, BigDecimal discount, BigDecimal totalPayment, String paymentMethod, String note,
-            List<OrderItem> orderItems, Integer addressId) {
-        //  Tạo mới đơn hàng
+    // public Order createOrder(Integer userId, BigDecimal discount, BigDecimal totalPayment, String paymentMethod, String note,
+    //         List<OrderItem> orderItems, Integer addressId) {
+    //     //  Tạo mới đơn hàng
+    //     Order order = new Order();
+    //     order.setUserId(userId);
+    //     order.setOrderDate(new Date());
+    //     order.setDiscount(discount);
+    //     order.setTotalPayment(totalPayment);
+    //     order.setOrderStatus("Chờ Xác Nhận");
+    //     order.setNote(note);
+    //     order.setPaymentMethod(paymentMethod);
+    //     //  Kiểm tra tồn kho và cập nhật số lượng bán
+    //     for (OrderItem item : orderItems) {
+    //         item.setOrder(order);
+    //         // Tìm sản phẩm trong database
+    //         Product product = productRepository.findById(item.getProductId())
+    //                 .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại với ID: " + item.getProductId()));
+    //         // Kiểm tra tồn kho
+    //         if (product.getQuantity() < item.getQuantity()) {
+    //             throw new RuntimeException("Số lượng tồn kho không đủ cho sản phẩm: " + product.getName());
+    //         }
+    //         // Cập nhật số lượng đã bán và tồn kho
+    //         product.setSold(product.getSold() + item.getQuantity());
+    //         product.setQuantity(product.getQuantity() - item.getQuantity());
+    //         // Lưu thay đổi sản phẩm
+    //         productRepository.save(product);
+    //     }
+    //     order.setOrderItems(orderItems);
+    //     //  Lưu Order trước khi lưu OrderItem (Cascade.ALL sẽ tự động lưu OrderItem)
+    //     Order savedOrder = orderRepository.save(order);
+    //     //  Lấy thông tin chi tiết địa chỉ từ bảng `address`
+    //     Address address = addressRepository.findById(Long.valueOf(addressId))
+    //             .orElseThrow(() -> new RuntimeException("Địa chỉ không tồn tại với ID: " + addressId));
+    //     //  Lưu toàn bộ thông tin địa chỉ vào `order_address`
+    //     OrderAddress orderAddress = new OrderAddress();
+    //     orderAddress.setUserId(userId);
+    //     orderAddress.setOrderId(savedOrder.getId());
+    //     orderAddress.setRecipientName(address.getRecipientName());
+    //     orderAddress.setPhoneNumber(address.getPhoneNumber());
+    //     orderAddress.setProvinceCity(address.getProvinceCity());
+    //     orderAddress.setDistrict(address.getDistrict());
+    //     orderAddress.setWardSubdistrict(address.getWardSubdistrict());
+    //     orderAddress.setAddressDetail(address.getAddressDetail());
+    //     //  Lưu địa chỉ liên kết với đơn hàng
+    //     orderAddressRepository.save(orderAddress);
+    //     //  Trả về thông tin đơn hàng đã lưu
+    //     return savedOrder;
+    // }
+    
+    //////////////////////////////////////////////////////////////////////////// 
+    public Order createOrder(Integer userId, BigDecimal discount, BigDecimal totalPayment, String paymentMethod,
+            String note, List<OrderItem> orderItems, Integer addressId) {
+
         Order order = new Order();
         order.setUserId(userId);
         order.setOrderDate(new Date());
@@ -96,37 +153,74 @@ public class OrderService {
         order.setNote(note);
         order.setPaymentMethod(paymentMethod);
 
-        //  Kiểm tra tồn kho và cập nhật số lượng bán
         for (OrderItem item : orderItems) {
             item.setOrder(order);
 
-            // Tìm sản phẩm trong database
             Product product = productRepository.findById(item.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại với ID: " + item.getProductId()));
+                    .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại: ID " + item.getProductId()));
 
-            // Kiểm tra tồn kho
-            if (product.getQuantity() < item.getQuantity()) {
-                throw new RuntimeException("Số lượng tồn kho không đủ cho sản phẩm: " + product.getName());
+            int quantityToSell = item.getQuantity();
+
+            if (product.getQuantity() < quantityToSell) {
+                throw new RuntimeException("Không đủ hàng trong kho cho sản phẩm: " + product.getName());
             }
 
-            // Cập nhật số lượng đã bán và tồn kho
-            product.setSold(product.getSold() + item.getQuantity());
-            product.setQuantity(product.getQuantity() - item.getQuantity());
+// 1. Tính anonymous stock (tồn ban đầu khi chưa nhập lô)
+            int stockInEntries = stockEntryRepository.sumQuantityByProduct(product);
+            int anonymousStock = product.getQuantity() - stockInEntries;
+            int usedAnonymous = 0;
 
-            // Lưu thay đổi sản phẩm
+// 2. Trừ từ hàng anonymous trước
+            if (anonymousStock > 0) {
+                usedAnonymous = Math.min(anonymousStock, quantityToSell);
+                quantityToSell -= usedAnonymous;
+                System.out.println("→ Bán " + usedAnonymous + " từ hàng tạo ban đầu, giá: " + product.getPrice());
+            }
+
+// 3. Trừ tiếp từ StockEntry (FIFO)
+            List<StockEntry> stockEntries = stockEntryRepository.findByProductOrderByEntryDateAsc(product);
+            for (StockEntry entry : stockEntries) {
+                if (entry.getQuantity() == 0) {
+                    continue;
+                }
+
+                int sellQty = Math.min(entry.getQuantity(), quantityToSell);
+                entry.setQuantity(entry.getQuantity() - sellQty);
+                stockEntryRepository.save(entry);
+
+                quantityToSell -= sellQty;
+
+                double price = entry.getPurchasePrice() * 1.2;
+                System.out.println("→ Bán " + sellQty + " từ lô " + entry.getEntryDate() + ", giá: " + price);
+
+                if (quantityToSell == 0) {
+                    break;
+                }
+            }
+
+            if (quantityToSell > 0) {
+                throw new RuntimeException("Không đủ hàng để hoàn tất đơn hàng cho sản phẩm: " + product.getName());
+            }
+
+// 4. Cập nhật tồn kho tổng
+            product.setQuantity(product.getQuantity() - item.getQuantity());
+            product.setSold(product.getSold() + item.getQuantity());
             productRepository.save(product);
+
+// 5. Nếu anonymous stock đã hết → cập nhật giá bán mới
+            int anonymousLeft = product.getQuantity() - stockEntryRepository.sumQuantityByProduct(product);
+            if (anonymousLeft <= 0) {
+                updateProductPriceFromNextBatch(product);
+            }
         }
 
         order.setOrderItems(orderItems);
-
-        //  Lưu Order trước khi lưu OrderItem (Cascade.ALL sẽ tự động lưu OrderItem)
         Order savedOrder = orderRepository.save(order);
 
-        //  Lấy thông tin chi tiết địa chỉ từ bảng `address`
+// 6. Ghi thông tin địa chỉ đơn hàng
         Address address = addressRepository.findById(Long.valueOf(addressId))
-                .orElseThrow(() -> new RuntimeException("Địa chỉ không tồn tại với ID: " + addressId));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy địa chỉ với ID: " + addressId));
 
-        //  Lưu toàn bộ thông tin địa chỉ vào `order_address`
         OrderAddress orderAddress = new OrderAddress();
         orderAddress.setUserId(userId);
         orderAddress.setOrderId(savedOrder.getId());
@@ -137,11 +231,54 @@ public class OrderService {
         orderAddress.setWardSubdistrict(address.getWardSubdistrict());
         orderAddress.setAddressDetail(address.getAddressDetail());
 
-        //  Lưu địa chỉ liên kết với đơn hàng
         orderAddressRepository.save(orderAddress);
 
-        //  Trả về thông tin đơn hàng đã lưu
         return savedOrder;
+    }
+
+    /**
+     * Cập nhật giá bán theo lô còn hàng tiếp theo (nếu anonymous stock đã hết)
+     */
+    public void updateProductPriceFromNextBatch(Product product) {
+        List<StockEntry> stockEntries = stockEntryRepository.findByProductOrderByEntryDateAsc(product);
+
+        for (StockEntry entry : stockEntries) {
+            if (entry.getQuantity() > 0) {
+                double newPrice = entry.getPurchasePrice() * 1.2;
+                if (!Objects.equals(product.getPrice(), newPrice)) {
+                    product.setPrice(newPrice);
+                    productRepository.save(product);
+                    System.out.println(" Giá cập nhật: " + newPrice + " từ lô ngày " + entry.getEntryDate());
+                }
+                return;
+            }
+        }
+
+// Nếu không còn hàng trong bất kỳ lô nào → hết hàng
+        product.setPrice(0.0);
+        productRepository.save(product);
+        System.out.println(" Sản phẩm đã hết hàng, giá bán đặt về 0.");
+    }
+
+    /**
+     * Nhập kho – thêm lô mới & cộng số lượng vào tồn kho
+     */
+    public void addStock(Long productId, Integer quantity, Double purchasePrice) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại với ID: " + productId));
+
+        StockEntry stockEntry = new StockEntry();
+        stockEntry.setProduct(product);
+        stockEntry.setQuantity(quantity);
+        stockEntry.setPurchasePrice(purchasePrice);
+        stockEntry.setEntryDate(LocalDateTime.now());
+
+        stockEntryRepository.save(stockEntry);
+
+        product.setQuantity(product.getQuantity() + quantity);
+        productRepository.save(product);
+
+        System.out.println(" Nhập kho: " + quantity + " sản phẩm, giá nhập: " + purchasePrice);
     }
 
     ///////////////// lấy chi tiết đơn hàng

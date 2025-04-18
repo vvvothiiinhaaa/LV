@@ -293,33 +293,42 @@
    
    </script>
    <script>
-    // document.addEventListener("DOMContentLoaded", function () {
-    //     const buttons = document.querySelectorAll(".filter-btn");
-    //     const sections = [
-    //         { content: "newProducts", title: "newProductsTitle" },
-    //         { content: "bestSellers", title: "bestSellersTitle" },
-    //         { content: "productList", title: "productListTitle" },
-    //     ];
-
-    //     buttons.forEach(btn => {
-    //         btn.addEventListener("click", function () {
-    //             const target = btn.getAttribute("data-target");
-
-    //             sections.forEach(section => {
-    //                 const contentEl = document.getElementById(section.content);
-    //                 const titleEl = document.getElementById(section.title);
-    //                 if (section.content === target) {
-    //                     contentEl.style.display = "flex";
-    //                     titleEl.style.display = "block";
-    //                 } else {
-    //                     contentEl.style.display = "none";
-    //                     titleEl.style.display = "none";
-    //                 }
-    //             });
-    //         });
-    //     });
-    // });
+  
 </script>
+<script src="./js/chat.js"></script>
+
+<button id="chatWithAI"></button>
+
+<!-- Modal chứa nội dung ChatGPT -->
+<div id="chatModal" style="display: none;">
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+       const chatBtn = document.getElementById("chatWithAI");
+       const chatModal = document.getElementById("chatModal");
+   
+       chatBtn.addEventListener("click", function () {
+           chatModal.style.display = "flex"; // Hiện modal
+           fetch("chatgpt.html") // Tải nội dung từ chatgpt.html
+               .then(response => response.text())
+               .then(data => {
+                   chatModal.innerHTML = data;
+                   addChatGPTListeners(); // Kích hoạt lại sự kiện khi tải xong nội dung chatgpt.html
+               })
+               .catch(error => console.error("Lỗi khi tải chatgpt.html:", error));
+       });
+   
+       function addChatGPTListeners() {
+           const closeChat = document.getElementById("closeChat");
+           if (closeChat) {
+               closeChat.addEventListener("click", function () {
+                   chatModal.style.display = "none";
+               });
+           }
+       }
+   });
+   
+   
+    </script>
 
 </body>
 </html>

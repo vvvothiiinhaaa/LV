@@ -334,31 +334,45 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 /// 
+
 let allProducts = []; // Dữ liệu sản phẩm tất cả
 let currentPage = 1;
 const productsPerPage = 10;
 
 // Hàm hiển thị sản phẩm theo trang
-function displayPaginatedProducts(page, products = allProducts) {
+function displayPaginatedProducts(page = 1, products = allProducts) {
     const productList = document.getElementById("productList");
-    productList.innerHTML = "";
+    productList.innerHTML = ""; // Xóa danh sách sản phẩm hiện tại
 
+    // Tính toán phạm vi sản phẩm cần hiển thị
     const start = (page - 1) * productsPerPage;
     const end = start + productsPerPage;
     const productsToShow = products.slice(start, end);
 
+    // Hiển thị sản phẩm trên trang
     productsToShow.forEach(product => {
         const productDiv = createProductItem(product);
         productList.appendChild(productDiv);
     });
 
+    // Tạo điều khiển phân trang
     createPaginationControls(products.length, page);
 }
+
+// Hàm tạo điều khiển phân trang
 function createPaginationControls(totalItems, currentPage) {
     const pagination = document.getElementById("paginationContainer");
-    pagination.innerHTML = "";
+    pagination.innerHTML = ""; // Xóa các điều khiển phân trang cũ
 
     const totalPages = Math.ceil(totalItems / productsPerPage);
+
+    // Kiểm tra nếu tổng số sản phẩm ít hơn hoặc bằng số sản phẩm mỗi trang
+    if (totalItems <= productsPerPage) {
+        pagination.style.display = "none"; // Ẩn phân trang nếu không có đủ sản phẩm để phân trang
+        return;
+    } else {
+        pagination.style.display = "flex"; // Hiển thị phân trang nếu có đủ nhiều sản phẩm
+    }
 
     const createButton = (label, page) => {
         const btn = document.createElement("button");
@@ -387,6 +401,10 @@ function createPaginationControls(totalItems, currentPage) {
         pagination.appendChild(createButton("»", currentPage + 1));
     }
 }
+
+
+
+// Hàm tải tất cả sản phẩm từ API
 function loadAllProducts(apiUrl) {
     fetch(apiUrl)
         .then(res => res.json())
@@ -396,3 +414,26 @@ function loadAllProducts(apiUrl) {
         })
         .catch(err => console.error("Lỗi khi tải sản phẩm:", err));
 }
+
+// Hàm lọc sản phẩm theo category và price
+function fetchFilteredProducts(category, price) {
+    fetch(`/api/products/filter?category=${category}&price=${price}`)
+        .then(response => response.json())
+        .then(data => {
+            allProducts = data;
+            displayPaginatedProducts(1, data); // Hiển thị sản phẩm lọc
+        })
+        .catch(error => {
+            console.error("Error fetching filtered products:", error);
+        });
+}
+
+// Lắng nghe sự kiện khi người dùng chọn bộ lọc và bấm nút "Áp dụng"
+document.getElementById("applyFilters").addEventListener("click", function() {
+    // Lấy giá trị bộ lọc category và price
+    const categoryFilter = document.getElementById("categoryFilter").value;
+    const priceFilter = document.getElementById("priceFilter").value;
+
+    // Gọi hàm lọc sản phẩm
+    fetchFilteredProducts(categoryFilter, priceFilter);
+});

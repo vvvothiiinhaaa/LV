@@ -242,6 +242,24 @@ public class UserController {
         }
     }
 
+    @PutMapping("/status/{userId}")
+    public ResponseEntity<User> updateUser(
+            @PathVariable Long userId,
+            @RequestParam(value = "status", required = false) Boolean status
+    ) {
+        try {
+            User userDetails = new User();
+            userDetails.setStatus(status); // Update the status here
+
+            // Update the user details using your service
+            User updatedUser = userService.updateUser(userId, userDetails, null);
+            return ResponseEntity.ok(updatedUser);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
     // API để lấy URL ảnh của người dùng
     @GetMapping("/{userId}/image")
     public ResponseEntity<String> getUserImageUrl(@PathVariable Long userId) {

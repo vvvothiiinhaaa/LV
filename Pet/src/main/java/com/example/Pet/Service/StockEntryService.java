@@ -166,6 +166,25 @@ public class StockEntryService {
     //         // Cập nhật giá bán sản phẩm
     //         product.setPrice(sellingPrice);
     //     }
+    // Lấy toàn bộ lịch sử nhập hàng
+    public List<StockEntry> getAllStockEntries() {
+        return stockEntryRepository.findAll();
+    }
+
+    // Chỉnh sửa số lượng nhập hàng
+    // public StockEntry updateStockQuantity(Long id, Integer newQuantity) {
+    //     StockEntry stockEntry = stockEntryRepository.findById(id)
+    //             .orElseThrow(() -> new RuntimeException("StockEntry không tồn tại"));
+    //     stockEntry.setQuantity(newQuantity);
+    //     return stockEntryRepository.save(stockEntry);
+    // }
+    // Lấy bản ghi nhập hàng mới nhất của sản phẩm
+    public StockEntry getLatestStockEntry(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
+        return stockEntryRepository.findTopByProductOrderByEntryDateDesc(product);
+    }
+
 }
 
 // // Lấy toàn bộ lịch sử nhập hàng

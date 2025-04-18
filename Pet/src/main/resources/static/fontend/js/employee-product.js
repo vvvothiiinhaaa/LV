@@ -275,43 +275,84 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Lỗi khi tải danh sách sản phẩm:", error);
         }
     }
+});
+//     // Xử lý gửi dữ liệu nhập hàng lên API
+//     document.getElementById("stockEntryForm").addEventListener("submit", async function (event) {
+//         event.preventDefault();
 
-    // Xử lý gửi dữ liệu nhập hàng lên API
-    document.getElementById("stockEntryForm").addEventListener("submit", async function (event) {
-        event.preventDefault();
+//         const productId = document.getElementById("productSelect").value;
+//         const quantity = document.getElementById("quantity").value;
+//         const purchasePrice = document.getElementById("purchasePrice").value;
+//         // const supplier = document.getElementById("supplier").value;
 
-        const productId = document.getElementById("productSelect").value;
-        const quantity = document.getElementById("quantity").value;
-        const purchasePrice = document.getElementById("purchasePrice").value;
-        // const supplier = document.getElementById("supplier").value;
+//         if (!productId) {
+//             alert("Vui lòng chọn sản phẩm.");
+//             return;
+//         }
 
-        if (!productId) {
-            alert("Vui lòng chọn sản phẩm.");
-            return;
-        }
+//         // Tạo FormData để gửi dưới dạng form-data như trên Postman
+//         const formData = new FormData();
+//         formData.append("productId", productId);
+//         formData.append("quantity", quantity);
+//         formData.append("purchasePrice", purchasePrice);
+//         // formData.append("supplier", supplier);
 
-        // Tạo FormData để gửi dưới dạng form-data như trên Postman
-        const formData = new FormData();
-        formData.append("productId", productId);
-        formData.append("quantity", quantity);
-        formData.append("purchasePrice", purchasePrice);
-        // formData.append("supplier", supplier);
+//         try {
+//             const response = await fetch("http://localhost:8080/api/stock/add", {
+//                 method: "POST",
+//                 body: formData // Gửi dữ liệu dưới dạng form-data
+//             });
 
-        try {
-            const response = await fetch("http://localhost:8080/api/stock/add", {
-                method: "POST",
-                body: formData // Gửi dữ liệu dưới dạng form-data
-            });
+//             if (!response.ok) throw new Error("Lỗi khi lưu nhập hàng");
 
-            if (!response.ok) throw new Error("Lỗi khi lưu nhập hàng");
+//             alert("Nhập hàng thành công!");
+//             stockEntryModal.hide();
+//             document.getElementById("stockEntryForm").reset();
+//             location.reload();
+//         } catch (error) {
+//             console.error("Lỗi khi gửi dữ liệu nhập hàng:", error);
+//             alert("Không thể lưu nhập hàng. Vui lòng thử lại!");
+//         }
+//     });
+document.getElementById('stockEntryForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent default form submission
 
-            alert("Nhập hàng thành công!");
-            stockEntryModal.hide();
-            document.getElementById("stockEntryForm").reset();
-            location.reload();
-        } catch (error) {
-            console.error("Lỗi khi gửi dữ liệu nhập hàng:", error);
-            alert("Không thể lưu nhập hàng. Vui lòng thử lại!");
-        }
+    // Get values from the form inputs
+    const productId = document.getElementById('productSelect').value;
+    const quantity = document.getElementById('quantity').value;
+    const purchasePrice = document.getElementById('purchasePrice').value;
+
+    // Check if all required fields are filled
+    if (!productId || !quantity || !purchasePrice) {
+        alert('Vui lòng điền đầy đủ thông tin!');
+        return;
+    }
+
+    // Prepare the request payload
+    const requestBody = {
+        productId: productId,
+        quantity: parseInt(quantity),
+        purchasePrice: parseFloat(purchasePrice)
+    };
+
+    // Make the API call to add stock
+    fetch('/api/stock/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+    })
+    .then(response => response.text()) // Sử dụng .text() thay vì .json() để lấy phản hồi dưới dạng chuỗi
+    .then(data => {
+        console.log(data); // Xem thông tin phản hồi
+        alert(data); // Hiển thị thông báo trả về từ API
+        $('#stockEntryModal').modal('hide');
+        location.reload();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Đã xảy ra lỗi khi nhập kho!');
     });
+    
 });

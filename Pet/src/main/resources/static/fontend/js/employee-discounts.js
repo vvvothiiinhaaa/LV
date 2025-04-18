@@ -239,6 +239,73 @@ function formatVND(amount) {
 //     });
 // });
 
+// document.getElementById("discountForm").addEventListener("submit", async function (event) {
+//     event.preventDefault(); // Ngăn chặn reload trang
+
+//     // Lấy dữ liệu từ form và kiểm tra
+//     const discountData = {
+//         code: document.getElementById("code").value.trim(),
+//         discountPercentage: parseFloat(document.getElementById("discountPercentage").value) || 0,
+//         startDate: convertToISOWithoutTimezone(document.getElementById("startDate").value),
+//         endDate: convertToISOWithoutTimezone(document.getElementById("endDate").value),
+//         minOrderAmount: parseFloat(document.getElementById("minOrderAmount").value) || 0,
+//         usageLimit: parseInt(document.getElementById("usageLimit").value) || 0
+//     };
+    
+//     // Kiểm tra dữ liệu trước khi gửi
+//     if (!discountData.code || discountData.discountPercentage <= 0 || !discountData.startDate || !discountData.endDate) {
+//         alert("Vui lòng nhập đầy đủ thông tin hợp lệ!");
+//         return;
+//     }
+
+//     try {
+//         const response = await fetch("http://localhost:8080/api/discounts", {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify(discountData)
+//         });
+
+//         if (!response.ok) {
+//             const errorData = await response.text();
+//             throw new Error(errorData || "Lỗi không xác định!");
+//         }
+
+//         const result = await response.json();
+//         alert(" Mã giảm giá đã được thêm thành công!");
+
+//         // Reset form
+//         document.getElementById("discountForm").reset();
+
+//         // Ẩn modal nếu sử dụng Bootstrap 5
+//         let modalElement = document.getElementById('discountModal');
+//         if (modalElement) {
+//             let modalInstance = bootstrap.Modal.getInstance(modalElement);
+//             if (modalInstance) modalInstance.hide();
+//         }
+
+//         // Reload trang sau 0.5 giây để cập nhật danh sách mã giảm giá
+//         setTimeout(() => location.reload(), 500);
+
+//     } catch (error) {
+//         console.error(" Lỗi khi thêm mã giảm giá:", error.message);
+//         alert(" lỗi" + error.message);
+//     }
+// });
+
+// // Hàm chuyển đổi thời gian về ISO 8601 với múi giờ UTC+7
+// function convertToISOWithoutTimezone(dateStr) {
+//     if (!dateStr) return null;
+
+//     let date = new Date(dateStr);
+//     if (isNaN(date.getTime())) return null;
+
+//     // Bù thêm 7 giờ để giữ đúng giờ Việt Nam (GMT+7)
+//     date.setHours(date.getHours() + 7);
+
+//     return date.toISOString().split("Z")[0]; // Bỏ phần 'Z' (UTC)
+// }
 document.getElementById("discountForm").addEventListener("submit", async function (event) {
     event.preventDefault(); // Ngăn chặn reload trang
 
@@ -251,10 +318,31 @@ document.getElementById("discountForm").addEventListener("submit", async functio
         minOrderAmount: parseFloat(document.getElementById("minOrderAmount").value) || 0,
         usageLimit: parseInt(document.getElementById("usageLimit").value) || 0
     };
-    
+
     // Kiểm tra dữ liệu trước khi gửi
     if (!discountData.code || discountData.discountPercentage <= 0 || !discountData.startDate || !discountData.endDate) {
         alert("Vui lòng nhập đầy đủ thông tin hợp lệ!");
+        return;
+    }
+
+    // Kiểm tra nếu ngày bắt đầu và ngày kết thúc là trong quá khứ
+    const currentDate = new Date();
+    const startDate = new Date(discountData.startDate);
+    const endDate = new Date(discountData.endDate);
+
+    if (startDate < currentDate) {
+        alert("Ngày bắt đầu không thể là ngày trong quá khứ!");
+        return;
+    }
+
+    if (endDate < currentDate) {
+        alert("Ngày kết thúc không thể là ngày trong quá khứ!");
+        return;
+    }
+
+    // Kiểm tra nếu ngày kết thúc nhỏ hơn ngày bắt đầu
+    if (endDate < startDate) {
+        alert("Ngày kết thúc không thể trước ngày bắt đầu!");
         return;
     }
 
@@ -273,7 +361,7 @@ document.getElementById("discountForm").addEventListener("submit", async functio
         }
 
         const result = await response.json();
-        alert(" Mã giảm giá đã được thêm thành công!");
+        alert("Mã giảm giá đã được thêm thành công!");
 
         // Reset form
         document.getElementById("discountForm").reset();
@@ -289,8 +377,8 @@ document.getElementById("discountForm").addEventListener("submit", async functio
         setTimeout(() => location.reload(), 500);
 
     } catch (error) {
-        console.error(" Lỗi khi thêm mã giảm giá:", error.message);
-        alert(" lỗi" + error.message);
+        console.error("Lỗi khi thêm mã giảm giá:", error.message);
+        alert("Lỗi: " + error.message);
     }
 });
 

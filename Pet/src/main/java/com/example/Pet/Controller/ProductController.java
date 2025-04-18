@@ -236,7 +236,7 @@ public class ProductController {
     //     }
 
     //     Product product = productOptional.get();
-    //     product.setName(name);
+    //     product.setName(name);  
     //     product.setSold(sold);
     //     product.setGenre(genre);
     //     product.setOrigin(origin);

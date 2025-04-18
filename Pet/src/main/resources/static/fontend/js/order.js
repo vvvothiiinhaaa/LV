@@ -289,7 +289,7 @@ async function renderOrderDetails(order) {
         }
 
         // Kiểm tra trạng thái đơn hàng
-        const isPendingOrShipping = ["Chờ Xác Nhận", "Đang Giao", "Đã Xác Nhận"].includes(order.orderStatus);
+        const isPendingOrShipping = ["Chờ Xác Nhận", "Đang Giao", "Đã Xác Nhận", "Đã Hủy"].includes(order.orderStatus);
 
         // Hiển thị danh sách sản phẩm
         order.items.forEach((item, index) => {

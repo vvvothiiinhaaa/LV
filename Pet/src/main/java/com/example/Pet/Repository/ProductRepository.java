@@ -71,7 +71,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> searchByName(@Param("name") String name);
 
     // Lấy 5 sản phẩm mới nhất theo ID lớn nhất
-    List<Product> findTop5ByOrderByIdDesc();
+    List<Product> findTop10ByOrderByIdDesc();
 
     // Lấy 5 sản phẩm bán chạy nhất theo số lượng đã bán
     List<Product> findTop5ByOrderBySoldDesc();

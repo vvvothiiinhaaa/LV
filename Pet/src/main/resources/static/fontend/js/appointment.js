@@ -109,6 +109,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const dateInput = document.getElementById("appDate");
     const timeSelect = document.getElementById("time");
 
+    // Lấy ngày hiện tại và định dạng thành 'YYYY-MM-DD' theo múi giờ của người dùng
+    const today = new Date();
+    const formattedToday = today.toLocaleDateString('en-CA'); // Đảm bảo định dạng là 'YYYY-MM-DD'
+
+    // Cập nhật thuộc tính min của input ngày để ngăn chọn ngày trong quá khứ
+    dateInput.setAttribute("min", formattedToday);
+
     // Khi người dùng chọn ngày
     dateInput.addEventListener("change", function () {
         const selectedDate = dateInput.value;
@@ -130,50 +137,51 @@ document.addEventListener("DOMContentLoaded", function () {
             "09:00-10:30", "11:00-12:00", "12:30-14:00",
             "14:00-15:30", "16:00-17:30", "18:00-19:30", "20:00-21:20"
         ];
-    
+
         const formattedAvailableSlots = availableSlots.map(slot => slot.substring(0, 5)); // ["09:00", "11:00", ...]
-    
+
         // Lấy ngày được chọn
         const selectedDate = document.getElementById("appDate").value;
         const today = new Date();
         const isToday = selectedDate === today.toISOString().split('T')[0];
-    
+
         // Lấy giờ hiện tại (nếu là hôm nay)
         const nowHours = today.getHours();
         const nowMinutes = today.getMinutes();
         const currentMinutes = nowHours * 60 + nowMinutes;
-    
+
         // Reset trạng thái tất cả option
         timeSelect.querySelectorAll("option").forEach(option => {
             option.disabled = false;
         });
-    
+
         allTimeSlots.forEach(slot => {
             const slotStartTime = slot.split("-")[0]; // ví dụ "14:00"
-    
+
             // Nếu không có trong danh sách giờ trống từ API
             if (!formattedAvailableSlots.includes(slotStartTime)) {
                 const option = timeSelect.querySelector(`option[value="${slot}"]`);
                 if (option) option.disabled = true;
+                option.style.color = "red";
                 return;
             }
-    
+
             // Nếu là hôm nay, kiểm tra giờ hiện tại
             if (isToday) {
                 const [h, m] = slotStartTime.split(":").map(Number);
                 const slotMinutes = h * 60 + m;
-    
+
                 // Nếu khung giờ bắt đầu trước thời điểm hiện tại => disable
                 if (slotMinutes <= currentMinutes) {
                     const option = timeSelect.querySelector(`option[value="${slot}"]`);
                     if (option) option.disabled = true;
+                    option.style.color = "red";
                 }
             }
         });
     }
-    
-    
 });
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

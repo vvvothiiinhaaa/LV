@@ -44,6 +44,10 @@
     color:white;
     border:none;
 }
+#add-to-cart-btn {
+    width:auto;
+    padding:15px;
+}
 
    </style>
 </head>
@@ -107,15 +111,16 @@
                 </div>
                 
                 <div class="d-flex">
-                    <button class="btn add-to-cart-btn" id="add-to-cart-btn">+ ADD TO CART</button>
+                    <button class="btn add-to-cart-btn" id="add-to-cart-btn">+ THÊM SẢN PHẨM VÀO GIỎ HÀNG</button>
                     <!-- <button class="btn buy-now-btn">Buy Now</button> -->
-                </div>
-
-                <div class="wishlist-container">
-                    <button class="wishlist-button">
+                     <button class="wishlist-button">
                         <i class="fa fa-heart"></i> Add to wishlist
                     </button>
                 </div>
+
+                <!-- <div class="wishlist-container">
+                    
+                </div> -->
                 
                 
                 
@@ -243,6 +248,40 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
+<script src="./js/chat.js"></script>
+
+<button id="chatWithAI"></button>
+
+<!-- Modal chứa nội dung ChatGPT -->
+<div id="chatModal" style="display: none;">
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+       const chatBtn = document.getElementById("chatWithAI");
+       const chatModal = document.getElementById("chatModal");
+   
+       chatBtn.addEventListener("click", function () {
+           chatModal.style.display = "flex"; // Hiện modal
+           fetch("chatgpt.html") // Tải nội dung từ chatgpt.html
+               .then(response => response.text())
+               .then(data => {
+                   chatModal.innerHTML = data;
+                   addChatGPTListeners(); // Kích hoạt lại sự kiện khi tải xong nội dung chatgpt.html
+               })
+               .catch(error => console.error("Lỗi khi tải chatgpt.html:", error));
+       });
+   
+       function addChatGPTListeners() {
+           const closeChat = document.getElementById("closeChat");
+           if (closeChat) {
+               closeChat.addEventListener("click", function () {
+                   chatModal.style.display = "none";
+               });
+           }
+       }
+   });
+   
+   
+    </script>
 
 </body>
 </html>

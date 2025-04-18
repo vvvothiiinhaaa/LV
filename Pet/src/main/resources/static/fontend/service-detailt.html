@@ -226,23 +226,21 @@ body {
         </div>
       </section>
     
-    <div class="container-xl">
+      <div class="container-xl">
         <div class="row align-items-center content-section">
             <div class="col-md-5 image-section">
                 <img src="./img/ser8.png" alt="Pet Training Image" class="img-fluid">
             </div>
+    
+            <!-- Tên dịch vụ nằm trên danh sách bước -->
             <div class="col-md-6 steps">
-                <ol id="stepsList">
-                    <!-- <li><div><strong>Appointment Scheduling</strong> Call or book online to schedule a veterinary appointment for your pet.</div></li>
-                    <li><div><strong>Comprehensive Examination</strong> Our veterinarians conduct thorough examinations to assess your pet's health and address any concerns.</div></li>
-                    <li><div><strong>Diagnostic Testing</strong> Utilizing advanced diagnostic tools, we perform tests to accurately diagnose any health issues.</div></li>
-                    <li><div><strong>Treatment Plan Development</strong> Based on the examination and test results, we create a personalized treatment plan tailored to your pet's needs.</div></li>
-                    <li><div><strong>Medical Procedures</strong> From routine procedures like vaccinations to complex surgeries, we provide expert medical care to address your pet’s health concerns.</div></li>
-                    <li><div><strong>Follow-Up Care</strong> We offer follow-up appointments and ongoing support to monitor your pet’s health.</div></li> -->
-                </ol>
+                <h3 id="name" class="mb-4 text-black"></h3>
+    
+                <ol id="stepsList"></ol>
             </div>
         </div>
     </div>
+    
 
   
         <!-- Bảng giá dịch vụ -->
@@ -288,6 +286,10 @@ body {
         .then(response => response.json())
         .then(service => {
             console.log(" Dữ liệu API trả về:", service);
+            
+               // Cập nhật tên dịch vụ
+               const serviceName = document.getElementById("name");
+            serviceName.textContent = service.name || "Tên dịch vụ không xác định";
 
             // Cập nhật các bước thực hiện
             const stepsList = document.getElementById("stepsList");
@@ -325,7 +327,7 @@ body {
                         priceList.appendChild(row);
                     });
                 } else {
-                    priceList.innerHTML = "<tr><td colspan='2'>⚠️ Chưa có bảng giá.</td></tr>";
+                    priceList.innerHTML = "<tr><td colspan='2'>Chưa có bảng giá.</td></tr>";
                 }
 
         })
@@ -333,6 +335,40 @@ body {
 });
 
     </script>
+    <script src="./js/chat.js"></script>
+
+    <button id="chatWithAI"></button>
+
+    <!-- Modal chứa nội dung ChatGPT -->
+    <div id="chatModal" style="display: none;">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+           const chatBtn = document.getElementById("chatWithAI");
+           const chatModal = document.getElementById("chatModal");
+       
+           chatBtn.addEventListener("click", function () {
+               chatModal.style.display = "flex"; // Hiện modal
+               fetch("chatgpt.html") // Tải nội dung từ chatgpt.html
+                   .then(response => response.text())
+                   .then(data => {
+                       chatModal.innerHTML = data;
+                       addChatGPTListeners(); // Kích hoạt lại sự kiện khi tải xong nội dung chatgpt.html
+                   })
+                   .catch(error => console.error("Lỗi khi tải chatgpt.html:", error));
+           });
+       
+           function addChatGPTListeners() {
+               const closeChat = document.getElementById("closeChat");
+               if (closeChat) {
+                   closeChat.addEventListener("click", function () {
+                       chatModal.style.display = "none";
+                   });
+               }
+           }
+       });
+       
+       
+        </script>
 </body>
 </html>
 <!-- <td>${service.name}</td> -->

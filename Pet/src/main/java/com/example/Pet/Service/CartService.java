@@ -77,7 +77,7 @@ public class CartService {
         // Lưu hoặc cập nhật CartItem
         cartItemRepository.save(cartItem);
 
-        return "Product added to cart";
+        return "Thêm sản phẩm vào giỏ hàng thành công";
     }
 
 // Xem giỏ hàng của người dùng

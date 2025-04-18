@@ -34,9 +34,6 @@ public class StockEntry {
     @Column(name = "entry_date", nullable = false)
     private LocalDateTime entryDate; // Ngày nhập hàng
 
-    @Column(name = "remaining_quantity", nullable = false)
-    private Integer remainingQuantity;
-
     public StockEntry() {
     }
 
@@ -56,7 +53,6 @@ public class StockEntry {
     public StockEntry(Product product, Integer quantity, Double purchasePrice, LocalDateTime entryDate) {
         this.product = product;
         this.quantity = quantity;
-        this.remainingQuantity = quantity; // ban đầu bằng số lượng nhập
         this.purchasePrice = purchasePrice;
         this.entryDate = entryDate;
     }
@@ -104,20 +100,6 @@ public class StockEntry {
 
     public void setEntryDate(LocalDateTime entryDate) {
         this.entryDate = entryDate;
-    }
-
-    /**
-     * @return Integer return the remainingQuantity
-     */
-    public Integer getRemainingQuantity() {
-        return remainingQuantity;
-    }
-
-    /**
-     * @param remainingQuantity the remainingQuantity to set
-     */
-    public void setRemainingQuantity(Integer remainingQuantity) {
-        this.remainingQuantity = remainingQuantity;
     }
 
 }

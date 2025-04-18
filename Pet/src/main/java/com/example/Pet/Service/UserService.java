@@ -453,7 +453,7 @@ public List<UserWarningDTO> getAllUsersOnlyRiskStatus() {
                     } else if (isWarning) {
                         riskStatus = "Cảnh báo";
                     }
-
+                    // (isWarning || isRiskHigh)
                     // Nếu người dùng có cảnh báo và không phải là tài khoản thủ công đã mở khóa
                     if (isWarning && !isRiskHigh && !user.isManuallyUnlocked()) {
                         return new UserWarningDTO(
